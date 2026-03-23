@@ -1,51 +1,48 @@
-enum TestimonialStatus {
-    PENDING = 'PENDING',
-    APPROVED = 'APPROVED',
-    REJECTED = 'REJECTED'
-}
-
-enum TestimonialTag {
-    PRODUCT = 'PRODUCT',
-    SERVICE = 'SERVICE',
-    SUPPORT = 'SUPPORT',
-}
-
-enum Rating {
-    ONE_STAR = 1,
-    TWO_STARS = 2,
-    THREE_STARS = 3,
-    FOUR_STARS = 4,
-    FIVE_STARS = 5
-}
-
-enum Category {
-    TECHNOLOGY = 'TECHNOLOGY',
-    HEALTHCARE = 'HEALTHCARE',
-    EDUCATION = 'EDUCATION',
-    FINANCE = 'FINANCE',
-    ENTERTAINMENT = 'ENTERTAINMENT'
-}
+import { TestimonialId } from './value-objects/TestimonialId';
+import { TestimonialIdempotencyKey } from './value-objects/TestimonialIdempotencyKey';
+import { TestimonialContent } from './value-objects/TestimonialContent';
+import { TestimonialAuthor } from './value-objects/TestimonialAuthor';
+import { TestimonialStatus } from './value-objects/TestimonialStatus';
+import { TestimonialTag } from './value-objects/TestimonialTag';
+import { TestimonialRating } from './value-objects/TestimonialRating';
+import { TestimonialCategory } from './value-objects/TestimonialCategory';
+import { TestimonialImageUrl } from './value-objects/TestimonialImageUrl';
+import { TestimonialVideoUrl } from './value-objects/TestimonialVideoUrl';
+import { TestimonialCreatedAt } from './value-objects/TestimonialCreatedAt';
+import { TestimonialUpdatedAt } from './value-objects/TestimonialUpdatedAt';
+import { TestimonialIsEdited } from './value-objects/TestimonialIsEdited';
 
 export class Testimonial {
-    iKey: string;
-    content: string;
-    author: string;
+    id: TestimonialId;
+    iKey: TestimonialIdempotencyKey;
+    content: TestimonialContent;
+    author: TestimonialAuthor;
     status: TestimonialStatus;
     tags: TestimonialTag[];
-    rating: Rating;
-    category: Category;
-    imageUrl?: string;
-    videoUrl?: string;
+    rating: TestimonialRating;
+    category: TestimonialCategory;
+    isEdited: TestimonialIsEdited;
+    imageUrl?: TestimonialImageUrl;
+    videoUrl?: TestimonialVideoUrl;
+    createdAt?: TestimonialCreatedAt;
+    updatedAt?: TestimonialUpdatedAt;
 
     constructor(
-        iKey: string,
-        content: string,
-        author: string,
+        id: TestimonialId,
+        iKey: TestimonialIdempotencyKey,
+        content: TestimonialContent,
+        author: TestimonialAuthor,
         status: TestimonialStatus,
         tags: TestimonialTag[],
-        rating: Rating,
-        category: Category
+        rating: TestimonialRating,
+        category: TestimonialCategory,
+        isEdited: TestimonialIsEdited,
+        imageUrl?: TestimonialImageUrl,
+        videoUrl?: TestimonialVideoUrl,
+        createdAt?: TestimonialCreatedAt,
+        updatedAt?: TestimonialUpdatedAt
     ) {
+        this.id = id;
         this.iKey = iKey;
         this.content = content;
         this.author = author;
@@ -53,6 +50,12 @@ export class Testimonial {
         this.tags = tags;
         this.rating = rating;
         this.category = category;
+        this.isEdited = isEdited;
+        this.imageUrl = imageUrl;
+        this.videoUrl = videoUrl;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
 }
+
