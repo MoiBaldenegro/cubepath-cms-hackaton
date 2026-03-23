@@ -10,7 +10,7 @@ import { UpdateTestimonial } from '../../application/updateTestimonial/UpdateTes
 import { RemoveTestimonial } from '../../application/removeTestimonial/RemoveTestimonial';
 import { TypeOrmTestimonialRepository } from '../typeorm/TypeOrmTestimonialRepository';
 import { TestimonialEntity } from '../typeorm/Testimonial.entity';
-import { TestimonialRepository } from '../../domain/TestimonialRepository';
+import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
 
 const TESTIMONIAL_REPOSITORY_PROVIDER = {
   provide: 'TestimonialRepository',

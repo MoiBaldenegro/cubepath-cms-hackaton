@@ -1,6 +1,6 @@
-import { TestimonialRepository } from '../../domain/TestimonialRepository';
 import { FindAllTestimonialsRequest } from './FindAllTestimonialsRequest';
 import { Testimonial } from '../../domain/Testimonial';
+import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
 
 export class FindAllTestimonials {
   constructor(private repository: TestimonialRepository) {}

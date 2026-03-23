@@ -1,4 +1,3 @@
-import { TestimonialRepository } from '../../domain/TestimonialRepository';
 import { CreateTestimonialRequest } from './CreateTestimonialRequest';
 import { Testimonial } from '../../domain/Testimonial';
 import { TestimonialId } from '../../domain/value-objects/TestimonialId';
@@ -27,6 +26,7 @@ import { TestimonialCreatedAt } from '../../domain/value-objects/TestimonialCrea
 import { TestimonialUpdatedAt } from '../../domain/value-objects/TestimonialUpdatedAt';
 import { TestimonialIsEdited } from '../../domain/value-objects/TestimonialIsEdited';
 import { randomUUID } from 'crypto';
+import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
 
 export class TestimonialCreate {
   constructor(private repository: TestimonialRepository) {}

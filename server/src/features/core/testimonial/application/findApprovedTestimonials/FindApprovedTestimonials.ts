@@ -1,12 +1,12 @@
-import { TestimonialRepository } from '../../domain/TestimonialRepository';
-import { FindApprovedTestimoniaRequest } from './FindApprovedTestimoniaRequest';
+import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
 import { Testimonial } from '../../domain/Testimonial';
+import { FindApprovedTestimonialRequest } from './FindApprovedTestimonialRequest';
 
 export class FindApprovedTestimonials {
   constructor(private repository: TestimonialRepository) {}
 
   async run(
-    request: FindApprovedTestimoniaRequest = {},
+    request: FindApprovedTestimonialRequest = {},
   ): Promise<Testimonial[]> {
     const testimonials = await this.repository.findApproved(request.limit);
 

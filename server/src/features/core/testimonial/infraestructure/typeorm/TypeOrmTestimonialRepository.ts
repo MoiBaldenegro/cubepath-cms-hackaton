@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, FindOptionsWhere } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { TestimonialRepository } from '../../domain/TestimonialRepository';
 import { Testimonial } from '../../domain/Testimonial';
 import { TestimonialEntity } from './Testimonial.entity';
 import { TestimonialId } from '../../domain/value-objects/TestimonialId';
@@ -30,6 +29,7 @@ import { TestimonialIdempotencyKey } from '../../domain/value-objects/Testimonia
 import { TestimonialCreatedAt } from '../../domain/value-objects/TestimonialCreatedAt';
 import { TestimonialUpdatedAt } from '../../domain/value-objects/TestimonialUpdatedAt';
 import { TestimonialIsEdited } from '../../domain/value-objects/TestimonialIsEdited';
+import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
 
 @Injectable()
 export class TypeOrmTestimonialRepository implements TestimonialRepository {

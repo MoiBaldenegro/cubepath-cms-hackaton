@@ -16,8 +16,11 @@ import { FindTestimonialById } from '../../application/findTestimonialById/FindT
 import { FindApprovedTestimonials } from '../../application/findApprovedTestimonials/FindApprovedTestimonials';
 import { UpdateTestimonial } from '../../application/updateTestimonial/UpdateTestimonial';
 import { RemoveTestimonial } from '../../application/removeTestimonial/RemoveTestimonial';
-import type { CreateTestimonialRequest } from '../../application/createTestimonial/CreateTestimonialRequest';
-import type { UpdateTestimonialRequest } from '../../application/updateTestimonial/UpdateTestimonialRequest';
+import { CreateTestimonialDto } from './dtos/CreateTestimonialDto';
+import { UpdateTestimonialDto } from './dtos/UpdateTestimonialDto';
+import { FindAllTestimonialsDto } from './dtos/FindAllTestimonialsDto';
+import { FindApprovedTestimonialsDto } from './dtos/FindApprovedTestimonialsDto';
+import { TestimonialIdDto } from './dtos/TestimonialIdDto';
 
 @Controller('testimonial')
 export class TestimonialController {
@@ -32,43 +35,41 @@ export class TestimonialController {
   ) {}
 
   @Post()
-  async create(@Body() request: CreateTestimonialRequest) {
-    return this.createTestimonial.run(request);
+  async create(@Body() request: CreateTestimonialDto) {
+    await this.createTestimonial.run(request);
+    return { success: true };
   }
 
   @Get()
-  async findAll(@Query('search') search?: string) {
-    return this.findAllTestimonials.run({ search });
+  async findAll(@Query() query: FindAllTestimonialsDto) {
+    const testimonials = await this.findAllTestimonials.run(query);
+    return testimonials.map(t => t.toPrimitives());
   }
 
   @Get('approved')
-  async findApproved(@Query('limit') limit?: number) {
-    return this.findApprovedTestimonials.run({
-      limit: limit ? Number(limit) : undefined,
-    });
+  async findApproved(@Query() query: FindApprovedTestimonialsDto) {
+    const testimonials = await this.findApprovedTestimonials.run(query);
+    return testimonials.map(t => t.toPrimitives());
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.findTestimonialById.run({ id });
+  async findOne(@Param() params: TestimonialIdDto) {
+    const testimonial = await this.findTestimonialById.run(params);
+    return testimonial.toPrimitives();
   }
 
   @Patch(':id/approve')
-  async approve(@Param('id') id: string) {
-    return this.approveTestimonial.run({ id });
+  async approve(@Param() params: TestimonialIdDto) {
+    return this.approveTestimonial.run(params);
   }
 
   @Put(':id')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async update(
-    @Param('id') id: string,
-    @Body() request: Omit<UpdateTestimonialRequest, 'id'>,
-  ) {
-    return this.updateTestimonial.run({ ...request, id });
+  async update(@Param('id') id: string, @Body() body: UpdateTestimonialDto) {
+    return this.updateTestimonial.run({ ...body, id });
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.removeTestimonial.run({ id });
+  async remove(@Param() params: TestimonialIdDto) {
+    return this.removeTestimonial.run(params);
   }
 }

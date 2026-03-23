@@ -1,4 +1,4 @@
-import { TestimonialRepository } from '../domain/TestimonialRepository';
+import { TestimonialRepository } from '../domain/ports/TestimonialRepository';
 import { Testimonial } from '../domain/Testimonial';
 import { TestimonialId } from '../domain/value-objects/TestimonialId';
 import {

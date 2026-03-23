@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TestimonialModule } from './features/core/testimonial/infraestructure/nest/testimonial.module';
+import { AuthModule } from './features/auth/infrastructure/nest/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TestimonialModule } from './features/core/testimonial/infraestructure/n
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
     TestimonialModule,
   ],
   controllers: [],

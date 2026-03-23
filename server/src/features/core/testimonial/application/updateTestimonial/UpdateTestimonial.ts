@@ -1,4 +1,3 @@
-import { TestimonialRepository } from '../../domain/TestimonialRepository';
 import { UpdateTestimonialRequest } from './UpdateTestimonialRequest';
 import { TestimonialId } from '../../domain/value-objects/TestimonialId';
 import { TestimonialContent } from '../../domain/value-objects/TestimonialContent';
@@ -24,6 +23,7 @@ import { TestimonialVideoUrl } from '../../domain/value-objects/TestimonialVideo
 import { TestimonialUpdatedAt } from '../../domain/value-objects/TestimonialUpdatedAt';
 import { TestimonialIsEdited } from '../../domain/value-objects/TestimonialIsEdited';
 import { TestimonialNotFoundError } from '../../domain/errors/TestimonialNotFoundError';
+import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
 
 export class UpdateTestimonial {
   constructor(private repository: TestimonialRepository) {}

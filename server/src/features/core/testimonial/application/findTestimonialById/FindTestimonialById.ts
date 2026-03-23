@@ -1,8 +1,8 @@
-import { TestimonialRepository } from '../../domain/TestimonialRepository';
 import { FindTestimonialByIdRequest } from './FindTestimonialByIdRequest';
 import { Testimonial } from '../../domain/Testimonial';
 import { TestimonialId } from '../../domain/value-objects/TestimonialId';
 import { TestimonialNotFoundError } from '../../domain/errors/TestimonialNotFoundError';
+import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
 
 export class FindTestimonialById {
   constructor(private repository: TestimonialRepository) {}

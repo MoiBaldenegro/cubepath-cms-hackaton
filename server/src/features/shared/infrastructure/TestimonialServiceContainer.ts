@@ -1,4 +1,3 @@
-import { TestimonialRepository } from '../../core/testimonial/domain/TestimonialRepository';
 import { TestimonialCreate } from '../../core/testimonial/application/createTestimonial/createTestimonial';
 import { FindAllTestimonials } from '../../core/testimonial/application/findAllTestimonials/FindAllTestimonials';
 import { FindTestimonialById } from '../../core/testimonial/application/findTestimonialById/FindTestimonialById';
@@ -6,6 +5,7 @@ import { RemoveTestimonial } from '../../core/testimonial/application/removeTest
 import { UpdateTestimonial } from '../../core/testimonial/application/updateTestimonial/UpdateTestimonial';
 import { ApproveTestimonial } from '../../core/testimonial/application/approveTestimonial/ApproveTestimonial';
 import { FindApprovedTestimonials } from '../../core/testimonial/application/findApprovedTestimonials/FindApprovedTestimonials';
+import { TestimonialRepository } from 'src/features/core/testimonial/domain/ports/TestimonialRepository';
 
 export class TestimonialServiceContainer {
   public readonly createTestimonial: TestimonialCreate;
