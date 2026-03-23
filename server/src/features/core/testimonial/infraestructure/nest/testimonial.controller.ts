@@ -43,13 +43,13 @@ export class TestimonialController {
   @Get()
   async findAll(@Query() query: FindAllTestimonialsDto) {
     const testimonials = await this.findAllTestimonials.run(query);
-    return testimonials.map(t => t.toPrimitives());
+    return testimonials.map((t) => t.toPrimitives());
   }
 
   @Get('approved')
   async findApproved(@Query() query: FindApprovedTestimonialsDto) {
     const testimonials = await this.findApprovedTestimonials.run(query);
-    return testimonials.map(t => t.toPrimitives());
+    return testimonials.map((t) => t.toPrimitives());
   }
 
   @Get(':id')

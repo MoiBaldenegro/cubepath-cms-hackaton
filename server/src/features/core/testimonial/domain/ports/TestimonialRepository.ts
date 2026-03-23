@@ -1,6 +1,5 @@
-import { Testimonial } from "../Testimonial";
-import { TestimonialId } from "../value-objects/TestimonialId";
-
+import { Testimonial } from '../Testimonial';
+import { TestimonialId } from '../value-objects/TestimonialId';
 
 export interface TestimonialRepository {
   create(testimonial: Testimonial): Promise<void>;

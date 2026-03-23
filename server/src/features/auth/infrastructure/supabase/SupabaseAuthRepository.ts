@@ -15,7 +15,7 @@ export class SupabaseAuthRepository implements AuthRepository {
     this.supabase = createClient(
       this.configService.get<string>('SUPABASE_URL') || '',
       this.configService.get<string>('SUPABASE_KEY') || '',
-    );
+    ) as SupabaseClient;
   }
 
   async login(email: AuthEmail, password: AuthPassword): Promise<AuthUser> {
