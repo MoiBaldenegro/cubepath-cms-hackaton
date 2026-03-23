@@ -29,10 +29,10 @@ export class TestimonialEntity {
   @Column({ name: 'is_edited', default: false })
   isEdited: boolean;
 
-  @Column({ name: 'image_url', nullable: true })
+  @Column('text', { name: 'image_url', nullable: true })
   imageUrl: string | null;
 
-  @Column({ name: 'video_url', nullable: true })
+  @Column('text', { name: 'video_url', nullable: true })
   videoUrl: string | null;
 
   @Column({ name: 'created_at', type: 'timestamp', nullable: true })
