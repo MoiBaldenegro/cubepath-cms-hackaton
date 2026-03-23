@@ -14,7 +14,7 @@ import { TestimonialModule } from './features/core/testimonial/infraestructure/n
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
         autoLoadEntities: true,
-        // synchronize: true,
+        synchronize: true,
       }),
       inject: [ConfigService],
     }),
