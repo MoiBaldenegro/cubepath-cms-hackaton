@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+import { TestimonialModule } from './features/core/testimonial/infraestructure/nest/testimonial.module';
 
 @Module({
-  imports: [],
+  imports: [TestimonialModule],
   controllers: [],
   providers: [],
 })
