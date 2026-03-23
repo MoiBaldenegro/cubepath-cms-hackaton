@@ -1,6 +1,7 @@
 import { Testimonial } from '../Testimonial';
 import { TestimonialId } from '../value-objects/TestimonialId';
 
+// ports
 export interface TestimonialRepository {
   create(testimonial: Testimonial): Promise<void>;
   findAll(search?: string): Promise<Testimonial[]>;
