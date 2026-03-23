@@ -57,5 +57,22 @@ export class Testimonial {
         this.updatedAt = updatedAt;
     }
 
+    toPrimitives() {
+        return {
+            id: this.id.value,
+            iKey: this.iKey.value,
+            content: this.content.value,
+            author: this.author.value,
+            status: this.status.value,
+            tags: this.tags.map(tag => tag.value),
+            rating: this.rating.value,
+            category: this.category.value,
+            isEdited: this.isEdited.value,
+            imageUrl: this.imageUrl?.value,
+            videoUrl: this.videoUrl?.value,
+            createdAt: this.createdAt?.value,
+            updatedAt: this.updatedAt?.value
+        };
+    }
 }
 
