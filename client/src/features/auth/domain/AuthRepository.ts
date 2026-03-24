@@ -3,6 +3,8 @@ export interface User {
     email: string;
     token?: string;
     role?: string;
+    provider?: string;
+    organizationId?: string;
 }
 
 export interface AuthRepository {

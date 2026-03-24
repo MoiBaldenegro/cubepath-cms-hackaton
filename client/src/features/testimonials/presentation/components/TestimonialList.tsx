@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TestimonialStatus, type Testimonial } from '../../domain/Testimonial';
 import { TestimonialService } from '../../infrastructure/TestimonialService';
 

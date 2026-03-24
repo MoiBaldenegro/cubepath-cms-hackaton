@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { UserRole } from '../../features/users/domain/UserRole'; // Assuming create this later or define inline
 
 interface User {
