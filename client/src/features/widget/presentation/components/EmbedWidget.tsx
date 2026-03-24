@@ -430,7 +430,7 @@ import '@cubepath/widget';
                             <head>
                                 <style>body { margin: 0; font-family: sans-serif; }</style>
                                 ${integrationMethod === 'npm' 
-                                    ? `<script type="module" src="http://localhost:3000/widget/sdk.js"></script>`
+                                    ? `<script type="module" src="${API_URL}/widget/sdk.js"></script>`
                                     : ''
                                 }
                             </head>
