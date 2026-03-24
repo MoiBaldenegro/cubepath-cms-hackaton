@@ -78,6 +78,24 @@ export class WidgetController {
   async getData(
     @Query('organizationId') organizationId: string,
   ) {
+    if (organizationId === 'demo-org-id') {
+      return [
+        {
+          id: '1',
+          content: 'CubePath has transformed how we gather feedback. Absolutely essential tool.',
+          author: 'Alice Johnson',
+          rating: 5,
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: '3',
+          content: 'The API is clean and the documentation is top notch. A developer\'s dream.',
+          author: 'Charlie Brown',
+          rating: 5,
+          createdAt: new Date().toISOString(),
+        },
+      ];
+    }
     const testimonials = await this.testimonialRepository.findApprovedByOrganization(new OrganizationId(organizationId));
     
     return testimonials.map(t => ({
@@ -97,17 +115,40 @@ export class WidgetController {
     @Query('layout') layout: string = 'grid',
     @Res() res: Response,
   ) {
-    const testimonials = await this.testimonialRepository.findApprovedByOrganization(new OrganizationId(organizationId));
-    
-    // Transform domain entities to primitive objects
-    const data = testimonials.map(t => ({
-      id: t.id.value,
-      content: t.content.value,
-      author: t.author.value,
-      rating: t.rating.value,
-      createdAt: t.createdAt?.value,
-      // Add other needed fields
-    }));
+    let data;
+
+    if (organizationId === 'demo-org-id') {
+      data = [
+        {
+          id: '1',
+          content: 'CubePath has transformed how we gather feedback. Absolutely essential tool.',
+          author: 'Alice Johnson',
+          rating: 5,
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: '3',
+          content: 'The API is clean and the documentation is top notch. A developer\'s dream.',
+          author: 'Charlie Brown',
+          rating: 5,
+          createdAt: new Date().toISOString(),
+        },
+      ];
+    } else {
+      const testimonials = await this.testimonialRepository.findApprovedByOrganization(new OrganizationId(organizationId));
+      
+      // Transform domain entities to primitive objects
+      data = testimonials.map(t => ({
+        id: t.id.value,
+        content: t.content.value,
+        author: t.author.value,
+        rating: t.rating.value,
+        createdAt: t.createdAt?.value,
+        // Add other needed fields
+      }));
+    }
+
+    const apiUrl = process.env.API_URL || 'http://localhost:3000';
 
     const jsCode = `
       (function() {
@@ -281,7 +322,7 @@ export class WidgetController {
             submitBtn.style.cursor = 'not-allowed';
 
             try {
-                const response = await fetch('http://localhost:3000/widget/submit', {
+                const response = await fetch('${apiUrl}/widget/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ...data, organizationId: '${organizationId}' }),
