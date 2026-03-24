@@ -18,11 +18,13 @@ export const EmbedWidget = () => {
 
     if (!user) return null;
 
+import { config } from '../../../../shared/infrastructure/config';
+
     // Use organizationId from user object, fallback to 'demo-org-id' if missing for preview
     const organizationId = user.organizationId || 'current-user-org-id';
     
     // Construct the script URL based on selected options
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const API_URL = config.VITE_API_URL;
     const scriptSrc = `${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}`;
     
     const frameworkConfig: Record<Framework, { label: string; variable: string; install: string; code: string }> = {

@@ -1,6 +1,7 @@
 import { TestimonialStatus, TestimonialCategory, TestimonialTag, type Testimonial } from "../domain/Testimonial";
+import { config } from '../../../shared/infrastructure/config';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = config.VITE_API_URL;
 
 const MOCK_TESTIMONIALS: any[] = [
   {
