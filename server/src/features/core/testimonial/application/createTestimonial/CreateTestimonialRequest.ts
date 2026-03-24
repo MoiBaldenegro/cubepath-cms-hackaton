@@ -5,6 +5,7 @@ export interface CreateTestimonialRequest {
   tags: string[];
   rating: number;
   category: string;
+  organizationId: string;
   imageUrl?: string;
   videoUrl?: string;
 }

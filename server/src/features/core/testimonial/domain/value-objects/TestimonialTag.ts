@@ -2,6 +2,7 @@ export enum TestimonialTagEnum {
   PRODUCT = 'PRODUCT',
   SERVICE = 'SERVICE',
   SUPPORT = 'SUPPORT',
+  GENERAL = 'GENERAL',
 }
 
 export class TestimonialTag {

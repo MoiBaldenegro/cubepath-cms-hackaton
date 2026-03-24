@@ -12,6 +12,7 @@ import {
   UserProvider,
 } from '../../domain/value-objects/UserProvider';
 import { UserPassword } from '../../domain/value-objects/UserPassword';
+import { OrganizationId } from '../../../core/testimonial/domain/value-objects/OrganizationId';
 
 @Injectable()
 export class TypeOrmUserRepository implements UserRepository {
@@ -28,6 +29,7 @@ export class TypeOrmUserRepository implements UserRepository {
       email: primitives.email,
       role: primitives.role,
       provider: primitives.provider,
+      organizationId: primitives.organizationId,
       password: primitives.password,
     });
   }
@@ -39,17 +41,30 @@ export class TypeOrmUserRepository implements UserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const entity = await this.repository.findOne({ where: { email } });
+    const entity = await this.repository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .addSelect('user.password')
+      .getOne();
+
     if (!entity) return null;
     return this.toDomain(entity);
   }
 
+  async findAll(organizationId?: OrganizationId): Promise<User[]> {
+    const where = organizationId ? { organizationId: organizationId.value } : {};
+    const entities = await this.repository.find({ where });
+    return entities.map((entity) => this.toDomain(entity));
+  }
+
   private toDomain(entity: UserEntity): User {
+    const orgId = entity.organizationId || 'default-org-id';
     return new User(
       new UserId(entity.id),
       new UserEmail(entity.email),
       entity.role as UserRole,
       new UserProvider(entity.provider as AuthProvider),
+      new OrganizationId(orgId),
       entity.password ? new UserPassword(entity.password) : undefined,
     );
   }

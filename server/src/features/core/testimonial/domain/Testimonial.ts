@@ -11,6 +11,7 @@ import { TestimonialVideoUrl } from './value-objects/TestimonialVideoUrl';
 import { TestimonialCreatedAt } from './value-objects/TestimonialCreatedAt';
 import { TestimonialUpdatedAt } from './value-objects/TestimonialUpdatedAt';
 import { TestimonialIsEdited } from './value-objects/TestimonialIsEdited';
+import { OrganizationId } from './value-objects/OrganizationId';
 
 export class Testimonial {
   id: TestimonialId;
@@ -22,6 +23,7 @@ export class Testimonial {
   rating: TestimonialRating;
   category: TestimonialCategory;
   isEdited: TestimonialIsEdited;
+  organizationId: OrganizationId;
   imageUrl?: TestimonialImageUrl;
   videoUrl?: TestimonialVideoUrl;
   createdAt?: TestimonialCreatedAt;
@@ -37,6 +39,7 @@ export class Testimonial {
     rating: TestimonialRating,
     category: TestimonialCategory,
     isEdited: TestimonialIsEdited,
+    organizationId: OrganizationId,
     imageUrl?: TestimonialImageUrl,
     videoUrl?: TestimonialVideoUrl,
     createdAt?: TestimonialCreatedAt,
@@ -51,6 +54,7 @@ export class Testimonial {
     this.rating = rating;
     this.category = category;
     this.isEdited = isEdited;
+    this.organizationId = organizationId;
     this.imageUrl = imageUrl;
     this.videoUrl = videoUrl;
     this.createdAt = createdAt;
@@ -68,6 +72,7 @@ export class Testimonial {
       rating: this.rating.value,
       category: this.category.value,
       isEdited: this.isEdited.value,
+      organizationId: this.organizationId.value,
       imageUrl: this.imageUrl?.value,
       videoUrl: this.videoUrl?.value,
       createdAt: this.createdAt?.value,

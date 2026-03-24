@@ -8,6 +8,8 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { TestimonialCreate } from '../../application/createTestimonial/createTestimonial';
 import { FindAllTestimonials } from '../../application/findAllTestimonials/FindAllTestimonials';
@@ -21,8 +23,11 @@ import { UpdateTestimonialDto } from './dtos/UpdateTestimonialDto';
 import { FindAllTestimonialsDto } from './dtos/FindAllTestimonialsDto';
 import { FindApprovedTestimonialsDto } from './dtos/FindApprovedTestimonialsDto';
 import { TestimonialIdDto } from './dtos/TestimonialIdDto';
+import { JwtAuthGuard } from '../../../../auth/infrastructure/nest/guards/jwt-auth.guard';
+import { Public } from '../../../../auth/infrastructure/nest/decorators/public.decorator';
 
 @Controller('testimonial')
+@UseGuards(JwtAuthGuard)
 export class TestimonialController {
   constructor(
     private readonly createTestimonial: TestimonialCreate,
@@ -35,17 +40,20 @@ export class TestimonialController {
   ) {}
 
   @Post()
-  async create(@Body() request: CreateTestimonialDto) {
-    await this.createTestimonial.run(request);
+  async create(@Body() request: CreateTestimonialDto, @Request() req) {
+    const { organizationId } = req.user;
+    await this.createTestimonial.run({ ...request, organizationId });
     return { success: true };
   }
 
   @Get()
-  async findAll(@Query() query: FindAllTestimonialsDto) {
-    const testimonials = await this.findAllTestimonials.run(query);
+  async findAll(@Query() query: FindAllTestimonialsDto, @Request() req) {
+    const { organizationId } = req.user;
+    const testimonials = await this.findAllTestimonials.run({ ...query, organizationId });
     return testimonials.map((t) => t.toPrimitives());
   }
 
+  @Public()
   @Get('approved')
   async findApproved(@Query() query: FindApprovedTestimonialsDto) {
     const testimonials = await this.findApprovedTestimonials.run(query);

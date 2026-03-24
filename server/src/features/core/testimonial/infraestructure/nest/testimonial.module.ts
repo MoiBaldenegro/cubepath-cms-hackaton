@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TestimonialController } from './testimonial.controller';
+import { WidgetController } from '../widget/nest/widget.controller';
+
 import { TestimonialCreate } from '../../application/createTestimonial/createTestimonial';
 import { FindAllTestimonials } from '../../application/findAllTestimonials/FindAllTestimonials';
 import { ApproveTestimonial } from '../../application/approveTestimonial/ApproveTestimonial';
@@ -8,9 +11,14 @@ import { FindTestimonialById } from '../../application/findTestimonialById/FindT
 import { FindApprovedTestimonials } from '../../application/findApprovedTestimonials/FindApprovedTestimonials';
 import { UpdateTestimonial } from '../../application/updateTestimonial/UpdateTestimonial';
 import { RemoveTestimonial } from '../../application/removeTestimonial/RemoveTestimonial';
+
 import { TypeOrmTestimonialRepository } from '../typeorm/TypeOrmTestimonialRepository';
+
 import { TestimonialEntity } from '../typeorm/Testimonial.entity';
+
 import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
+
+import { AuthModule } from '../../../../auth/infrastructure/nest/auth.module';
 
 const TESTIMONIAL_REPOSITORY_PROVIDER = {
   provide: 'TestimonialRepository',
@@ -18,8 +26,12 @@ const TESTIMONIAL_REPOSITORY_PROVIDER = {
 };
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TestimonialEntity])],
-  controllers: [TestimonialController],
+  imports: [
+    TypeOrmModule.forFeature([TestimonialEntity]),
+    AuthModule,
+    ConfigModule,
+  ],
+  controllers: [TestimonialController, WidgetController],
   providers: [
     TESTIMONIAL_REPOSITORY_PROVIDER,
     {

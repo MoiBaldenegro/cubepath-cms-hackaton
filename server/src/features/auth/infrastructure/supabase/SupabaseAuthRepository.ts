@@ -12,19 +12,28 @@ export class SupabaseAuthRepository implements AuthRepository {
   private supabase: SupabaseClient;
 
   constructor(private configService: ConfigService) {
-    this.supabase = createClient(
-      this.configService.get<string>('SUPABASE_URL') || '',
-      this.configService.get<string>('SUPABASE_KEY') || '',
-    ) as SupabaseClient;
+    const url = this.configService.get<string>('SUPABASE_URL');
+    const key = this.configService.get<string>('SUPABASE_KEY');
+
+    if (!url || !key) {
+      console.error('Supabase credentials missing:', {
+        url: !!url,
+        key: !!key,
+      });
+    }
+
+    this.supabase = createClient(url || '', key || '') as SupabaseClient;
   }
 
   async login(email: AuthEmail, password: AuthPassword): Promise<AuthUser> {
+    console.log('Attempting login for:', email.value);
     const { data, error } = await this.supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     });
 
     if (error) {
+      console.error('Login error:', error.message);
       throw new UnauthorizedException(error.message);
     }
 
@@ -40,14 +49,18 @@ export class SupabaseAuthRepository implements AuthRepository {
   }
 
   async register(email: AuthEmail, password: AuthPassword): Promise<AuthUser> {
+    console.log('Attempting register for:', email.value);
     const { data, error } = await this.supabase.auth.signUp({
       email: email.value,
       password: password.value,
     });
 
     if (error) {
+      console.error('Register error:', error.message);
       throw new UnauthorizedException(error.message);
     }
+
+    console.log('User registered in Supabase:', data.user?.id);
 
     if (!data.user) {
       throw new UnauthorizedException('Could not create user');

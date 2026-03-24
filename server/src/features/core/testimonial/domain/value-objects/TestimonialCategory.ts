@@ -4,6 +4,7 @@ export enum TestimonialCategoryEnum {
   EDUCATION = 'EDUCATION',
   FINANCE = 'FINANCE',
   ENTERTAINMENT = 'ENTERTAINMENT',
+  OTHER = 'OTHER',
 }
 
 export class TestimonialCategory {

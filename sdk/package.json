@@ -1,0 +1,23 @@
+{
+  "name": "@cubepath/widget",
+  "version": "0.0.1",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/cubepath-widget.umd.cjs",
+  "module": "./dist/cubepath-widget.js",
+  "exports": {
+    ".": {
+      "import": "./dist/cubepath-widget.js",
+      "require": "./dist/cubepath-widget.umd.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}

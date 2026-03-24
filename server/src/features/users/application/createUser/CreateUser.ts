@@ -8,6 +8,7 @@ import {
   UserProvider,
 } from '../../domain/value-objects/UserProvider';
 import { UserPassword } from '../../domain/value-objects/UserPassword';
+import { OrganizationId } from '../../../core/testimonial/domain/value-objects/OrganizationId';
 
 export class CreateUser {
   constructor(private readonly repository: UserRepository) {}
@@ -17,6 +18,7 @@ export class CreateUser {
     email: string,
     role: string = 'editor',
     provider: string = 'local',
+    organizationId: string,
     password?: string,
   ): Promise<void> {
     const user = new User(
@@ -24,6 +26,7 @@ export class CreateUser {
       new UserEmail(email),
       role as UserRole,
       new UserProvider(provider as AuthProvider),
+      new OrganizationId(organizationId),
       password ? new UserPassword(password) : undefined,
     );
     await this.repository.save(user);

@@ -3,6 +3,7 @@ export interface LoginResponse {
     id: string;
     email: string;
     role: string;
+    organizationId: string;
   };
   token: string;
 }

@@ -27,6 +27,7 @@ import { TestimonialUpdatedAt } from '../../domain/value-objects/TestimonialUpda
 import { TestimonialIsEdited } from '../../domain/value-objects/TestimonialIsEdited';
 import { randomUUID } from 'crypto';
 import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
+import { OrganizationId } from '../../domain/value-objects/OrganizationId';
 
 export class TestimonialCreate {
   constructor(private repository: TestimonialRepository) {}
@@ -90,6 +91,7 @@ export class TestimonialCreate {
       rating,
       category,
       isEdited,
+      new OrganizationId(request.organizationId),
       imageUrl,
       videoUrl,
       createdAt,

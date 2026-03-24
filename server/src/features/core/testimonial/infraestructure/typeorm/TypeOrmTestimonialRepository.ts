@@ -30,6 +30,7 @@ import { TestimonialCreatedAt } from '../../domain/value-objects/TestimonialCrea
 import { TestimonialUpdatedAt } from '../../domain/value-objects/TestimonialUpdatedAt';
 import { TestimonialIsEdited } from '../../domain/value-objects/TestimonialIsEdited';
 import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
+import { OrganizationId } from '../../domain/value-objects/OrganizationId';
 
 @Injectable()
 export class TypeOrmTestimonialRepository implements TestimonialRepository {
@@ -50,6 +51,7 @@ export class TypeOrmTestimonialRepository implements TestimonialRepository {
       rating: primitives.rating,
       category: primitives.category,
       isEdited: primitives.isEdited,
+      organizationId: primitives.organizationId,
       imageUrl: primitives.imageUrl,
       videoUrl: primitives.videoUrl,
       createdAt: primitives.createdAt,
@@ -58,8 +60,8 @@ export class TypeOrmTestimonialRepository implements TestimonialRepository {
     await this.repository.save(entity);
   }
 
-  async findAll(search?: string): Promise<Testimonial[]> {
-    const where: FindOptionsWhere<TestimonialEntity> = {};
+  async findAll(organizationId: OrganizationId, search?: string): Promise<Testimonial[]> {
+    const where: FindOptionsWhere<TestimonialEntity> = { organizationId: organizationId.value };
     if (search) {
       where.content = Like(`%${search}%`);
     }
@@ -76,6 +78,17 @@ export class TypeOrmTestimonialRepository implements TestimonialRepository {
     const entities = await this.repository.find({
       where: { status: TestimonialStatusEnum.APPROVED },
       take: limit,
+      order: { createdAt: 'DESC' },
+    });
+    return entities.map((entity) => this.toDomain(entity));
+  }
+
+  async findApprovedByOrganization(organizationId: OrganizationId): Promise<Testimonial[]> {
+    const entities = await this.repository.find({
+      where: {
+        organizationId: organizationId.value,
+        status: TestimonialStatusEnum.APPROVED,
+      },
       order: { createdAt: 'DESC' },
     });
     return entities.map((entity) => this.toDomain(entity));
@@ -119,6 +132,7 @@ export class TypeOrmTestimonialRepository implements TestimonialRepository {
       new TestimonialRating(entity.rating as TestimonialRatingEnum),
       new TestimonialCategory(entity.category as TestimonialCategoryEnum),
       new TestimonialIsEdited(entity.isEdited),
+      new OrganizationId(entity.organizationId),
       entity.imageUrl ? new TestimonialImageUrl(entity.imageUrl) : undefined,
       entity.videoUrl ? new TestimonialVideoUrl(entity.videoUrl) : undefined,
       entity.createdAt ? new TestimonialCreatedAt(entity.createdAt) : undefined,

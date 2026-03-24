@@ -29,6 +29,9 @@ export class TestimonialEntity {
   @Column({ name: 'is_edited', default: false })
   isEdited: boolean;
 
+  @Column({ nullable: true })
+  organizationId: string;
+
   @Column('text', { name: 'image_url', nullable: true })
   imageUrl: string | null;
 

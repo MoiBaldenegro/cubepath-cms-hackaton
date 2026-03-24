@@ -6,6 +6,8 @@ import {
   TestimonialStatusEnum,
 } from '../domain/value-objects/TestimonialStatus';
 
+import { OrganizationId } from '../domain/value-objects/OrganizationId';
+
 export class InMemoryTestimonialRepository implements TestimonialRepository {
   private testimonials: Testimonial[] = [];
 
@@ -13,16 +15,17 @@ export class InMemoryTestimonialRepository implements TestimonialRepository {
     this.testimonials.push(testimonial);
   }
 
-  async findAll(search?: string): Promise<Testimonial[]> {
-    if (!search) {
-      return this.testimonials;
+  async findAll(organizationId: OrganizationId, search?: string): Promise<Testimonial[]> {
+    let filtered = this.testimonials.filter(t => t.organizationId.value === organizationId.value);
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      filtered = filtered.filter(
+        (t) =>
+          t.content.value.toLowerCase().includes(lowerSearch) ||
+          t.author.value.toLowerCase().includes(lowerSearch),
+      );
     }
-    const lowerSearch = search.toLowerCase();
-    return this.testimonials.filter(
-      (t) =>
-        t.content.value.toLowerCase().includes(lowerSearch) ||
-        t.author.value.toLowerCase().includes(lowerSearch),
-    );
+    return filtered;
   }
 
   async findById(id: TestimonialId): Promise<Testimonial | null> {
@@ -43,6 +46,14 @@ export class InMemoryTestimonialRepository implements TestimonialRepository {
       (t) => t.status.value === TestimonialStatusEnum.APPROVED,
     );
     return limit ? approved.slice(0, limit) : approved;
+  }
+
+  async findApprovedByOrganization(organizationId: OrganizationId): Promise<Testimonial[]> {
+    return this.testimonials.filter(
+      (t) =>
+        t.status.value === TestimonialStatusEnum.APPROVED &&
+        t.organizationId.value === organizationId.value,
+    );
   }
 
   async update(id: TestimonialId, data: Partial<Testimonial>): Promise<void> {

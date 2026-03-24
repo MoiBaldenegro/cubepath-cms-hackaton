@@ -15,5 +15,8 @@ export class UserEntity {
   provider: string;
 
   @Column({ nullable: true })
+  organizationId: string;
+
+  @Column({ nullable: true, select: false })
   password?: string;
 }
