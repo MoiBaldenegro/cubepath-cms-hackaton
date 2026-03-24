@@ -69,7 +69,7 @@ export class WidgetController {
   @Public()
   @Get('sdk.js')
   getSdk(@Res() res: Response) {
-    const filePath = join(process.cwd(), '../sdk/dist/cubepath-widget.js');
+    const filePath = join(process.cwd(), '../sdk/dist/sdk.js');
     res.sendFile(filePath);
   }
 
@@ -82,7 +82,7 @@ export class WidgetController {
       return [
         {
           id: '1',
-          content: 'CubePath has transformed how we gather feedback. Absolutely essential tool.',
+          content: 'Testimo has transformed how we gather feedback. Absolutely essential tool.',
           author: 'Alice Johnson',
           rating: 5,
           createdAt: new Date().toISOString(),
@@ -121,7 +121,7 @@ export class WidgetController {
       data = [
         {
           id: '1',
-          content: 'CubePath has transformed how we gather feedback. Absolutely essential tool.',
+          content: 'Testimo has transformed how we gather feedback. Absolutely essential tool.',
           author: 'Alice Johnson',
           rating: 5,
           createdAt: new Date().toISOString(),

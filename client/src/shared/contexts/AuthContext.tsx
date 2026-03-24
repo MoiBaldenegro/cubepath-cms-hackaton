@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginAsDemo = () => {
     const demoUser: User = {
       id: 'demo-user-id',
-      email: 'demo@cubepath.com',
+      email: 'demo@testimo.com',
       role: UserRole.ADMIN,
       accessToken: 'demo-token',
       organizationId: 'demo-org-id'

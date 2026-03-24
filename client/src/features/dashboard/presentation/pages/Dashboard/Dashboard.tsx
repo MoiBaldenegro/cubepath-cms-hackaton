@@ -33,7 +33,10 @@ export const Dashboard = () => {
   return (
     <div className={styles.dashboard}>
       <aside className={styles.sidebar}>
-        <div className={styles.logo}>CubePath CMS</div>
+        <div className={styles.logo}>
+            <img src="/testimo-logo.svg" alt="Testimo Logo" style={{ width: '2rem', height: '2rem', marginRight: '0.5rem' }} />
+            Testimo
+        </div>
         <div className={styles.userInfo}>
           <small>{user.email}</small>
           <div className={styles.roleBadge}>{user.role}</div>

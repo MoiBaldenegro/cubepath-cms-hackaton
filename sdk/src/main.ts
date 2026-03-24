@@ -1,6 +1,6 @@
 // src/main.ts
-if (typeof window !== 'undefined' && !customElements.get('cubepath-widget')) {
-  class CubePathWidget extends HTMLElement {
+if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
+  class TestimoWidget extends HTMLElement {
     static get observedAttributes() {
       return ['organization-id', 'theme', 'layout', 'api-url'];
     }
@@ -269,5 +269,5 @@ if (typeof window !== 'undefined' && !customElements.get('cubepath-widget')) {
     }
   }
 
-  customElements.define('cubepath-widget', CubePathWidget);
+  customElements.define('testimo-widget', TestimoWidget);
 }

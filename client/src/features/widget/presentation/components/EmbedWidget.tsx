@@ -30,10 +30,10 @@ export const EmbedWidget = () => {
         tanstack: {
             label: 'TanStack Start',
             variable: 'VITE_ORG_ID',
-            install: 'npm install @cubepath/widget',
+            install: 'npm install testimo-widget',
             code: `// 1. app/routes/index.tsx
 import { createFileRoute } from '@tanstack/react-router';
-import '@cubepath/widget';
+import 'testimo-widget';
 
 export const Route = createFileRoute('/')({
   component: HomeComponent,
@@ -43,43 +43,43 @@ function HomeComponent() {
   const orgId = import.meta.env.VITE_ORG_ID;
 
   return (
-    <cubepath-widget 
+    <testimo-widget 
       organization-id={orgId} 
       theme="${theme}" 
       layout="${layout}" 
-    ></cubepath-widget>
+    ></testimo-widget>
   )
 }`
         },
         react: {
             label: 'React (Vite)',
             variable: 'VITE_ORG_ID',
-            install: 'npm install @cubepath/widget',
+            install: 'npm install testimo-widget',
             code: `// 1. main.tsx or App.tsx
-import '@cubepath/widget';
+import 'testimo-widget';
 
 // 2. Component usage
 export function Testimonials() {
   const orgId = import.meta.env.VITE_ORG_ID;
 
   return (
-    <cubepath-widget 
+    <testimo-widget 
       organization-id={orgId} 
       theme="${theme}" 
       layout="${layout}"
-    ></cubepath-widget>
+    ></testimo-widget>
   );
 }`
         },
         nextjs: {
             label: 'Next.js',
             variable: 'NEXT_PUBLIC_ORG_ID',
-            install: 'npm install @cubepath/widget',
+            install: 'npm install testimo-widget',
             code: `// 1. Create a Client Component (e.g. Testimonials.tsx)
 'use client';
 
 import { useEffect, useState } from 'react';
-import '@cubepath/widget';
+import 'testimo-widget';
 
 export default function Testimonials() {
   const [mounted, setMounted] = useState(false);
@@ -92,38 +92,38 @@ export default function Testimonials() {
   if (!mounted) return null;
 
   return (
-    <cubepath-widget 
+    <testimo-widget 
       organization-id={process.env.NEXT_PUBLIC_ORG_ID} 
       theme="${theme}" 
       layout="${layout}" 
-    ></cubepath-widget>
+    ></testimo-widget>
   );
 }`
         },
         vue: {
             label: 'Vue (Vite)',
             variable: 'VITE_ORG_ID',
-            install: 'npm install @cubepath/widget',
+            install: 'npm install testimo-widget',
             code: `<!-- 1. Component.vue -->
 <script setup>
-import '@cubepath/widget';
+import 'testimo-widget';
 const orgId = import.meta.env.VITE_ORG_ID;
 </script>
 
 <template>
-  <cubepath-widget 
+  <testimo-widget 
     :organization-id="orgId" 
     theme="${theme}" 
     layout="${layout}"
-  ></cubepath-widget>
+  ></testimo-widget>
 </template>`
         },
         nuxt: {
             label: 'Nuxt 3',
             variable: 'NUXT_PUBLIC_ORG_ID',
-            install: 'npm install @cubepath/widget',
-            code: `<!-- 1. plugin/cubepath.client.ts -->
-import '@cubepath/widget';
+            install: 'npm install testimo-widget',
+            code: `<!-- 1. plugin/testimo.client.ts -->
+import 'testimo-widget';
 export default defineNuxtPlugin(() => {});
 
 <!-- 2. Component.vue -->
@@ -133,87 +133,87 @@ const orgId = config.public.orgId;
 </script>
 
 <template>
-  <cubepath-widget 
+  <testimo-widget 
     :organization-id="orgId" 
     theme="${theme}" 
     layout="${layout}"
-  ></cubepath-widget>
+  ></testimo-widget>
 </template>`
         },
         svelte: {
             label: 'Svelte/Kit',
             variable: 'PUBLIC_ORG_ID',
-            install: 'npm install @cubepath/widget',
+            install: 'npm install testimo-widget',
             code: `<!-- 1. +page.svelte -->
 <script>
   import { onMount } from 'svelte';
   import { env } from '$env/dynamic/public';
   
   onMount(async () => {
-    await import('@cubepath/widget');
+    await import('testimo-widget');
   });
 </script>
 
-<cubepath-widget 
+<testimo-widget 
   organization-id={env.PUBLIC_ORG_ID} 
   theme="${theme}" 
   layout="${layout}"
-></cubepath-widget>`
+></testimo-widget>`
         },
         solid: {
             label: 'SolidJS',
             variable: 'VITE_ORG_ID',
-            install: 'npm install @cubepath/widget',
+            install: 'npm install testimo-widget',
             code: `// 1. Component.tsx
 import { onMount } from 'solid-js';
-import '@cubepath/widget';
+import 'testimo-widget';
 
 export default function Testimonials() {
   const orgId = import.meta.env.VITE_ORG_ID;
 
   return (
-    <cubepath-widget 
+    <testimo-widget 
       organization-id={orgId} 
       theme="${theme}" 
       layout="${layout}"
-    ></cubepath-widget>
+    ></testimo-widget>
   );
 }`
         },
         astro: {
             label: 'Astro',
             variable: 'PUBLIC_ORG_ID',
-            install: 'npm install @cubepath/widget',
+            install: 'npm install testimo-widget',
             code: `---
 // 1. Component.astro
 ---
 <script>
-  import '@cubepath/widget';
+  import 'testimo-widget';
 </script>
 
-<cubepath-widget 
+<testimo-widget 
   organization-id={import.meta.env.PUBLIC_ORG_ID} 
   theme="${theme}" 
   layout="${layout}"
-></cubepath-widget>`
+></testimo-widget>`
         },
         remix: {
             label: 'Remix',
             variable: 'VITE_ORG_ID',
-            install: 'npm install @cubepath/widget',
+            install: 'npm install testimo-widget',
             code: `// 1. entry.client.tsx or route file
 import { ClientOnly } from "remix-utils/client-only";
-import '@cubepath/widget';
+import 'testimo-widget';
 
 export default function Route() {
   return (
     <ClientOnly fallback={<div>Loading...</div>}>
       {() => (
-        <cubepath-widget 
+        <testimo-widget 
           organization-id={import.meta.env.VITE_ORG_ID} 
           theme="${theme}" 
           layout="${layout}"
-        ></cubepath-widget>
+        ></testimo-widget>
       )}
     </ClientOnly>
   );
@@ -222,10 +222,10 @@ export default function Route() {
         angular: {
             label: 'Angular',
             variable: 'NG_APP_ORG_ID',
-            install: 'npm install @cubepath/widget',
+            install: 'npm install testimo-widget',
             code: `// 1. app.module.ts
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import '@cubepath/widget';
+import 'testimo-widget';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -234,26 +234,26 @@ import '@cubepath/widget';
 
 // 2. app.component.html
 // Ensure 'orgId' is defined in your environment/component
-<cubepath-widget 
+<testimo-widget 
   [attr.organization-id]="orgId" 
   theme="${theme}" 
   layout="${layout}"
-></cubepath-widget>`
+></testimo-widget>`
         },
         html: {
             label: 'HTML/Buildless',
             variable: 'ORG_ID',
-            install: 'npm install @cubepath/widget',
+            install: 'npm install testimo-widget',
             code: `<!-- 1. index.html -->
 <script type="module">
-  import '@cubepath/widget';
+  import 'testimo-widget';
 </script>
 
-<cubepath-widget 
+<testimo-widget 
   organization-id="YOUR_ORG_ID" 
   theme="${theme}" 
   layout="${layout}"
-></cubepath-widget>`
+></testimo-widget>`
         }
     };
 
@@ -437,11 +437,11 @@ import '@cubepath/widget';
                             <body>
                                 ${integrationMethod === 'script'
                                     ? `<script src="${scriptSrc}" type="module"></script>`
-                                    : `<cubepath-widget 
+                                    : `<testimo-widget 
                                         organization-id="${organizationId}" 
                                         theme="${theme}" 
                                         layout="${layout}" 
-                                       ></cubepath-widget>`
+                                       ></testimo-widget>`
                                 }
                             </body>
                             </html>

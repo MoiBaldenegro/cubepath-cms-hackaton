@@ -8,7 +8,7 @@ const MOCK_TESTIMONIALS: any[] = [
     id: '1',
     iKey: 'demo-ikey-1',
     author: 'Alice Johnson',
-    content: 'CubePath has transformed how we gather feedback. Absolutely essential tool.',
+    content: 'Testimo has transformed how we gather feedback. Absolutely essential tool.',
     rating: 5,
     imageUrl: 'https://i.pravatar.cc/150?u=alice',
     status: TestimonialStatus.APPROVED,

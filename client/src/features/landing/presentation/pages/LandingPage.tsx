@@ -18,7 +18,7 @@ export const LandingPage = () => {
             {/* Navbar */}
             <nav className={styles.navbar}>
                 <Link to="/" className={styles.logo}>
-                    <span role="img" aria-label="Cube">🧊</span> CubePath
+                    <img src="/testimo-logo.svg" alt="Testimo Logo" style={{ width: '40px', height: '40px', marginRight: '10px' }} /> Testimo
                 </Link>
                 
                 <div className={styles.navLinks}>
@@ -100,17 +100,17 @@ export const LandingPage = () => {
                 <div className={styles.codeContainer}>
                     <pre style={{color: '#fff', textAlign: 'left', overflowX: 'auto'}}>
 {`<!-- Use our cloud or plug your own backend -->
-<cubepath-widget 
+<testimo-widget 
   organization-id="your-org-id" 
-  api-url="https://api.yourcomapny.com"
-></cubepath-widget>`}
+  api-url="https://api.testimo.app"
+></testimo-widget>`}
                     </pre>
                 </div>
             </section>
 
             {/* Footer */}
             <footer className={styles.footer}>
-                <p>&copy; {new Date().getFullYear()} CubePath CMS. Built with ❤️ for the Hackathon.</p>
+                <p>&copy; {new Date().getFullYear()} Testimo CMS. Built with ❤️ for the Hackathon.</p>
             </footer>
         </div>
     );
