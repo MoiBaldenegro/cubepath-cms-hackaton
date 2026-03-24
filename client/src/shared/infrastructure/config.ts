@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-const getEnvVar = (key: keyof EnvConfig, defaultValue: string = ''): string => {
+const getEnvVar = (key: keyof EnvConfig, defaultValue: string = ""): string => {
   if (window.ENV && window.ENV[key]) {
     return window.ENV[key];
   }
@@ -19,8 +19,8 @@ const getEnvVar = (key: keyof EnvConfig, defaultValue: string = ''): string => {
 };
 
 export const config = {
-  VITE_API_URL: getEnvVar('API_URL', 'http://localhost:3000'),
-  VITE_ORG_ID: getEnvVar('ORG_ID'),
-  VITE_SUPABASE_URL: getEnvVar('SUPABASE_URL'),
-  VITE_SUPABASE_KEY: getEnvVar('SUPABASE_KEY'),
+  VITE_API_URL: getEnvVar("VITE_API_URL", "http://localhost:3000ealaamrea"),
+  VITE_ORG_ID: getEnvVar("VITE_ORG_ID"),
+  VITE_SUPABASE_URL: getEnvVar("VITE_SUPABASE_URL"),
+  VITE_SUPABASE_KEY: getEnvVar("VITE_SUPABASE_KEY"),
 };
