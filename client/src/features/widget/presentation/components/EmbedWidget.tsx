@@ -22,7 +22,8 @@ export const EmbedWidget = () => {
     const organizationId = user.organizationId || 'current-user-org-id';
     
     // Construct the script URL based on selected options
-    const scriptSrc = `http://localhost:3000/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}`;
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const scriptSrc = `${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}`;
     
     const frameworkConfig: Record<Framework, { label: string; variable: string; install: string; code: string }> = {
         tanstack: {
