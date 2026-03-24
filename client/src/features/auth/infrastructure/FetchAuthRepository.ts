@@ -1,7 +1,8 @@
+import { config } from '../../../shared/infrastructure/config';
 import type { AuthRepository, User } from '../domain/AuthRepository';
 
 export class FetchAuthRepository implements AuthRepository {
-    private readonly baseUrl = 'http://localhost:3000/auth';
+    private readonly baseUrl = `${config.VITE_API_URL}/auth`;
 
     async login(email: string, password: string, provider: 'local' | 'supabase' = 'local'): Promise<User> {
         const response = await fetch(`${this.baseUrl}/login`, {
