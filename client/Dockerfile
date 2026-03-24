@@ -1,7 +1,19 @@
-
+# Stage 1: Build the React application
 FROM node:20-alpine as build
 
 WORKDIR /app
+
+# Argumentos de construcción para recibir las variables de entorno
+ARG VITE_API_URL
+ARG VITE_ORG_ID
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_KEY
+
+# Establecer las variables de entorno para que estén disponibles durante el build
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_ORG_ID=$VITE_ORG_ID
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_KEY=$VITE_SUPABASE_KEY
 
 # Copy package.json and install dependencies
 COPY package*.json ./
@@ -22,27 +34,8 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Copy custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create entrypoint script inline to avoid CRLF issues
-RUN printf '#!/bin/sh\n\
-\n\
-# Create env-config.js with environment variables\n\
-cat <<EOF > /usr/share/nginx/html/env-config.js\n\
-window.ENV = {\n\
-  VITE_API_URL: "${VITE_API_URL}",\n\
-  VITE_ORG_ID: "${VITE_ORG_ID}",\n\
-  VITE_SUPABASE_URL: "${VITE_SUPABASE_URL}",\n\
-  VITE_SUPABASE_KEY: "${VITE_SUPABASE_KEY}"\n\
-};\n\
-EOF\n\
-\n\
-# Start Nginx\n\
-exec nginx -g "daemon off;"\n\
-' > /docker-entrypoint.sh
-
-RUN chmod +x /docker-entrypoint.sh
-
 # Expose port 80
 EXPOSE 80
 
-# Start Nginx via entrypoint
-ENTRYPOINT ["/docker-entrypoint.sh"]
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
