@@ -10,6 +10,16 @@ RUN npm ci
 # Copy the rest of the application code
 COPY . .
 
+# Build Args for environment variables
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
+ARG SUPABASE_URL
+ENV VITE_SUPABASE_URL=$SUPABASE_URL
+
+ARG SUPABASE_KEY
+ENV VITE_SUPABASE_KEY=$SUPABASE_KEY
+
 # Build the application
 RUN npm run build
 
