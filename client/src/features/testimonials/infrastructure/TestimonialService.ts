@@ -3,7 +3,7 @@ import { config } from '../../../shared/infrastructure/config';
 
 const API_URL = config.VITE_API_URL;
 
-const MOCK_TESTIMONIALS: any[] = [
+const DEFAULT_MOCK_TESTIMONIALS: Testimonial[] = [
   {
     id: '1',
     iKey: 'demo-ikey-1',
@@ -51,6 +51,19 @@ const MOCK_TESTIMONIALS: any[] = [
   }
 ];
 
+const getDemoTestimonials = (): Testimonial[] => {
+  const stored = localStorage.getItem('demo_testimonials');
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  localStorage.setItem('demo_testimonials', JSON.stringify(DEFAULT_MOCK_TESTIMONIALS));
+  return DEFAULT_MOCK_TESTIMONIALS;
+};
+
+const saveDemoTestimonials = (testimonials: Testimonial[]) => {
+  localStorage.setItem('demo_testimonials', JSON.stringify(testimonials));
+};
+
 export class TestimonialService {
   private static async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem('token');
@@ -60,12 +73,45 @@ export class TestimonialService {
        // Simulate network delay
        await new Promise(resolve => setTimeout(resolve, 600));
        
-       if (options.method === 'POST') return {} as T;
-       if (options.method === 'PATCH') return {} as T;
-       if (options.method === 'DELETE') return {} as T;
-       if (endpoint.includes('approved')) return MOCK_TESTIMONIALS.filter(t => t.status === TestimonialStatus.APPROVED) as unknown as T;
+       const currentTestimonials = getDemoTestimonials();
+
+       if (options.method === 'POST') {
+           const body = JSON.parse(options.body as string);
+           const newTestimonial = {
+               ...body,
+               id: Math.random().toString(36).substr(2, 9),
+               status: body.status || TestimonialStatus.PENDING,
+               organizationId: 'demo-org-id',
+               createdAt: new Date().toISOString(),
+               updatedAt: new Date().toISOString(),
+               isEdited: false
+           };
+           currentTestimonials.push(newTestimonial);
+           saveDemoTestimonials(currentTestimonials);
+           return {} as T;
+       }
+
+       if (options.method === 'PATCH' && endpoint.includes('/approve')) {
+           const id = endpoint.split('/')[1];
+           const updated = currentTestimonials.map(t => 
+             t.id === id ? { ...t, status: TestimonialStatus.APPROVED } : t
+           );
+           saveDemoTestimonials(updated);
+           return {} as T;
+       }
+
+       if (options.method === 'DELETE') {
+           const id = endpoint.split('/')[1];
+           const filtered = currentTestimonials.filter(t => t.id !== id);
+           saveDemoTestimonials(filtered);
+           return {} as T;
+       }
+
+       if (endpoint.includes('approved')) {
+         return currentTestimonials.filter(t => t.status === TestimonialStatus.APPROVED) as unknown as T;
+       }
        
-       return MOCK_TESTIMONIALS as unknown as T;
+       return currentTestimonials as unknown as T;
     }
 
     const headers = {

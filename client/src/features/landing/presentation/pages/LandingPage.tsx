@@ -78,13 +78,33 @@ export const LandingPage = () => {
                         enterprise-grade security built-in from day one.
                     </p>
                 </div>
+            </section>
 
-                <div className={styles.featureCard}>
-                    <span className={styles.featureIcon}>🌐</span>
-                    <h3 className={styles.featureTitle}>Self-Hosted Ready</h3>
-                    <p className={styles.featureDesc}>
-                        Prefer to host it yourself? Our SDK supports custom API endpoints
-                        for full data control and enterprise compliance.
+            {/* Self-Hosting Section */}
+            <section className={styles.selfHostSection}>
+                <div className={styles.selfHostContent}>
+                    <h2 className={styles.selfHostTitle}>Self-Hosting: Total Control, Zero Limits</h2>
+                    <p className={styles.selfHostSubtitle}>
+                        Testimo is the only testimonial platform that lets you <b>run your own backend</b> with the same beautiful widgets and admin experience. Perfect for teams with strict compliance, data residency, or advanced integration needs.
+                    </p>
+                    <ul className={styles.selfHostList}>
+                        <li><b>Full Data Ownership:</b> Store testimonials in your own database, on your own infrastructure.</li>
+                        <li><b>Custom API Endpoints:</b> Point the widget to any REST API—Node, Python, Go, or even no-code backends.</li>
+                        <li><b>Enterprise Compliance:</b> Meet GDPR, HIPAA, or internal audit requirements with ease.</li>
+                        <li><b>Advanced Integrations:</b> Connect with internal tools, CRMs, or analytics pipelines.</li>
+                        <li><b>Open Source SDK:</b> Fork, extend, or audit the widget code for maximum transparency.</li>
+                    </ul>
+                    <div className={styles.selfHostCodeBlock}>
+                        <pre>{`<!-- Example: Pointing the widget to your own API -->
+<testimo-widget 
+  organization-id="acme-corp" 
+  api-url="https://api.acme.com/testimonials"
+  theme="dark"
+  layout="grid"
+></testimo-widget>`}</pre>
+                    </div>
+                    <p className={styles.selfHostNote}>
+                        <b>Need help?</b> Our team can assist with on-premise deployments, custom integrations, and security reviews. <a href="mailto:enterprise@testimo.app" style={{color:'#007bff'}}>Contact us</a> for a tailored solution.
                     </p>
                 </div>
             </section>
