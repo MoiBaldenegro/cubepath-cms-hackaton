@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import styles from './EmbedWidget.module.css';
 import { useAuth } from '../../../../shared/contexts/AuthContext';
+import { config } from '../../../../shared/infrastructure/config';
 
 
 type Framework = 'react' | 'vue' | 'angular' | 'nextjs' | 'svelte' | 'solid' | 'astro' | 'remix' | 'nuxt' | 'html' | 'tanstack';
@@ -17,8 +18,6 @@ export const EmbedWidget = () => {
     const [installCopied, setInstallCopied] = useState(false);
 
     if (!user) return null;
-
-import { config } from '../../../../shared/infrastructure/config';
 
     // Use organizationId from user object, fallback to 'demo-org-id' if missing for preview
     const organizationId = user.organizationId || 'current-user-org-id';
