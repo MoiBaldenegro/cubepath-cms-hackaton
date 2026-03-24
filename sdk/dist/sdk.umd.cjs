@@ -1,4 +1,4 @@
-(function(i){typeof define=="function"&&define.amd?define(i):i()})(function(){"use strict";var h=Object.defineProperty;var m=(i,r,l)=>r in i?h(i,r,{enumerable:!0,configurable:!0,writable:!0,value:l}):i[r]=l;var c=(i,r,l)=>(m(i,typeof r!="symbol"?r+"":r,l),l);if(typeof window<"u"&&!customElements.get("cubepath-widget")){class i extends HTMLElement{constructor(){super();c(this,"_data",[]);c(this,"_loading",!0);c(this,"_error",null);c(this,"_submitting",!1);this.attachShadow({mode:"open"})}static get observedAttributes(){return["organization-id","theme","layout"]}connectedCallback(){this.fetchData()}attributeChangedCallback(n,t,e){t!==e&&n==="organization-id"?this.fetchData():t!==e&&this.render()}async fetchData(){const n=this.getAttribute("organization-id");if(!n){this._error="Organization ID is missing",this._loading=!1,this.render();return}this._loading=!0,this.render();try{const t=await fetch(`http://localhost:3000/widget/data?organizationId=${n}`);if(!t.ok)throw new Error("Failed to fetch testimonials");this._data=await t.json()}catch(t){this._error=t.message}finally{this._loading=!1,this.render()}}async _handleSubmit(n){var f;n.preventDefault();const t=n.target,e=new FormData(t),g=Object.fromEntries(e.entries()),s=this.getAttribute("organization-id"),a=(f=this.shadowRoot)==null?void 0:f.getElementById("form-feedback");if(this._submitting)return;this._submitting=!0;const o=t.querySelector("button");o&&(o.disabled=!0),o&&(o.textContent="Submitting...");try{if(!(await fetch("http://localhost:3000/widget/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...g,organizationId:s})})).ok)throw new Error("Failed to submit");t.reset(),a&&(a.textContent="Thank you! Your testimonial has been submitted for review.",a.className="success-msg")}catch{a&&(a.textContent="Error submitting testimonial. Please try again.",a.className="error-msg")}finally{this._submitting=!1,o&&(o.disabled=!1,o.textContent="Submit Testimonial")}}render(){var o;if(!this.shadowRoot)return;const n=this.getAttribute("theme")||"light",t=this.getAttribute("layout")||"grid",e=n==="dark",g=`
+(function(i){typeof define=="function"&&define.amd?define(i):i()})(function(){"use strict";var u=Object.defineProperty;var h=(i,a,l)=>a in i?u(i,a,{enumerable:!0,configurable:!0,writable:!0,value:l}):i[a]=l;var c=(i,a,l)=>(h(i,typeof a!="symbol"?a+"":a,l),l);if(typeof window<"u"&&!customElements.get("cubepath-widget")){class i extends HTMLElement{constructor(){super();c(this,"_data",[]);c(this,"_loading",!0);c(this,"_error",null);c(this,"_submitting",!1);this.attachShadow({mode:"open"})}static get observedAttributes(){return["organization-id","theme","layout","api-url"]}connectedCallback(){this.fetchData()}get apiUrl(){return this.getAttribute("api-url")||"http://cubepathhackaton-api-aymrvj-31e30c-108-165-47-144.traefik.me"}attributeChangedCallback(o,t,e){t!==e&&(o==="organization-id"||o==="api-url")?this.fetchData():t!==e&&this.render()}async fetchData(){const o=this.getAttribute("organization-id");if(!o){this._error="Organization ID is missing",this._loading=!1,this.render();return}this._loading=!0,this.render();try{const t=await fetch(`${this.apiUrl}/widget/data?organizationId=${o}`);if(!t.ok)throw new Error("Failed to fetch testimonials");this._data=await t.json()}catch(t){this._error=t.message}finally{this._loading=!1,this.render()}}async _handleSubmit(o){var p;o.preventDefault();const t=o.target,e=new FormData(t),f=Object.fromEntries(e.entries()),s=this.getAttribute("organization-id"),n=(p=this.shadowRoot)==null?void 0:p.getElementById("form-feedback");if(this._submitting)return;this._submitting=!0;const r=t.querySelector("button");r&&(r.disabled=!0),r&&(r.textContent="Submitting...");try{if(!(await fetch(`${this.apiUrl}/widget/submit`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...f,organizationId:s})})).ok)throw new Error("Failed to submit");t.reset(),n&&(n.textContent="Thank you! Your testimonial has been submitted for review.",n.className="success-msg")}catch{n&&(n.textContent="Error submitting testimonial. Please try again.",n.className="error-msg")}finally{this._submitting=!1,r&&(r.disabled=!1,r.textContent="Submit Testimonial")}}render(){var r;if(!this.shadowRoot)return;const o=this.getAttribute("theme")||"light",t=this.getAttribute("layout")||"grid",e=o==="dark",f=`
         :host {
           display: block;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -101,15 +101,15 @@
         button:disabled { background-color: #93c5fd; cursor: not-allowed; }
         .success-msg { color: #10b981; text-align: center; margin-top: 10px; font-weight: 500;}
         .error-msg { color: #ef4444; text-align: center; margin-top: 10px; }
-      `;let s="";if(this._loading)s='<div class="loading">Loading testimonials...</div>';else if(this._error)s=`<div class="error">Error: ${this._error}</div>`;else if(this._data.length===0)s='<div class="loading">No approved testimonials yet.</div>';else{const f=this._data.map(d=>{const p=d.rating?"★".repeat(d.rating)+"☆".repeat(5-d.rating):"";return`
+      `;let s="";if(this._loading)s='<div class="loading">Loading testimonials...</div>';else if(this._error)s=`<div class="error">Error: ${this._error}</div>`;else if(this._data.length===0)s='<div class="loading">No approved testimonials yet.</div>';else{const p=this._data.map(d=>{const g=d.rating?"★".repeat(d.rating)+"☆".repeat(5-d.rating):"";return`
             <div class="card">
               <p>"${d.content}"</p>
               <div class="footer">
                 <strong>${d.author}</strong>
-                <div class="rating">${p}</div>
+                <div class="rating">${g}</div>
               </div>
             </div>
-          `}).join("");s=`<div class="${t}">${f}</div>`}const a=`
+          `}).join("");s=`<div class="${t}">${p}</div>`}const n=`
         <div class="form-section">
           <h3>Share your experience</h3>
           <form id="testimonial-form">
@@ -127,10 +127,10 @@
           <div id="form-feedback"></div>
         </div>
       `;this.shadowRoot.innerHTML=`
-        <style>${g}</style>
+        <style>${f}</style>
         <div class="container">
           <h2>What People Say</h2>
           ${s}
-          ${a}
+          ${n}
         </div>
-      `,(o=this.shadowRoot.getElementById("testimonial-form"))==null||o.addEventListener("submit",this._handleSubmit.bind(this))}}customElements.define("cubepath-widget",i)}});
+      `,(r=this.shadowRoot.getElementById("testimonial-form"))==null||r.addEventListener("submit",this._handleSubmit.bind(this))}}customElements.define("cubepath-widget",i)}});

@@ -2,7 +2,7 @@
 if (typeof window !== 'undefined' && !customElements.get('cubepath-widget')) {
   class CubePathWidget extends HTMLElement {
     static get observedAttributes() {
-      return ['organization-id', 'theme', 'layout'];
+      return ['organization-id', 'theme', 'layout', 'api-url'];
     }
 
     private _data: any[] = [];
@@ -19,8 +19,12 @@ if (typeof window !== 'undefined' && !customElements.get('cubepath-widget')) {
       this.fetchData();
     }
 
+    get apiUrl() {
+      return this.getAttribute('api-url') || 'http://cubepathhackaton-api-aymrvj-31e30c-108-165-47-144.traefik.me';
+    }
+
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-      if (oldValue !== newValue && name === 'organization-id') {
+      if (oldValue !== newValue && (name === 'organization-id' || name === 'api-url')) {
         this.fetchData();
       } else if (oldValue !== newValue) {
         this.render();
@@ -40,7 +44,7 @@ if (typeof window !== 'undefined' && !customElements.get('cubepath-widget')) {
       this.render();
 
       try {
-        const response = await fetch(`http://localhost:3000/widget/data?organizationId=${orgId}`);
+        const response = await fetch(`${this.apiUrl}/widget/data?organizationId=${orgId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch testimonials');
         }
@@ -69,7 +73,7 @@ if (typeof window !== 'undefined' && !customElements.get('cubepath-widget')) {
       if (btn) btn.textContent = 'Submitting...';
 
       try {
-        const response = await fetch('http://localhost:3000/widget/submit', {
+        const response = await fetch(`${this.apiUrl}/widget/submit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...data, organizationId: orgId }),

@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "type": "module",
   "files": ["dist"],
-  "main": "./dist/cubepath-widget.umd.cjs",
-  "module": "./dist/cubepath-widget.js",
+  "main": "./dist/sdk.umd.cjs",
+  "module": "./dist/sdk.js",
   "exports": {
     ".": {
-      "import": "./dist/cubepath-widget.js",
-      "require": "./dist/cubepath-widget.umd.cjs"
+      "import": "./dist/sdk.js",
+      "require": "./dist/sdk.umd.cjs"
     }
   },
   "scripts": {

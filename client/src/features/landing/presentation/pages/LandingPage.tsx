@@ -78,6 +78,15 @@ export const LandingPage = () => {
                         enterprise-grade security built-in from day one.
                     </p>
                 </div>
+
+                <div className={styles.featureCard}>
+                    <span className={styles.featureIcon}>🌐</span>
+                    <h3 className={styles.featureTitle}>Self-Hosted Ready</h3>
+                    <p className={styles.featureDesc}>
+                        Prefer to host it yourself? Our SDK supports custom API endpoints
+                        for full data control and enterprise compliance.
+                    </p>
+                </div>
             </section>
 
             {/* Code Preview Section */}
@@ -90,10 +99,10 @@ export const LandingPage = () => {
                 
                 <div className={styles.codeContainer}>
                     <pre style={{color: '#fff', textAlign: 'left', overflowX: 'auto'}}>
-{`<cubepath-widget 
+{`<!-- Use our cloud or plug your own backend -->
+<cubepath-widget 
   organization-id="your-org-id" 
-  theme="dark" 
-  layout="grid"
+  api-url="https://api.yourcomapny.com"
 ></cubepath-widget>`}
                     </pre>
                 </div>

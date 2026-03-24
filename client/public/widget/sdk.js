@@ -1,6 +1,6 @@
 var h = Object.defineProperty;
-var m = (n, r, l) => r in n ? h(n, r, { enumerable: !0, configurable: !0, writable: !0, value: l }) : n[r] = l;
-var c = (n, r, l) => (m(n, typeof r != "symbol" ? r + "" : r, l), l);
+var u = (n, r, l) => r in n ? h(n, r, { enumerable: !0, configurable: !0, writable: !0, value: l }) : n[r] = l;
+var c = (n, r, l) => (u(n, typeof r != "symbol" ? r + "" : r, l), l);
 if (typeof window < "u" && !customElements.get("cubepath-widget")) {
   class n extends HTMLElement {
     constructor() {
@@ -12,23 +12,26 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
       this.attachShadow({ mode: "open" });
     }
     static get observedAttributes() {
-      return ["organization-id", "theme", "layout"];
+      return ["organization-id", "theme", "layout", "api-url"];
     }
     connectedCallback() {
       this.fetchData();
     }
-    attributeChangedCallback(o, t, e) {
-      t !== e && o === "organization-id" ? this.fetchData() : t !== e && this.render();
+    get apiUrl() {
+      return this.getAttribute("api-url") || "http://cubepathhackaton-api-aymrvj-31e30c-108-165-47-144.traefik.me";
+    }
+    attributeChangedCallback(i, t, e) {
+      t !== e && (i === "organization-id" || i === "api-url") ? this.fetchData() : t !== e && this.render();
     }
     async fetchData() {
-      const o = this.getAttribute("organization-id");
-      if (!o) {
+      const i = this.getAttribute("organization-id");
+      if (!i) {
         this._error = "Organization ID is missing", this._loading = !1, this.render();
         return;
       }
       this._loading = !0, this.render();
       try {
-        const t = await fetch(`http://localhost:3000/widget/data?organizationId=${o}`);
+        const t = await fetch(`${this.apiUrl}/widget/data?organizationId=${i}`);
         if (!t.ok)
           throw new Error("Failed to fetch testimonials");
         this._data = await t.json();
@@ -38,34 +41,34 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
         this._loading = !1, this.render();
       }
     }
-    async _handleSubmit(o) {
-      var g;
-      o.preventDefault();
-      const t = o.target, e = new FormData(t), p = Object.fromEntries(e.entries()), s = this.getAttribute("organization-id"), a = (g = this.shadowRoot) == null ? void 0 : g.getElementById("form-feedback");
+    async _handleSubmit(i) {
+      var p;
+      i.preventDefault();
+      const t = i.target, e = new FormData(t), g = Object.fromEntries(e.entries()), s = this.getAttribute("organization-id"), a = (p = this.shadowRoot) == null ? void 0 : p.getElementById("form-feedback");
       if (this._submitting)
         return;
       this._submitting = !0;
-      const i = t.querySelector("button");
-      i && (i.disabled = !0), i && (i.textContent = "Submitting...");
+      const o = t.querySelector("button");
+      o && (o.disabled = !0), o && (o.textContent = "Submitting...");
       try {
-        if (!(await fetch("http://localhost:3000/widget/submit", {
+        if (!(await fetch(`${this.apiUrl}/widget/submit`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...p, organizationId: s })
+          body: JSON.stringify({ ...g, organizationId: s })
         })).ok)
           throw new Error("Failed to submit");
         t.reset(), a && (a.textContent = "Thank you! Your testimonial has been submitted for review.", a.className = "success-msg");
       } catch {
         a && (a.textContent = "Error submitting testimonial. Please try again.", a.className = "error-msg");
       } finally {
-        this._submitting = !1, i && (i.disabled = !1, i.textContent = "Submit Testimonial");
+        this._submitting = !1, o && (o.disabled = !1, o.textContent = "Submit Testimonial");
       }
     }
     render() {
-      var i;
+      var o;
       if (!this.shadowRoot)
         return;
-      const o = this.getAttribute("theme") || "light", t = this.getAttribute("layout") || "grid", e = o === "dark", p = `
+      const i = this.getAttribute("theme") || "light", t = this.getAttribute("layout") || "grid", e = i === "dark", g = `
         :host {
           display: block;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -177,7 +180,7 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
       else if (this._data.length === 0)
         s = '<div class="loading">No approved testimonials yet.</div>';
       else {
-        const g = this._data.map((d) => {
+        const p = this._data.map((d) => {
           const f = d.rating ? "★".repeat(d.rating) + "☆".repeat(5 - d.rating) : "";
           return `
             <div class="card">
@@ -189,7 +192,7 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
             </div>
           `;
         }).join("");
-        s = `<div class="${t}">${g}</div>`;
+        s = `<div class="${t}">${p}</div>`;
       }
       const a = `
         <div class="form-section">
@@ -210,13 +213,13 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
         </div>
       `;
       this.shadowRoot.innerHTML = `
-        <style>${p}</style>
+        <style>${g}</style>
         <div class="container">
           <h2>What People Say</h2>
           ${s}
           ${a}
         </div>
-      `, (i = this.shadowRoot.getElementById("testimonial-form")) == null || i.addEventListener("submit", this._handleSubmit.bind(this));
+      `, (o = this.shadowRoot.getElementById("testimonial-form")) == null || o.addEventListener("submit", this._handleSubmit.bind(this));
     }
   }
   customElements.define("cubepath-widget", n);
