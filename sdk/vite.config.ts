@@ -6,7 +6,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/main.ts'),
       name: 'CubePathWidget',
-      fileName: 'cubepath-widget',
+      fileName: 'sdk',
     },
   },
 })
