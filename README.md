@@ -1,66 +1,69 @@
+
 # Testimo
 
 <div align="center">
-  <img src="assets/testimo-logo.svg" alt="Testimo Logo" width="400" />
+  <img src="assets/testimo-logo.svg" alt="Logo de Testimo" width="400" />
 </div>
 
-**Testimo** is the modern SaaS platform for collecting, managing, and showcasing customer testimonials. Turn customer love into business growth with beautiful, embeddable widgets that work anywhere.
+**Testimo** es la plataforma SaaS moderna para recolectar, gestionar y mostrar testimonios de clientes. Convierte el feedback positivo en crecimiento para tu negocio con widgets embebibles, personalizables y ultra rápidos, listos para cualquier sitio web.
 
-![Testimo Banner](https://via.placeholder.com/1200x400?text=Testimo+Banner)
+![Banner Testimo](https://via.placeholder.com/1200x400?text=Testimo+Banner)
 
-> 🚀 **Hackathon Project Note**: This project was built during a hackathon to demonstrate a complete Full-Stack solution (NestJS, React, Web Components) with a focus on developer experience and enterprise-readiness.
+> 🚀 **Nota de Hackatón**: Este proyecto fue desarrollado durante un hackatón para demostrar una solución Full-Stack completa (NestJS, React, Web Components) con foco en experiencia de desarrollador, arquitectura hexagonal y preparación empresarial.
 
-## ✨ Features
+## ✨ Características principales
 
-- **Multi-Platform SDK**: Embed widgets in React, Vue, Angular, or Vanilla JS with a single line of code.
-- **Self-Hosted Ready**: Use our cloud or host your own instance for full data sovereignty.
-- **Customizable Widgets**: Grid, List, Dark/Light modes, and custom CSS support.
-- **Enterprise Security**: Domain whitelisting and spam protection built-in.
-- **Fast & Lightweight**: Zero-dependency Web Component SDK (< 10kb gzipped).
+- **SDK multiplataforma**: Integra widgets en React, Vue, Angular o Vanilla JS con una sola línea de código.
+- **Listo para auto-hospedaje**: Usa nuestra nube o despliega tu propia instancia para control total de tus datos.
+- **Widgets personalizables**: Soporte para grid, lista, modos oscuro/claro y CSS a medida.
+- **Seguridad empresarial**: Lista blanca de dominios y protección anti-spam integrada.
+- **Rápido y liviano**: SDK Web Component sin dependencias (< 10kb gzipped).
+- **Arquitectura hexagonal**: Separación clara de dominios, infraestructura y presentación para máxima escalabilidad.
+- **Carga y gestión de imágenes**: Soporte para subir imágenes de testimonios vía Cloudinary.
 
-## 🛠️ Tech Stack
+## 🛠️ Tecnologías utilizadas
 
 - **Backend**: NestJS, TypeORM, PostgreSQL.
-- **Frontend**: React, Vite, TypeScript.
-- **SDK**: Vanilla TypeScript Web Components (Vite Library Mode).
-- **Infrastructure**: Docker, Traefik, Supabase (optional).
+- **Frontend**: React, Vite, TypeScript, CSS Modules.
+- **SDK**: Web Components en TypeScript (Vite Library Mode).
+- **Infraestructura**: Docker, Traefik, Supabase (opcional), Cloudinary.
 
-## 🚀 Getting Started
+## 🚀 Primeros pasos
 
-### 1. Installation
+### 1. Instalación rápida
 
-You can run the entire stack locally using Docker Compose:
+Puedes levantar todo el stack localmente usando Docker Compose:
 
 ```bash
 docker-compose up -d
 ```
 
-### 2. Usage (SDK)
+### 2. Uso del SDK (Widget)
 
-Embed the widget in your website:
+Incorpora el widget en tu sitio web:
 
 ```html
-<!-- Use the Testimo Cloud API (Default) -->
+<!-- Usar la API Cloud de Testimo (por defecto) -->
 <script src="https://cdn.testimo.app/sdk.js"></script>
-<cubepath-widget organization-id="YOUR_ORG_ID"></cubepath-widget>
+<cubepath-widget organization-id="TU_ORG_ID"></cubepath-widget>
 
-<!-- OR Point to your Self-Hosted Instance -->
+<!-- O apunta a tu instancia auto-hospedada -->
 <cubepath-widget 
-  organization-id="YOUR_ORG_ID" 
-  api-url="https://api.your-domain.com"
+  organization-id="TU_ORG_ID" 
+  api-url="https://api.tu-dominio.com"
 ></cubepath-widget>
 ```
 
-### 3. Development
+### 3. Desarrollo local
 
-#### Server (API)
+#### Backend (API)
 ```bash
 cd server
 npm install
 npm run start:dev
 ```
 
-#### Client (Dashboard)
+#### Frontend (Dashboard)
 ```bash
 cd client
 npm install
@@ -74,16 +77,23 @@ npm install
 npm run build
 ```
 
-## 📦 Project Structure
+## 📦 Estructura del proyecto
 
 ```
 /
-├── client/     # React Dashboard for managing testimonials
-├── server/     # NestJS API Backend
-├── sdk/        # The embeddable widget library
-└── docker/     # Infrastructure configuration
+├── client/     # Dashboard React para gestión de testimonios
+├── server/     # Backend API NestJS
+├── sdk/        # Biblioteca del widget embebible
+└── assets/     # Recursos estáticos y media
 ```
 
-## 📄 License
+## 🧩 Arquitectura y buenas prácticas
 
-This project is open-sourced software licensed under the [MIT license](LICENSE).
+- **Componentización avanzada**: Cada sección de características está implementada como un componente React independiente, facilitando la extensión y el mantenimiento.
+- **Estilos modernos**: Uso de CSS Modules para un diseño atractivo y consistente.
+- **Escapado seguro de HTML**: Los bloques de código y ejemplos usan técnicas de escape para evitar errores de JSX/Babel.
+- **Documentación clara**: Cada sección y funcionalidad está documentada y estructurada para facilitar la comprensión y la colaboración.
+
+## 📄 Licencia
+
+Este proyecto es software de código abierto bajo la licencia [MIT](LICENSE).
