@@ -146,38 +146,47 @@ export class TestimonialService {
   }
 
   static async create(data: Omit<Testimonial, 'id' | 'createdAt' | 'updatedAt' | 'isEdited' | 'organizationId' | 'status'> & { imageFile?: File | null }): Promise<void> {
-    const token = localStorage.getItem('token');
-    // If imageFile is present, use FormData
-    if (data.imageFile) {
-      const formData = new FormData();
-      formData.append('author', data.author);
-      formData.append('content', data.content);
-      formData.append('rating', String(data.rating));
-      formData.append('category', data.category);
-      formData.append('iKey', data.iKey);
-      formData.append('tags', JSON.stringify(data.tags));
-      if (data.videoUrl) formData.append('videoUrl', data.videoUrl);
-      formData.append('image', data.imageFile);
-      return fetch(`${API_URL}/testimonial`, {
-        method: 'POST',
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: formData,
-      }).then(async (res) => {
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.message || 'API Error');
-        }
-      });
-    } else {
-      // No file, send JSON
-      return this.request<void>('testimonial', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-    }
+  const token = localStorage.getItem('token');
+
+  if (data.imageFile) {
+    const formData = new FormData();
+    formData.append('author', data.author);
+    formData.append('content', data.content);
+    formData.append('rating', String(data.rating)); // Se queda como string, lo arreglamos en el DTO
+    formData.append('category', data.category);
+    formData.append('iKey', data.iKey);
+
+    // ✅ CORRECCIÓN 1: Mandar tags uno por uno
+    // NestJS recolecta múltiples appends con la misma llave y los vuelve un array
+    data.tags.forEach(tag => {
+      formData.append('tags', tag); 
+    });
+
+    if (data.videoUrl) formData.append('videoUrl', data.videoUrl);
+    formData.append('image', data.imageFile);
+
+    return fetch(`${API_URL}/testimonial`, {
+      method: 'POST',
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        // IMPORTANTE: NO pongas 'Content-Type': 'application/json' ni 'multipart/form-data'
+        // El navegador lo pone solo con el "boundary" necesario
+      },
+      body: formData,
+    }).then(async (res) => {
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'API Error');
+      }
+    });
+  } else {
+    // Modo JSON (aquí no hay bronca con los tipos)
+    return this.request<void>('testimonial', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   }
+}
 
   static async approve(id: string): Promise<void> {
     return this.request<void>(`testimonial/${id}/approve`, {

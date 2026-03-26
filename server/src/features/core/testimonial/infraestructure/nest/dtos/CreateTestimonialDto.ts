@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsInt,
@@ -26,6 +27,7 @@ export class CreateTestimonialDto {
   @IsString({ each: true })
   tags: string[];
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(5)
