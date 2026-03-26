@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsEnum, IsObject, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEnum,
+  IsObject,
+  IsOptional,
+} from 'class-validator';
 import { WidgetTypeEnum } from '../../../../domain/widget/value-objects/WidgetType';
 import { WidgetThemeEnum } from '../../../../domain/widget/value-objects/WidgetTheme';
 

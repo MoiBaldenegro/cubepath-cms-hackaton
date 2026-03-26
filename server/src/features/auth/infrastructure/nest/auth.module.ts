@@ -74,8 +74,10 @@ const AUTH_REPOSITORY_PROVIDER = {
     },
     {
       provide: CreateModerator,
-      useFactory: (createUser: CreateUser, localAuthService: LocalAuthService) =>
-        new CreateModerator(createUser, localAuthService),
+      useFactory: (
+        createUser: CreateUser,
+        localAuthService: LocalAuthService,
+      ) => new CreateModerator(createUser, localAuthService),
       inject: [CreateUser, LocalAuthService],
     },
   ],

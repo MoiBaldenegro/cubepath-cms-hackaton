@@ -16,9 +16,18 @@ import { TestimonialId } from '../../../domain/value-objects/TestimonialId';
 import { TestimonialContent } from '../../../domain/value-objects/TestimonialContent';
 import { TestimonialAuthor } from '../../../domain/value-objects/TestimonialAuthor';
 import { TestimonialRating } from '../../../domain/value-objects/TestimonialRating';
-import { TestimonialStatus, TestimonialStatusEnum } from '../../../domain/value-objects/TestimonialStatus';
-import { TestimonialCategory, TestimonialCategoryEnum } from '../../../domain/value-objects/TestimonialCategory';
-import { TestimonialTag, TestimonialTagEnum } from '../../../domain/value-objects/TestimonialTag';
+import {
+  TestimonialStatus,
+  TestimonialStatusEnum,
+} from '../../../domain/value-objects/TestimonialStatus';
+import {
+  TestimonialCategory,
+  TestimonialCategoryEnum,
+} from '../../../domain/value-objects/TestimonialCategory';
+import {
+  TestimonialTag,
+  TestimonialTagEnum,
+} from '../../../domain/value-objects/TestimonialTag';
 import { TestimonialIdempotencyKey } from '../../../domain/value-objects/TestimonialIdempotencyKey';
 import { TestimonialIsEdited } from '../../../domain/value-objects/TestimonialIsEdited';
 import { TestimonialCreatedAt } from '../../../domain/value-objects/TestimonialCreatedAt';
@@ -34,9 +43,17 @@ export class WidgetController {
 
   @Public()
   @Post('submit')
-  async submit(@Body() body: { organizationId: string; content: string; author: string; rating: number }) {
+  async submit(
+    @Body()
+    body: {
+      organizationId: string;
+      content: string;
+      author: string;
+      rating: number;
+    },
+  ) {
     const { organizationId, content, author, rating } = body;
-    
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const category = TestimonialCategoryEnum.OTHER;
@@ -45,20 +62,20 @@ export class WidgetController {
     const tag = TestimonialTagEnum.GENERAL;
 
     const testimonial = new Testimonial(
-        new TestimonialId(randomUUID()),
-        new TestimonialIdempotencyKey(randomUUID()),
-        new TestimonialContent(content),
-        new TestimonialAuthor(author),
-        new TestimonialStatus(TestimonialStatusEnum.PENDING),
-        [new TestimonialTag(tag)],
-        new TestimonialRating(Number(rating)),
-        new TestimonialCategory(category),
-        new TestimonialIsEdited(false),
-        new OrganizationId(organizationId),
-        undefined, // imageUrl
-        undefined, // videoUrl
-        new TestimonialCreatedAt(new Date()),
-        undefined  // updatedAt
+      new TestimonialId(randomUUID()),
+      new TestimonialIdempotencyKey(randomUUID()),
+      new TestimonialContent(content),
+      new TestimonialAuthor(author),
+      new TestimonialStatus(TestimonialStatusEnum.PENDING),
+      [new TestimonialTag(tag)],
+      new TestimonialRating(Number(rating)),
+      new TestimonialCategory(category),
+      new TestimonialIsEdited(false),
+      new OrganizationId(organizationId),
+      undefined, // imageUrl
+      undefined, // videoUrl
+      new TestimonialCreatedAt(new Date()),
+      undefined, // updatedAt
     );
 
     await this.testimonialRepository.create(testimonial);
@@ -75,30 +92,33 @@ export class WidgetController {
 
   @Public()
   @Get('data')
-  async getData(
-    @Query('organizationId') organizationId: string,
-  ) {
+  async getData(@Query('organizationId') organizationId: string) {
     if (organizationId === 'demo-org-id') {
       return [
         {
           id: '1',
-          content: 'Testimo has transformed how we gather feedback. Absolutely essential tool.',
+          content:
+            'Testimo has transformed how we gather feedback. Absolutely essential tool.',
           author: 'Alice Johnson',
           rating: 5,
           createdAt: new Date().toISOString(),
         },
         {
           id: '3',
-          content: 'The API is clean and the documentation is top notch. A developer\'s dream.',
+          content:
+            "The API is clean and the documentation is top notch. A developer's dream.",
           author: 'Charlie Brown',
           rating: 5,
           createdAt: new Date().toISOString(),
         },
       ];
     }
-    const testimonials = await this.testimonialRepository.findApprovedByOrganization(new OrganizationId(organizationId));
-    
-    return testimonials.map(t => ({
+    const testimonials =
+      await this.testimonialRepository.findApprovedByOrganization(
+        new OrganizationId(organizationId),
+      );
+
+    return testimonials.map((t) => ({
       id: t.id.value,
       content: t.content.value,
       author: t.author.value,
@@ -121,24 +141,29 @@ export class WidgetController {
       data = [
         {
           id: '1',
-          content: 'Testimo has transformed how we gather feedback. Absolutely essential tool.',
+          content:
+            'Testimo has transformed how we gather feedback. Absolutely essential tool.',
           author: 'Alice Johnson',
           rating: 5,
           createdAt: new Date().toISOString(),
         },
         {
           id: '3',
-          content: 'The API is clean and the documentation is top notch. A developer\'s dream.',
+          content:
+            "The API is clean and the documentation is top notch. A developer's dream.",
           author: 'Charlie Brown',
           rating: 5,
           createdAt: new Date().toISOString(),
         },
       ];
     } else {
-      const testimonials = await this.testimonialRepository.findApprovedByOrganization(new OrganizationId(organizationId));
-      
+      const testimonials =
+        await this.testimonialRepository.findApprovedByOrganization(
+          new OrganizationId(organizationId),
+        );
+
       // Transform domain entities to primitive objects
-      data = testimonials.map(t => ({
+      data = testimonials.map((t) => ({
         id: t.id.value,
         content: t.content.value,
         author: t.author.value,
@@ -361,6 +386,4 @@ export class WidgetController {
     res.set('Content-Type', 'application/javascript');
     res.send(jsCode);
   }
-
 }
-

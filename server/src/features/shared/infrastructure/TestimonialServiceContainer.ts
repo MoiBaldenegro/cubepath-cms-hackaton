@@ -6,6 +6,8 @@ import { UpdateTestimonial } from '../../core/testimonial/application/updateTest
 import { ApproveTestimonial } from '../../core/testimonial/application/approveTestimonial/ApproveTestimonial';
 import { FindApprovedTestimonials } from '../../core/testimonial/application/findApprovedTestimonials/FindApprovedTestimonials';
 import { TestimonialRepository } from 'src/features/core/testimonial/domain/ports/TestimonialRepository';
+import { UploadImageUseCase } from 'src/features/media/application/UploadImageUseCase';
+import { MediaRepository } from 'src/features/media/domain/MediaRepository';
 
 export class TestimonialServiceContainer {
   public readonly createTestimonial: TestimonialCreate;
@@ -15,8 +17,12 @@ export class TestimonialServiceContainer {
   public readonly updateTestimonial: UpdateTestimonial;
   public readonly approveTestimonial: ApproveTestimonial;
   public readonly findApprovedTestimonials: FindApprovedTestimonials;
+  public readonly uploadImage: UploadImageUseCase;
 
-  constructor(repository: TestimonialRepository) {
+  constructor(
+    repository: TestimonialRepository,
+    mediaRepository: MediaRepository,
+  ) {
     this.createTestimonial = new TestimonialCreate(repository);
     this.findAllTestimonials = new FindAllTestimonials(repository);
     this.findTestimonialById = new FindTestimonialById(repository);
@@ -24,5 +30,6 @@ export class TestimonialServiceContainer {
     this.updateTestimonial = new UpdateTestimonial(repository);
     this.approveTestimonial = new ApproveTestimonial(repository);
     this.findApprovedTestimonials = new FindApprovedTestimonials(repository);
+    this.uploadImage = new UploadImageUseCase(mediaRepository);
   }
 }

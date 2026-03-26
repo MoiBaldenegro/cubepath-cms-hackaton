@@ -15,8 +15,13 @@ export class InMemoryTestimonialRepository implements TestimonialRepository {
     this.testimonials.push(testimonial);
   }
 
-  async findAll(organizationId: OrganizationId, search?: string): Promise<Testimonial[]> {
-    let filtered = this.testimonials.filter(t => t.organizationId.value === organizationId.value);
+  async findAll(
+    organizationId: OrganizationId,
+    search?: string,
+  ): Promise<Testimonial[]> {
+    let filtered = this.testimonials.filter(
+      (t) => t.organizationId.value === organizationId.value,
+    );
     if (search) {
       const lowerSearch = search.toLowerCase();
       filtered = filtered.filter(
@@ -48,7 +53,9 @@ export class InMemoryTestimonialRepository implements TestimonialRepository {
     return limit ? approved.slice(0, limit) : approved;
   }
 
-  async findApprovedByOrganization(organizationId: OrganizationId): Promise<Testimonial[]> {
+  async findApprovedByOrganization(
+    organizationId: OrganizationId,
+  ): Promise<Testimonial[]> {
     return this.testimonials.filter(
       (t) =>
         t.status.value === TestimonialStatusEnum.APPROVED &&

@@ -10,14 +10,11 @@ import {
   Query,
   UseGuards,
   Request,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { TestimonialCreate } from '../../application/createTestimonial/createTestimonial';
-import { FindAllTestimonials } from '../../application/findAllTestimonials/FindAllTestimonials';
-import { ApproveTestimonial } from '../../application/approveTestimonial/ApproveTestimonial';
-import { FindTestimonialById } from '../../application/findTestimonialById/FindTestimonialById';
-import { FindApprovedTestimonials } from '../../application/findApprovedTestimonials/FindApprovedTestimonials';
-import { UpdateTestimonial } from '../../application/updateTestimonial/UpdateTestimonial';
-import { RemoveTestimonial } from '../../application/removeTestimonial/RemoveTestimonial';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { TestimonialServiceContainer } from '../../../../shared/infrastructure/TestimonialServiceContainer';
 import { CreateTestimonialDto } from './dtos/CreateTestimonialDto';
 import { UpdateTestimonialDto } from './dtos/UpdateTestimonialDto';
 import { FindAllTestimonialsDto } from './dtos/FindAllTestimonialsDto';
@@ -30,54 +27,66 @@ import { Public } from '../../../../auth/infrastructure/nest/decorators/public.d
 @UseGuards(JwtAuthGuard)
 export class TestimonialController {
   constructor(
-    private readonly createTestimonial: TestimonialCreate,
-    private readonly findAllTestimonials: FindAllTestimonials,
-    private readonly approveTestimonial: ApproveTestimonial,
-    private readonly findTestimonialById: FindTestimonialById,
-    private readonly findApprovedTestimonials: FindApprovedTestimonials,
-    private readonly updateTestimonial: UpdateTestimonial,
-    private readonly removeTestimonial: RemoveTestimonial,
+    private readonly testimonialServices: TestimonialServiceContainer,
   ) {}
 
   @Post()
-  async create(@Body() request: CreateTestimonialDto, @Request() req) {
+  @UseInterceptors(FileInterceptor('image'))
+  async create(
+    @Body() request: CreateTestimonialDto,
+    @Request() req,
+    @UploadedFile() image?: Express.Multer.File,
+  ) {
     const { organizationId } = req.user;
-    await this.createTestimonial.run({ ...request, organizationId });
+    let imageUrl = request.imageUrl;
+    if (image) {
+      // Use the uploadImage use case to upload the file and get the URL
+      imageUrl = await this.testimonialServices.uploadImage.execute(image);
+    }
+    await this.testimonialServices.createTestimonial.run({
+      ...request,
+      organizationId,
+      imageUrl,
+    });
     return { success: true };
   }
 
   @Get()
   async findAll(@Query() query: FindAllTestimonialsDto, @Request() req) {
     const { organizationId } = req.user;
-    const testimonials = await this.findAllTestimonials.run({ ...query, organizationId });
+    const testimonials = await this.testimonialServices.findAllTestimonials.run(
+      { ...query, organizationId },
+    );
     return testimonials.map((t) => t.toPrimitives());
   }
 
   @Public()
   @Get('approved')
   async findApproved(@Query() query: FindApprovedTestimonialsDto) {
-    const testimonials = await this.findApprovedTestimonials.run(query);
+    const testimonials =
+      await this.testimonialServices.findApprovedTestimonials.run(query);
     return testimonials.map((t) => t.toPrimitives());
   }
 
   @Get(':id')
   async findOne(@Param() params: TestimonialIdDto) {
-    const testimonial = await this.findTestimonialById.run(params);
+    const testimonial =
+      await this.testimonialServices.findTestimonialById.run(params);
     return testimonial.toPrimitives();
   }
 
   @Patch(':id/approve')
   async approve(@Param() params: TestimonialIdDto) {
-    return this.approveTestimonial.run(params);
+    return this.testimonialServices.approveTestimonial.run(params);
   }
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() body: UpdateTestimonialDto) {
-    return this.updateTestimonial.run({ ...body, id });
+    return this.testimonialServices.updateTestimonial.run({ ...body, id });
   }
 
   @Delete(':id')
   async remove(@Param() params: TestimonialIdDto) {
-    return this.removeTestimonial.run(params);
+    return this.testimonialServices.removeTestimonial.run(params);
   }
 }

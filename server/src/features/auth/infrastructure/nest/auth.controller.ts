@@ -47,8 +47,8 @@ export class AuthController {
   async createModerator(@Body() body: CreateModeratorDto, @Request() req) {
     const { organizationId } = req.user;
     return this.createModeratorUseCase.run({
-        ...body,
-        organizationId
+      ...body,
+      organizationId,
     });
   }
 }

@@ -1,16 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TestimonialController } from './testimonial.controller';
 import { WidgetController } from '../widget/nest/widget.controller';
 
-import { TestimonialCreate } from '../../application/createTestimonial/createTestimonial';
-import { FindAllTestimonials } from '../../application/findAllTestimonials/FindAllTestimonials';
-import { ApproveTestimonial } from '../../application/approveTestimonial/ApproveTestimonial';
-import { FindTestimonialById } from '../../application/findTestimonialById/FindTestimonialById';
-import { FindApprovedTestimonials } from '../../application/findApprovedTestimonials/FindApprovedTestimonials';
-import { UpdateTestimonial } from '../../application/updateTestimonial/UpdateTestimonial';
-import { RemoveTestimonial } from '../../application/removeTestimonial/RemoveTestimonial';
+import { TestimonialServiceContainer } from '../../../../shared/infrastructure/TestimonialServiceContainer';
 
 import { TypeOrmTestimonialRepository } from '../typeorm/TypeOrmTestimonialRepository';
 
@@ -19,10 +13,17 @@ import { TestimonialEntity } from '../typeorm/Testimonial.entity';
 import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
 
 import { AuthModule } from '../../../../auth/infrastructure/nest/auth.module';
+import { MediaRepository } from 'src/features/media/domain/MediaRepository';
+import { CloudinaryMediaRepository } from 'src/features/media/infrastructure/CloudinaryMediaRepository';
 
 const TESTIMONIAL_REPOSITORY_PROVIDER = {
   provide: 'TestimonialRepository',
   useClass: TypeOrmTestimonialRepository,
+};
+
+const MEDIA_REPOSITORY_PROVIDER = {
+  provide: 'MediaRepository',
+  useClass: CloudinaryMediaRepository, // Se resolverá useClass
 };
 
 @Module({
@@ -34,47 +35,17 @@ const TESTIMONIAL_REPOSITORY_PROVIDER = {
   controllers: [TestimonialController, WidgetController],
   providers: [
     TESTIMONIAL_REPOSITORY_PROVIDER,
+    MEDIA_REPOSITORY_PROVIDER,
     {
-      provide: TestimonialCreate,
-      useFactory: (repository: TestimonialRepository) =>
-        new TestimonialCreate(repository),
-      inject: [TESTIMONIAL_REPOSITORY_PROVIDER.provide],
-    },
-    {
-      provide: FindAllTestimonials,
-      useFactory: (repository: TestimonialRepository) =>
-        new FindAllTestimonials(repository),
-      inject: [TESTIMONIAL_REPOSITORY_PROVIDER.provide],
-    },
-    {
-      provide: ApproveTestimonial,
-      useFactory: (repository: TestimonialRepository) =>
-        new ApproveTestimonial(repository),
-      inject: [TESTIMONIAL_REPOSITORY_PROVIDER.provide],
-    },
-    {
-      provide: FindTestimonialById,
-      useFactory: (repository: TestimonialRepository) =>
-        new FindTestimonialById(repository),
-      inject: [TESTIMONIAL_REPOSITORY_PROVIDER.provide],
-    },
-    {
-      provide: FindApprovedTestimonials,
-      useFactory: (repository: TestimonialRepository) =>
-        new FindApprovedTestimonials(repository),
-      inject: [TESTIMONIAL_REPOSITORY_PROVIDER.provide],
-    },
-    {
-      provide: UpdateTestimonial,
-      useFactory: (repository: TestimonialRepository) =>
-        new UpdateTestimonial(repository),
-      inject: [TESTIMONIAL_REPOSITORY_PROVIDER.provide],
-    },
-    {
-      provide: RemoveTestimonial,
-      useFactory: (repository: TestimonialRepository) =>
-        new RemoveTestimonial(repository),
-      inject: [TESTIMONIAL_REPOSITORY_PROVIDER.provide],
+      provide: TestimonialServiceContainer,
+      useFactory: (
+        repository: TestimonialRepository,
+        mediaRepository: MediaRepository,
+      ) => new TestimonialServiceContainer(repository, mediaRepository),
+      inject: [
+        TESTIMONIAL_REPOSITORY_PROVIDER.provide,
+        MEDIA_REPOSITORY_PROVIDER.provide,
+      ],
     },
   ],
 })

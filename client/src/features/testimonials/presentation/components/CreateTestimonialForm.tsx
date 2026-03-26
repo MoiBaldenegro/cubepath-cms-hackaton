@@ -9,6 +9,7 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
   const [category, setCategory] = useState<TestimonialCategory>(TestimonialCategory.TECHNOLOGY);
   const [tags, setTags] = useState<TestimonialTag[]>([]);
   const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -39,15 +40,16 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
     setError('');
 
     try {
-      await TestimonialService.create({ 
-        author, 
-        content, 
+      await TestimonialService.create({
+        author,
+        content,
         rating,
         category,
         tags,
         iKey: generateIdempotencyKey(),
         imageUrl: imageUrl || undefined,
         videoUrl: videoUrl || undefined,
+        imageFile,
       });
       setAuthor('');
       setContent('');
@@ -55,6 +57,7 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
       setCategory(TestimonialCategory.TECHNOLOGY);
       setTags([]);
       setImageUrl('');
+      setImageFile(null);
       setVideoUrl('');
       onSuccess();
       alert('Testimonial created successfully!');
@@ -111,13 +114,19 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
           </div>
         </div>
         <div style={{ marginBottom: '10px' }}>
-          <label>Image URL (Optional):</label>
+          <label>Image (Optional):</label>
           <input
-            type="url"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
+            type="file"
+            accept="image/*"
+            onChange={e => {
+              if (e.target.files && e.target.files[0]) {
+                setImageFile(e.target.files[0]);
+                setImageUrl(''); // Limpiar el campo de URL si se sube archivo
+              } else {
+                setImageFile(null);
+              }
+            }}
             style={{ display: 'block', width: '100%' }}
-            placeholder="https://example.com/image.jpg"
           />
         </div>
         <div style={{ marginBottom: '10px' }}>

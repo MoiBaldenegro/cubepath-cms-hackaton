@@ -16,12 +16,14 @@ export class CreateModerator {
   async run(request: CreateModeratorRequest): Promise<{ id: string }> {
     const id = this.localAuthService.generateId();
     let hashedPassword: string | undefined = undefined;
-    
+
     // For now we assume local auth for simplicity
     if (request.password) {
-        hashedPassword = await this.localAuthService.hashPassword(request.password);
+      hashedPassword = await this.localAuthService.hashPassword(
+        request.password,
+      );
     }
-    
+
     // Role is always 'editor' (Moderator)
     await this.createUser.run(
       id,

@@ -60,8 +60,13 @@ export class TypeOrmTestimonialRepository implements TestimonialRepository {
     await this.repository.save(entity);
   }
 
-  async findAll(organizationId: OrganizationId, search?: string): Promise<Testimonial[]> {
-    const where: FindOptionsWhere<TestimonialEntity> = { organizationId: organizationId.value };
+  async findAll(
+    organizationId: OrganizationId,
+    search?: string,
+  ): Promise<Testimonial[]> {
+    const where: FindOptionsWhere<TestimonialEntity> = {
+      organizationId: organizationId.value,
+    };
     if (search) {
       where.content = Like(`%${search}%`);
     }
@@ -83,7 +88,9 @@ export class TypeOrmTestimonialRepository implements TestimonialRepository {
     return entities.map((entity) => this.toDomain(entity));
   }
 
-  async findApprovedByOrganization(organizationId: OrganizationId): Promise<Testimonial[]> {
+  async findApprovedByOrganization(
+    organizationId: OrganizationId,
+  ): Promise<Testimonial[]> {
     const entities = await this.repository.find({
       where: {
         organizationId: organizationId.value,

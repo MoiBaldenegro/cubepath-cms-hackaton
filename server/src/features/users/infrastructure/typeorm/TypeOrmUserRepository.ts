@@ -52,7 +52,9 @@ export class TypeOrmUserRepository implements UserRepository {
   }
 
   async findAll(organizationId?: OrganizationId): Promise<User[]> {
-    const where = organizationId ? { organizationId: organizationId.value } : {};
+    const where = organizationId
+      ? { organizationId: organizationId.value }
+      : {};
     const entities = await this.repository.find({ where });
     return entities.map((entity) => this.toDomain(entity));
   }

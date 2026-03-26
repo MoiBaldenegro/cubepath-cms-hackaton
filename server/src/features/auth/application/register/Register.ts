@@ -25,16 +25,28 @@ export class Register {
       );
       const id = this.localAuthService.generateId();
 
-      await this.createUser.run(id, email.value, role, 'local', organizationId, hashedPassword);
+      await this.createUser.run(
+        id,
+        email.value,
+        role,
+        'local',
+        organizationId,
+        hashedPassword,
+      );
 
       // Generate token for auto-login
-      const token = this.localAuthService.generateToken({ sub: id, email: email.value, role, organizationId });
-      
+      const token = this.localAuthService.generateToken({
+        sub: id,
+        email: email.value,
+        role,
+        organizationId,
+      });
+
       return {
         user: {
           id,
           email: email.value,
-          token
+          token,
         },
       } as any;
     }
