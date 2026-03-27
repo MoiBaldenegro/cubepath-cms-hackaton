@@ -13,6 +13,7 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
   const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [imageError, setImageError] = useState('');
 
   const generateIdempotencyKey = () => {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -114,13 +115,21 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
           </div>
         </div>
         <div style={{ marginBottom: '10px' }}>
-          <label>Image (Optional):</label>
+          <label>Imagen (opcional):</label>
           <input
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/jpg,image/png"
             onChange={e => {
+              setImageError('');
               if (e.target.files && e.target.files[0]) {
-                setImageFile(e.target.files[0]);
+                const file = e.target.files[0];
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                  setImageFile(null);
+                  setImageError('Formato de imagen no válido. Solo se permiten archivos JPEG, JPG o PNG.');
+                  return;
+                }
+                setImageFile(file);
                 setImageUrl(''); // Limpiar el campo de URL si se sube archivo
               } else {
                 setImageFile(null);
@@ -128,6 +137,9 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
             }}
             style={{ display: 'block', width: '100%' }}
           />
+          {imageError && (
+            <div style={{ color: 'red', marginTop: '5px' }}>{imageError}</div>
+          )}
         </div>
         <div style={{ marginBottom: '10px' }}>
           <label>Video URL (Optional):</label>
