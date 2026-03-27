@@ -1,3 +1,19 @@
+import { ParseArrayPipe } from '@nestjs/common';
+  @Get('batch-stats')
+  async batchStats(
+    @Query('organizationId') organizationId: string,
+    @Query('testimonialIds', new ParseArrayPipe({ items: String, separator: ',' })) testimonialIds: string[],
+    @Query('type') type: 'view' | 'click',
+  ) {
+    const useCase = new GetAnalyticsStats(this.repo);
+    const results: Record<string, number> = {};
+    await Promise.all(
+      testimonialIds.map(async (testimonialId) => {
+        results[testimonialId] = await useCase.run({ organizationId, testimonialId, type });
+      })
+    );
+    return { stats: results };
+  }
 import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { TypeOrmAnalyticsEventRepository } from './TypeOrmAnalyticsEventRepository';
 import { TrackAnalyticsEvent } from '../application/TrackAnalyticsEvent';

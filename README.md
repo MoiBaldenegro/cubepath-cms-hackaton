@@ -11,15 +11,31 @@
 
 > 🚀 **Nota de Hackatón**: Este proyecto fue desarrollado durante un hackatón para demostrar una solución Full-Stack completa (NestJS, React, Web Components) con foco en experiencia de desarrollador, arquitectura hexagonal y preparación empresarial.
 
-## ✨ Características principales
 
-- **SDK multiplataforma**: Integra widgets en React, Vue, Angular o Vanilla JS con una sola línea de código.
-- **Listo para auto-hospedaje**: Usa nuestra nube o despliega tu propia instancia para control total de tus datos.
-- **Widgets personalizables**: Soporte para grid, lista, modos oscuro/claro y CSS a medida.
-- **Seguridad empresarial**: Lista blanca de dominios y protección anti-spam integrada.
-- **Rápido y liviano**: SDK Web Component sin dependencias (< 10kb gzipped).
-- **Arquitectura hexagonal**: Separación clara de dominios, infraestructura y presentación para máxima escalabilidad.
-- **Carga y gestión de imágenes**: Soporte para subir imágenes de testimonios vía Cloudinary.
+## 🚀 Características avanzadas
+
+- **Gestión total de testimonios**: Alta, edición, aprobación, eliminación y visualización con validaciones y lógica de negocio real.
+- **Filtros avanzados y búsqueda**: Filtra testimonios por estado, autor, calificación, categoría, tipo de media y rango de fechas. Encuentra el testimonio ideal en segundos.
+- **Analíticas en tiempo real**: Visualiza vistas, clics, tasa de conversión, ranking de testimonios y tendencias históricas. Exporta métricas a Excel con un clic.
+- **Multi-tenant y roles**: Cada organización ve solo sus datos. Soporte para administradores, editores y moderadores.
+- **Widget SDK ultra rápido**: Integra testimonios en cualquier web (React, Vue, Angular, HTML puro) con personalización total y carga instantánea (<10kb gzipped).
+- **Seguridad y privacidad**: Lista blanca de dominios, protección anti-spam, autenticación JWT y control de acceso granular.
+- **Arquitectura empresarial**: Hexagonal, desacoplada, lista para escalar y personalizar. Separación estricta de dominio, infraestructura y presentación.
+- **Infraestructura lista para producción**: Docker Compose, Traefik, Supabase, Cloudinary y PostgreSQL. Despliegue en minutos en cualquier nube.
+
+## 🏆 ¿Por qué Testimo?
+
+- **Convierte más**: Los testimonios aumentan la confianza y la conversión. Con Testimo, puedes medir el impacto real y optimizar tu estrategia.
+- **Ahorra tiempo**: Panel intuitivo, filtros inteligentes y exportación directa. Menos clicks, más resultados.
+- **Escala sin límites**: Desde startups hasta empresas, Testimo se adapta a tu crecimiento y necesidades.
+- **Integración sin fricción**: Un solo script, sin dependencias, y soporte para cualquier stack moderno.
+
+## ⚙️ Cómo funciona
+
+1. **Recolecta testimonios**: Tus clientes envían feedback desde tu web o desde el dashboard.
+2. **Modera y aprueba**: Filtra, aprueba o elimina testimonios fácilmente desde el panel de administración.
+3. **Analiza y exporta**: Visualiza métricas clave, aplica filtros avanzados y exporta los datos para reportes o marketing.
+4. **Publica en tu web**: Inserta el widget y muestra los mejores testimonios en segundos, con personalización total.
 
 ## 🛠️ Tecnologías utilizadas
 

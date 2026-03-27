@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import type { Testimonial } from '../../../testimonials/domain/Testimonial';
 import { ExportAnalyticsButton } from './ExportAnalyticsButton';
 import { TestimonialAnalyticsChart } from './TestimonialAnalyticsChart';
@@ -32,37 +32,35 @@ export const TestimonialAnalyticsTable: React.FC<TestimonialAnalyticsTableProps>
   const authors = Array.from(new Set(testimonials.map(t => t.author))).filter(Boolean);
   const statuses = Object.values(TestimonialStatus);
 
-  // Filtrado local de testimonios
-  const filteredTestimonials = testimonials.filter(t => {
-    if (category && t.category !== category) return false;
-    if (author && t.author !== author) return false;
-    if (status && t.status !== status) return false;
-    return true;
-  });
+  // Filtrado local de testimonios (memoizado para evitar nuevas referencias en cada render)
+  const filteredTestimonials = useMemo(() => {
+    return testimonials.filter(t => {
+      if (category && t.category !== category) return false;
+      if (author && t.author !== author) return false;
+      if (status && t.status !== status) return false;
+      return true;
+    });
+  }, [testimonials, category, author, status]);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       setLoading(true);
       try {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://cubepathhackaton-api-aymrvj-31e30c-108-165-47-144.traefik.me';
+        const testimonialIds = filteredTestimonials.map(t => t.id);
+        const [viewsRes, clicksRes] = await Promise.all([
+          fetch(`${apiUrl}/analytics/batch-stats?organizationId=${organizationId}&testimonialIds=${testimonialIds.join(',')}&type=view`),
+          fetch(`${apiUrl}/analytics/batch-stats?organizationId=${organizationId}&testimonialIds=${testimonialIds.join(',')}&type=click`)
+        ]);
+        const viewsData = await viewsRes.json();
+        const clicksData = await clicksRes.json();
         const results: AnalyticsMap = {};
-        await Promise.all(
-          filteredTestimonials.map(async (t) => {
-            const params = [
-              `organizationId=${organizationId}`,
-              `testimonialId=${t.id}`,
-              from ? `from=${from}` : '',
-              to ? `to=${to}` : '',
-            ].filter(Boolean).join('&');
-            const [viewsRes, clicksRes] = await Promise.all([
-              fetch(`${apiUrl}/analytics/stats?${params}&type=view`),
-              fetch(`${apiUrl}/analytics/stats?${params}&type=click`),
-            ]);
-            const viewsData = await viewsRes.json();
-            const clicksData = await clicksRes.json();
-            results[t.id] = { views: viewsData.count, clicks: clicksData.count };
-          })
-        );
+        for (const id of testimonialIds) {
+          results[id] = {
+            views: viewsData.stats[id] ?? 0,
+            clicks: clicksData.stats[id] ?? 0
+          };
+        }
         setAnalytics(results);
       } catch (err) {
         setError((err as Error)?.message || 'Error fetching analytics');
@@ -71,7 +69,7 @@ export const TestimonialAnalyticsTable: React.FC<TestimonialAnalyticsTableProps>
       }
     };
     if (filteredTestimonials.length > 0) fetchAnalytics();
-  }, [organizationId, filteredTestimonials, from, to]);
+  }, [organizationId, category, author, status, from, to, testimonials]);
 
   if (loading) return <div style={{ padding: 16 }}>Cargando analíticas por testimonio...</div>;
   if (error) return <div style={{ color: 'red', padding: 16 }}>{error}</div>;
