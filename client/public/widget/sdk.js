@@ -182,8 +182,22 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
       else {
         const p = this._data.map((d) => {
           const f = d.rating ? "★".repeat(d.rating) + "☆".repeat(5 - d.rating) : "";
+          // YouTube embed if videoUrl is present and valid
+          let videoEmbed = "";
+          if (d.videoUrl) {
+            const ytMatch = d.videoUrl.match(/(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/watch\?v=|youtu.be\/)([\w-]{11})/);
+            if (ytMatch) {
+              const embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
+              videoEmbed = `<div style=\"margin-bottom:12px;text-align:center;\"><iframe width=\"320\" height=\"180\" src=\"${embedUrl}\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen style=\"border-radius:10px;background:#000;\"></iframe></div>`;
+            }
+          }
+          let imageBlock = "";
+          if (d.imageUrl) {
+            imageBlock = `<div style=\"margin-bottom:12px;text-align:center;\"><img src=\"${d.imageUrl}\" alt=\"Imagen del testimonio\" style=\"max-width:320px;max-height:220px;border-radius:10px;border:1px solid #eee;box-shadow:0 2px 12px #0001;background:#fff;\" /></div>`;
+          }
           return `
             <div class="card">
+              ${videoEmbed || imageBlock}
               <p>"${d.content}"</p>
               <div class="footer">
                 <strong>${d.author}</strong>

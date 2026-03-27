@@ -1,5 +1,10 @@
+
 import { TestimonialStatus, TestimonialCategory, TestimonialTag, type Testimonial } from "../domain/Testimonial";
 import { config } from '../../../shared/infrastructure/config';
+
+export async function findTestimonialById(id: string): Promise<Testimonial | null> {
+  return TestimonialService.findById(id);
+}
 
 const API_URL = config.VITE_API_URL;
 
@@ -65,6 +70,15 @@ const saveDemoTestimonials = (testimonials: Testimonial[]) => {
 };
 
 export class TestimonialService {
+  static async findById(id: string): Promise<Testimonial | null> {
+    // MOCK MODE
+    const token = localStorage.getItem('token');
+    if (token === 'demo-token') {
+      const testimonials = getDemoTestimonials();
+      return testimonials.find(t => t.id === id) || null;
+    }
+    return this.request<Testimonial>(`testimonial/${id}`);
+  }
   private static async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem('token');
     

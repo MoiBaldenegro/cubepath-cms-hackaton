@@ -5,6 +5,7 @@ import { Dashboard } from './features/dashboard/presentation/pages/Dashboard/Das
 import { LandingPage } from './features/landing/presentation/pages/LandingPage';
 import { FeaturesPage } from './features/landing/presentation/pages/features/FeaturesPage';
 import { AuthProvider } from './shared/contexts/AuthContext';
+import { TestimonialDetailPage } from './features/testimonials/presentation/pages/TestimonialDetailPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/testimonials/:id" element={<TestimonialDetailPage />} />
           <Route path="/" element={<LandingPage />} />
         </Routes>
       </BrowserRouter>
