@@ -15,8 +15,27 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
       this.attachShadow({ mode: 'open' });
     }
 
+
     connectedCallback() {
       this.fetchData();
+      this.trackView();
+    }
+
+    async trackView() {
+      const orgId = this.getAttribute('organization-id');
+      if (!orgId) return;
+      try {
+        await fetch(`${this.apiUrl}/analytics/track`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            organizationId: orgId,
+            testimonialId: 'all',
+            type: 'view',
+            metadata: { widget: true }
+          })
+        });
+      } catch {}
     }
 
     get apiUrl() {
@@ -225,7 +244,7 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
           const stars = t.rating ? '★'.repeat(t.rating) + '☆'.repeat(5 - t.rating) : '';
           const image = t.imageUrl ? `<div style="margin-bottom:10px;"><img src="${t.imageUrl}" alt="Testimonial" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #eee;" /></div>` : '';
           return `
-            <div class="card">
+            <div class="card" data-tid="${t.id}">
               ${image}
               <p>"${t.content}"</p>
               <div class="footer">
@@ -235,8 +254,7 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
             </div>
           `;
         }).join('');
-        
-        content = `<div class="${layout}">${items}</div>`;
+        content = `<div class="${layout}" id="testimo-list">${items}</div>`;
       }
 
       const formHtml = `
@@ -268,6 +286,35 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
       `;
 
       this.shadowRoot.getElementById('testimonial-form')?.addEventListener('submit', this._handleSubmit.bind(this));
+
+      // Tracking de clics en testimonios
+      const list = this.shadowRoot.getElementById('testimo-list');
+      if (list) {
+        list.querySelectorAll('.card').forEach(card => {
+          card.addEventListener('click', (e) => {
+            const tid = card.getAttribute('data-tid');
+            this.trackClick(tid);
+          });
+        });
+      }
+    }
+
+    async trackClick(testimonialId) {
+      const orgId = this.getAttribute('organization-id');
+      if (!orgId || !testimonialId) return;
+      try {
+        await fetch(`${this.apiUrl}/analytics/track`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            organizationId: orgId,
+            testimonialId,
+            type: 'click',
+            metadata: { widget: true }
+          })
+        });
+      } catch {}
+    }
     }
   }
 

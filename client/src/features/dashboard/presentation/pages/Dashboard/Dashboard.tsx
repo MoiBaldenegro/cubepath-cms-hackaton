@@ -7,6 +7,7 @@ import { TestimonialList } from '../../../../testimonials/presentation/component
 import { UserList } from '../../../../users/presentation/components/UserList';
 import { useNavigate } from 'react-router-dom';
 import { EmbedWidget } from '../../../../widget/presentation/components/EmbedWidget';
+import { AnalyticsWidget } from '../../components/AnalyticsWidget';
 
 export const Dashboard = () => {
   const { user, logout, isLoading } = useAuth();
@@ -101,10 +102,13 @@ export const Dashboard = () => {
 
         <div className={styles.content}>
           {activeView === 'overview' && (
-            <div className={styles.card}>
-              <h3>Welcome, {user.email}</h3>
-              <p>Select an option from the sidebar to manage content.</p>
-            </div>
+            <>
+              <AnalyticsWidget organizationId={user.organizationId} />
+              <div className={styles.card}>
+                <h3>Welcome, {user.email}</h3>
+                <p>Select an option from the sidebar to manage content.</p>
+              </div>
+            </>
           )}
 
           {activeView === 'testimonials' && (

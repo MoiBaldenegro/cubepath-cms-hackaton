@@ -1,121 +1,143 @@
-import { useEffect, useState } from 'react';
 
+import { useEffect, useState } from 'react';
 import { TestimonialStatus, type Testimonial } from '../../domain/Testimonial';
 import { TestimonialService } from '../../infrastructure/TestimonialService';
 import { TestimonialListVideoCell } from './TestimonialListVideoCell';
+import { FilterByStatus } from './filters/FilterByStatus';
+import { FilterByAuthor } from './filters/FilterByAuthor';
+import { FilterByRating } from './filters/FilterByRating';
+import { FilterByCategory } from './filters/FilterByCategory';
+import { FilterByMedia } from './filters/FilterByMedia';
+import { TestimonialAnalyticsTable } from '../../../dashboard/presentation/components/TestimonialAnalyticsTable';
 
-export const TestimonialList = ({ isAdmin }: { isAdmin: boolean }) => {
+function TestimonialList({ isAdmin }: { isAdmin: boolean }) {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [status, setStatus] = useState('');
+  const [author, setAuthor] = useState('');
+  const [rating, setRating] = useState('');
+  const [category, setCategory] = useState('');
+  const [media, setMedia] = useState('');
 
-  const fetchTestimonials = async () => {
+  useEffect(() => {
+    TestimonialService.findAll()
+      .then((data) => {
+        setTestimonials(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Error al cargar testimonios');
+        setLoading(false);
+      });
+  }, []);
+
+  const authors = Array.from(new Set(testimonials.map(t => t.author))).filter(Boolean);
+  const filtered = testimonials.filter(t => {
+    if (status && t.status !== status) return false;
+    if (author && t.author !== author) return false;
+    if (rating && String(t.rating) !== rating) return false;
+    if (category && t.category !== category) return false;
+    if (media && ((media === 'image' && !t.imageUrl) || (media === 'video' && !t.videoUrl))) return false;
+    return true;
+  });
+
+  const handleApprove = async (id: string) => {
+    setLoading(true);
+    setError('');
     try {
-      setLoading(true);
-      const data = await TestimonialService.findAll();
-      // Ensure data is mapped correctly if needed, or assume backend returns matches
-      setTestimonials(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load testimonials');
+      await TestimonialService.approve(id);
+      const updated = testimonials.map(t => t.id === id ? { ...t, status: TestimonialStatus.APPROVED } : t);
+      setTestimonials(updated);
+    } catch {
+      setError('Error al aprobar testimonio');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchTestimonials();
-  }, []);
-
-  const handleApprove = async (id: string) => {
-    try {
-      await TestimonialService.approve(id);
-      setTestimonials((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, status: TestimonialStatus.APPROVED } : t))
-      );
-    } catch (err: any) {
-      alert(err.message || 'Failed to approve');
-    }
-  };
-
   const handleRemove = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this testimonial?')) return;
+    setLoading(true);
+    setError('');
     try {
       await TestimonialService.remove(id);
-      setTestimonials((prev) => prev.filter((t) => t.id !== id));
-    } catch (err: any) {
-      alert(err.message || 'Failed to remove');
+      setTestimonials(testimonials.filter(t => t.id !== id));
+    } catch {
+      setError('Error al eliminar testimonio');
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading) return <p>Loading testimonials...</p>;
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+  if (loading) return <div>Cargando testimonios...</div>;
+  if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
   return (
     <div>
       <h3>All Testimonials</h3>
-      {testimonials.length === 0 ? (
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', margin: '18px 0 24px 0', alignItems: 'flex-end' }}>
+        <FilterByStatus value={status} onChange={setStatus} />
+        <FilterByAuthor value={author} onChange={setAuthor} authors={authors} />
+        <FilterByRating value={rating} onChange={setRating} />
+        <FilterByCategory value={category} onChange={setCategory} />
+        <FilterByMedia value={media} onChange={setMedia} />
+      </div>
+      {filtered.length === 0 ? (
         <p>No testimonials found.</p>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-          <thead>
-            <tr style={{ borderBottom: '2px solid #ddd', textAlign: 'left' }}>
-              <th style={{ padding: '8px' }}>Imagen</th>
-              <th style={{ padding: '8px' }}>Video</th>
-              <th style={{ padding: '8px' }}>Autor</th>
-              <th style={{ padding: '8px' }}>Contenido</th>
-              <th style={{ padding: '8px' }}>Calificación</th>
-              <th style={{ padding: '8px' }}>Estado</th>
-              <th style={{ padding: '8px' }}>Ver detalles</th>
-              {isAdmin && <th style={{ padding: '8px' }}>Acciones</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {testimonials.map((t) => (
-              <tr key={t.id} style={{ borderBottom: '1px solid #eee' }}>
-                <td style={{ padding: '8px', textAlign: 'center' }}>
-                  {t.imageUrl ? (
-                    <img src={t.imageUrl} alt="Testimonial" style={{ maxWidth: '80px', maxHeight: '80px', borderRadius: '8px', border: '1px solid #eee' }} />
-                  ) : (
-                    <span style={{ color: '#bbb', fontSize: '12px' }}>Sin imagen</span>
-                  )}
-                </td>
-                <td style={{ padding: '8px', textAlign: 'center' }}>
-                  <TestimonialListVideoCell videoUrl={t.videoUrl} />
-                </td>
-                <td style={{ padding: '8px' }}>{t.author}</td>
-                <td style={{ padding: '8px' }}>{t.content}</td>
-                <td style={{ padding: '8px' }}>{t.rating} ★</td>
-                <td style={{ padding: '8px' }}>
-                  <button
-                    style={{ background: '#3b82f6', color: 'white', border: 'none', borderRadius: 6, padding: '6px 14px', cursor: 'pointer' }}
-                    onClick={() => window.location.assign(`/testimonials/${t.id}`)}
-                  >
-                    Ver detalles
-                  </button>
-                </td>
-                {isAdmin && (
-                  <td style={{ padding: '8px' }}>
-                    {t.status !== TestimonialStatus.APPROVED && (
-                      <button
-                        onClick={() => handleApprove(t.id)}
-                        style={{ marginRight: '5px', backgroundColor: '#28a745', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}
-                      >
-                        Aprobar
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleRemove(t.id)}
-                      style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                )}
+        <>
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #ddd', textAlign: 'left' }}>
+                <th style={{ padding: '8px' }}>Imagen</th>
+                <th style={{ padding: '8px' }}>Video</th>
+                <th style={{ padding: '8px' }}>Autor</th>
+                <th style={{ padding: '8px' }}>Contenido</th>
+                <th style={{ padding: '8px' }}>Calificación</th>
+                <th style={{ padding: '8px' }}>Estado</th>
+                <th style={{ padding: '8px' }}>Ver detalles</th>
+                {isAdmin && <th style={{ padding: '8px' }}>Acciones</th>}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((t) => (
+                <tr key={t.id} style={{ borderBottom: '1px solid #eee' }}>
+                  <td style={{ padding: '8px', textAlign: 'center' }}>
+                    {t.imageUrl ? (
+                      <img src={t.imageUrl} alt="Testimonial" style={{ maxWidth: '80px', maxHeight: '80px', borderRadius: '8px', border: '1px solid #eee' }} />
+                    ) : (
+                      <span style={{ color: '#bbb', fontSize: '12px' }}>Sin imagen</span>
+                    )}
+                  </td>
+                  <td style={{ padding: '8px', textAlign: 'center' }}>
+                    <TestimonialListVideoCell videoUrl={t.videoUrl} />
+                  </td>
+                  <td style={{ padding: '8px' }}>{t.author}</td>
+                  <td style={{ padding: '8px' }}>{t.content}</td>
+                  <td style={{ padding: '8px' }}>{t.rating} ★</td>
+                  <td style={{ padding: '8px' }}>{t.status}</td>
+                  <td style={{ padding: '8px' }}>
+                    <a href={`/testimonials/${t.id}`} target="_blank" rel="noopener noreferrer">Ver</a>
+                  </td>
+                  {isAdmin && (
+                    <td style={{ padding: '8px' }}>
+                      {t.status !== TestimonialStatus.APPROVED && (
+                        <button onClick={() => handleApprove(t.id)} style={{ marginRight: 8 }}>Aprobar</button>
+                      )}
+                      <button onClick={() => handleRemove(t.id)} style={{ color: '#ef4444' }}>Eliminar</button>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {isAdmin && filtered.length > 0 && (
+            <TestimonialAnalyticsTable organizationId={filtered[0].organizationId} testimonials={filtered} />
+          )}
+        </>
       )}
     </div>
   );
-};
+}
+
+export { TestimonialList };
