@@ -68,7 +68,14 @@ export const TestimonialList = ({ isAdmin }: { isAdmin: boolean }) => {
             {testimonials.map((t) => (
               <tr key={t.id} style={{ borderBottom: '1px solid #eee' }}>
                 <td style={{ padding: '8px' }}>{t.author}</td>
-                <td style={{ padding: '8px' }}>{t.content}</td>
+                <td style={{ padding: '8px' }}>
+                  {t.content}
+                  {t.imageUrl && (
+                    <div style={{ marginTop: '8px' }}>
+                      <img src={t.imageUrl} alt="Testimonial" style={{ maxWidth: '120px', maxHeight: '120px', borderRadius: '8px', border: '1px solid #eee' }} />
+                    </div>
+                  )}
+                </td>
                 <td style={{ padding: '8px' }}>{t.rating} ★</td>
                 <td style={{ padding: '8px' }}>
                   <span

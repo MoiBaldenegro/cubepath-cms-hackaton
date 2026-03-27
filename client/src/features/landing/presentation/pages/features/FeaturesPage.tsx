@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "../LandingPage.module.css";
 import InstantIntegration from "./sections/InstantIntegration";
 import AdvancedCustomization from "./sections/AdvancedCustomization";

@@ -223,8 +223,10 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
       } else {
         const items = this._data.map(t => {
           const stars = t.rating ? '★'.repeat(t.rating) + '☆'.repeat(5 - t.rating) : '';
+          const image = t.imageUrl ? `<div style="margin-bottom:10px;"><img src="${t.imageUrl}" alt="Testimonial" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #eee;" /></div>` : '';
           return `
             <div class="card">
+              ${image}
               <p>"${t.content}"</p>
               <div class="footer">
                 <strong>${t.author}</strong>
