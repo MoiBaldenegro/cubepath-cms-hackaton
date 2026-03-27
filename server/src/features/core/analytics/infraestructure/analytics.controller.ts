@@ -1,4 +1,12 @@
-import { ParseArrayPipe } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, ParseArrayPipe } from '@nestjs/common';
+import { TypeOrmAnalyticsEventRepository } from './TypeOrmAnalyticsEventRepository';
+import { TrackAnalyticsEvent } from '../application/TrackAnalyticsEvent';
+import { GetAnalyticsStats } from '../application/GetAnalyticsStats';
+
+@Controller('analytics')
+export class AnalyticsController {
+  constructor(private readonly repo: TypeOrmAnalyticsEventRepository) {}
+
   @Get('batch-stats')
   async batchStats(
     @Query('organizationId') organizationId: string,
@@ -14,14 +22,6 @@ import { ParseArrayPipe } from '@nestjs/common';
     );
     return { stats: results };
   }
-import { Controller, Post, Body, Get, Query } from '@nestjs/common';
-import { TypeOrmAnalyticsEventRepository } from './TypeOrmAnalyticsEventRepository';
-import { TrackAnalyticsEvent } from '../application/TrackAnalyticsEvent';
-import { GetAnalyticsStats } from '../application/GetAnalyticsStats';
-
-@Controller('analytics')
-export class AnalyticsController {
-  constructor(private readonly repo: TypeOrmAnalyticsEventRepository) {}
 
   @Post('track')
   async track(@Body() body: { organizationId: string; testimonialId: string; type: 'view' | 'click'; metadata?: any }) {

@@ -62,6 +62,7 @@ export const TestimonialDetailPage = () => {
   let twitterUrl = '';
   let facebookUrl = '';
   let linkedinUrl = '';
+  let whatsappUrl = '';
   let shareText = '';
   let shareUrl = '';
   if (testimonial.videoUrl) {
@@ -70,6 +71,7 @@ export const TestimonialDetailPage = () => {
     twitterUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
     facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
     linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}&title=${shareText}`;
+    whatsappUrl = `https://wa.me/?text=${shareText}%20${shareUrl}`;
   }
 
   return (
@@ -125,6 +127,15 @@ export const TestimonialDetailPage = () => {
                     title="Compartir en LinkedIn"
                   >
                     <span role="img" aria-label="LinkedIn" style={{ marginRight: 6 }}>💼</span> LinkedIn
+                  </a>
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ background: '#25d366', color: '#fff', borderRadius: 6, padding: '8px 12px', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center' }}
+                    title="Compartir en WhatsApp"
+                  >
+                    <span role="img" aria-label="WhatsApp" style={{ marginRight: 6 }}>💬</span> WhatsApp
                   </a>
                 </>
               )}
