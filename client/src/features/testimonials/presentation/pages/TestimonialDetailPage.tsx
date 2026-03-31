@@ -122,8 +122,6 @@ export const TestimonialDetailPage = () => {
                   <div className={styles.socialLinks}>
                     <a
                       href={twitterUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className={`${styles.socialLink} ${styles.twitter}`}
                       title="Compartir en Twitter"
                     >
@@ -131,8 +129,6 @@ export const TestimonialDetailPage = () => {
                     </a>
                     <a
                       href={facebookUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className={`${styles.socialLink} ${styles.facebook}`}
                       title="Compartir en Facebook"
                     >
@@ -140,8 +136,6 @@ export const TestimonialDetailPage = () => {
                     </a>
                     <a
                       href={linkedinUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className={`${styles.socialLink} ${styles.linkedin}`}
                       title="Compartir en LinkedIn"
                     >
@@ -149,8 +143,6 @@ export const TestimonialDetailPage = () => {
                     </a>
                     <a
                       href={whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className={`${styles.socialLink} ${styles.whatsapp}`}
                       title="Compartir en WhatsApp"
                     >

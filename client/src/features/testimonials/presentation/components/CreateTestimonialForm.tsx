@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { TestimonialCategory, TestimonialTag } from '../../domain/Testimonial';
 import { TestimonialService } from '../../infrastructure/TestimonialService';
 import styles from './CreateTestimonialForm.module.css';
@@ -11,6 +11,7 @@ interface TestimonialInput {
   tags: TestimonialTag[];
   iKey: string;
   imageUrl?: string;
+  imageFile?: File | null;
   videoUrl?: string;
 }
 
@@ -21,9 +22,32 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
   const [category, setCategory] = useState<TestimonialCategory>(TestimonialCategory.TECHNOLOGY);
   const [tags, setTags] = useState<TestimonialTag[]>([]);
   const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const generateIdempotencyKey = () => {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -50,13 +74,14 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
     setError('');
 
     try {
-      const testimonialData: TestimonialInput = {
+      const testimonialData: TestimonialInput & { imageFile?: File | null } = {
         author,
         content,
         rating,
         category,
         tags,
         iKey: generateIdempotencyKey(),
+        imageFile: imageFile || undefined,
       };
       if (imageUrl) testimonialData.imageUrl = imageUrl;
       if (videoUrl) testimonialData.videoUrl = videoUrl;
@@ -67,7 +92,10 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
       setCategory(TestimonialCategory.TECHNOLOGY);
       setTags([]);
       setImageUrl('');
+      setImageFile(null);
+      setImagePreview(null);
       setVideoUrl('');
+      if (fileInputRef.current) fileInputRef.current.value = '';
       onSuccess();
       alert('¡Testimonio creado exitosamente!');
     } catch (err: unknown) {
@@ -177,15 +205,40 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
 
         <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
-            <label className={styles.label}>URL de Imagen (opcional)</label>
+            <label className={styles.label}>Imagen (opcional)</label>
             <input
-              type="url"
-              className={styles.input}
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://ejemplo.com/imagen.jpg"
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className={styles.fileInput}
+              onChange={handleImageChange}
             />
-            <span className={styles.fileHint}>Ingresa una URL de imagen válida</span>
+            <div 
+              className={`${styles.fileUploadArea} ${imagePreview ? styles.hasFile : ''}`}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {imagePreview ? (
+                <div className={styles.imagePreviewContainer}>
+                  <img src={imagePreview} alt="Preview" className={styles.imagePreview} />
+                  <button 
+                    type="button"
+                    className={styles.removeImageBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveImage();
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className={styles.fileUploadIcon}>📷</div>
+                  <div className={styles.fileUploadText}>Haz clic para subir una imagen</div>
+                  <div className={styles.fileUploadHint}>PNG, JPG o WEBP (máx. 5MB)</div>
+                </>
+              )}
+            </div>
           </div>
 
           <div className={styles.inputGroup}>

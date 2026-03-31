@@ -44,7 +44,16 @@ export const Dashboard = () => {
   const { user, logout, isLoading } = useAuth();
   const [activeView, setActiveView] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
+
+  const npmInstallCommand = 'npm install testimo-widget';
+
+  const handleCopyInstall = () => {
+    navigator.clipboard.writeText(npmInstallCommand);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   if (isLoading) {
     return (
@@ -174,6 +183,26 @@ export const Dashboard = () => {
         <div className={styles.content}>
           {activeView === 'overview' && (
             <>
+              <div className={styles.installBox}>
+                <div className={styles.installBoxLabel}>
+                  <span>⚡</span> Quick Start
+                </div>
+                <div className={styles.installBoxTitle}>Instala el widget en tu proyecto</div>
+                <div className={styles.installBoxDescription}>
+                  Copia y ejecuta este comando en la terminal de tu proyecto para integrar Testimo
+                </div>
+                <div className={styles.installCommand}>
+                  <span className={styles.installPrompt}>$</span>
+                  <code className={styles.installCommandText}>{npmInstallCommand}</code>
+                  <button 
+                    className={`${styles.installCopyBtn} ${copied ? styles.copied : ''}`}
+                    onClick={handleCopyInstall}
+                  >
+                    {copied ? '✓ Copiado' : '📋 Copiar'}
+                  </button>
+                </div>
+              </div>
+
               <div className={styles.card}>
                 <AnalyticsWidget organizationId={user.organizationId} />
               </div>

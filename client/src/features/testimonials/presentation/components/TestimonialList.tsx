@@ -178,8 +178,8 @@ function TestimonialList({ isAdmin }: TestimonialListProps) {
                       </span>
                     </td>
                     <td>
-                      <a href={`/testimonials/${t.id}`} target="_blank" rel="noopener noreferrer" className={styles.viewBtn}>
-                        Ver ↗
+                      <a href={`/testimonials/${t.id}`} className={styles.viewBtn}>
+                        Ver
                       </a>
                     </td>
                     {isAdmin && (

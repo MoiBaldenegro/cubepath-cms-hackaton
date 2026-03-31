@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './LandingPage.module.css';
 import { useAuth } from '../../../../shared/contexts/useAuth';
@@ -26,6 +27,15 @@ const TestimoLogo = ({ size = 40 }: { size?: number }) => (
 export const LandingPage = () => {
   const { loginAsDemo } = useAuth();
   const navigate = useNavigate();
+  const [copied, setCopied] = useState(false);
+
+  const npmInstallCommand = 'npm install testimo-widget';
+
+  const handleCopyInstall = () => {
+    navigator.clipboard.writeText(npmInstallCommand);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleDemo = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -147,6 +157,26 @@ export const LandingPage = () => {
           <div className={styles.statItem}>
             <div className={styles.statValue}>5min</div>
             <div className={styles.statLabel}>Tiempo de integración</div>
+          </div>
+        </div>
+
+        <div className={styles.installBox}>
+          <div className={styles.installBoxLabel}>
+            <span>⚡</span> Quick Start
+          </div>
+          <div className={styles.installBoxTitle}>Instala el widget en 30 segundos</div>
+          <div className={styles.installBoxDescription}>
+            Copia y ejecuta este comando en tu terminal para integrar Testimo
+          </div>
+          <div className={styles.installCommand}>
+            <span className={styles.installPrompt}>$</span>
+            <code className={styles.installCommandText}>{npmInstallCommand}</code>
+            <button 
+              className={`${styles.installCopyBtn} ${copied ? styles.copied : ''}`}
+              onClick={handleCopyInstall}
+            >
+              {copied ? '✓ Copiado' : '📋 Copiar'}
+            </button>
           </div>
         </div>
       </header>
