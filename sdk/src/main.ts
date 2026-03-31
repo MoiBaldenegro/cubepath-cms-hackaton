@@ -303,6 +303,82 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
         content = `${summaryBox}<div class="${layout}" id="testimo-list">${items}</div>`;
       }
 
+      const tagsComponent = `
+<style>
+  .tags-container {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 16px 0;
+    max-width: 100%;
+  }
+
+  .tags-title {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 10px;
+  }
+
+  .tags-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .tag-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: #f3f4f6;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .tag-label:hover {
+    background-color: #e5e7eb;
+    border-color: #d1d5db;
+  }
+
+  .tag-label input[type="checkbox"] {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    accent-color: #2563eb; /* Color azul moderno para el check */
+    cursor: pointer;
+  }
+
+  /* Estado cuando el checkbox está marcado */
+  .tag-label:has(input:checked) {
+    background-color: #dbeafe;
+    border-color: #3b82f6;
+    color: #1e40af;
+  }
+</style>
+
+<div class="tags-container">
+  <span class="tags-title">Etiquetas:</span>
+  <div class="tags-group">
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="PRODUCT" /> Producto
+    </label>
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="SERVICE" /> Servicio
+    </label>
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="SUPPORT" /> Soporte
+    </label>
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="GENERAL" /> General
+    </label>
+  </div>
+</div>
+`;
+
       const formHtml = `
         <div class="form-section">
           <h3>Comparte tu experiencia</h3>
@@ -322,10 +398,7 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
             
             <div style="margin:8px 0 0 0;">
               <span style="font-size:14px;">Etiquetas:</span><br/>
-              <label><input type="checkbox" name="tags" value="PRODUCT" /> Producto</label>
-              <label><input type="checkbox" name="tags" value="SERVICE" /> Servicio</label>
-              <label><input type="checkbox" name="tags" value="SUPPORT" /> Soporte</label>
-              <label><input type="checkbox" name="tags" value="GENERAL" /> General</label>
+              ${tagsComponent}
             </div>
             <button type="submit">Enviar testimonio</button>
           </form>

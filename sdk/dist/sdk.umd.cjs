@@ -1,4 +1,4 @@
-(function(n){typeof define=="function"&&define.amd?define(n):n()})(function(){"use strict";var b=Object.defineProperty;var x=(n,s,d)=>s in n?b(n,s,{enumerable:!0,configurable:!0,writable:!0,value:d}):n[s]=d;var r=(n,s,d)=>(x(n,typeof s!="symbol"?s+"":s,d),d);if(typeof window<"u"&&!customElements.get("testimo-widget")){class n extends HTMLElement{constructor(){super();r(this,"_data",[]);r(this,"_aiSummary","");r(this,"_loading",!0);r(this,"_error",null);r(this,"_submitting",!1);r(this,"formListener",null);r(this,"clickListeners",[]);r(this,"_handleSubmit",async t=>{var c;t.preventDefault();const e=t.target,i=new FormData(e),p=this.getAttribute("organization-id"),a=(c=this.shadowRoot)==null?void 0:c.getElementById("form-feedback");if(this._submitting||!p)return;this._submitting=!0;const l=e.querySelector("button");l&&(l.disabled=!0,l.textContent="Enviando...");try{if(i.append("organizationId",p),!(await fetch(`${this.apiUrl}/widget/submit`,{method:"POST",body:i})).ok)throw new Error("Failed to submit");e.reset(),a&&(a.textContent="¡Gracias! Tu testimonio ha sido enviado para revisión.",a.className="success-msg")}catch{a&&(a.textContent="Error al enviar el testimonio. Inténtalo de nuevo.",a.className="error-msg")}finally{this._submitting=!1,l&&(l.disabled=!1,l.textContent="Enviar testimonio")}});this.attachShadow({mode:"open"})}static get observedAttributes(){return["organization-id","theme","layout","api-url"]}connectedCallback(){this.fetchData(),this.trackView()}disconnectedCallback(){this.removeAllListeners()}removeAllListeners(){var t,e;this.formListener&&((e=(t=this.shadowRoot)==null?void 0:t.getElementById("testimonial-form"))==null||e.removeEventListener("submit",this.formListener),this.formListener=null),this.clickListeners.forEach(i=>i()),this.clickListeners=[]}get apiUrl(){return this.getAttribute("api-url")||"http://hackathoncubepath-server-zzxmva-37677b-108-165-47-237.traefik.me"}attributeChangedCallback(t,e,i){e!==i&&(t==="organization-id"||t==="api-url"?this.fetchData():this.render())}async trackView(){const t=this.getAttribute("organization-id");if(t)try{await fetch(`${this.apiUrl}/analytics/track`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({organizationId:t,testimonialId:"all",type:"view",metadata:{widget:!0}})})}catch{}}async fetchData(){const t=this.getAttribute("organization-id");if(!t){this._error="Organization ID is missing",this._loading=!1,this.render();return}this._loading=!0,this._error=null,this.render();try{const e=await fetch(`${this.apiUrl}/widget/data?organizationId=${t}`);if(!e.ok)throw new Error("Failed to fetch testimonials");this._data=await e.json(),this._data.length>0?this._data.length===1?this._aiSummary=`Las personas comentan que: "${this._data[0].content}"`:this._data.length===2?this._aiSummary=`Las personas comentan que: "${this._data[0].content}" y "${this._data[1].content}"`:this._aiSummary=`Las personas comentan que: "${this._data[0].content}", "${this._data[1].content}" y otros ${this._data.length-2} testimonios más.`:this._aiSummary="Aún no hay testimonios para analizar."}catch(e){this._error=e.message||"Failed to load testimonials"}finally{this._loading=!1,this.render()}}render(){if(!this.shadowRoot)return;this.removeAllListeners();const t=this.getAttribute("theme")||"light",e=this.getAttribute("layout")||"grid",i=t==="dark",p=`
+(function(r){typeof define=="function"&&define.amd?define(r):r()})(function(){"use strict";var x=Object.defineProperty;var y=(r,s,d)=>s in r?x(r,s,{enumerable:!0,configurable:!0,writable:!0,value:d}):r[s]=d;var n=(r,s,d)=>(y(r,typeof s!="symbol"?s+"":s,d),d);if(typeof window<"u"&&!customElements.get("testimo-widget")){class r extends HTMLElement{constructor(){super();n(this,"_data",[]);n(this,"_aiSummary","");n(this,"_loading",!0);n(this,"_error",null);n(this,"_submitting",!1);n(this,"formListener",null);n(this,"clickListeners",[]);n(this,"_handleSubmit",async t=>{var m;t.preventDefault();const e=t.target,i=new FormData(e),p=this.getAttribute("organization-id"),a=(m=this.shadowRoot)==null?void 0:m.getElementById("form-feedback");if(this._submitting||!p)return;this._submitting=!0;const l=e.querySelector("button");l&&(l.disabled=!0,l.textContent="Enviando...");try{if(i.append("organizationId",p),!(await fetch(`${this.apiUrl}/widget/submit`,{method:"POST",body:i})).ok)throw new Error("Failed to submit");e.reset(),a&&(a.textContent="¡Gracias! Tu testimonio ha sido enviado para revisión.",a.className="success-msg")}catch{a&&(a.textContent="Error al enviar el testimonio. Inténtalo de nuevo.",a.className="error-msg")}finally{this._submitting=!1,l&&(l.disabled=!1,l.textContent="Enviar testimonio")}});this.attachShadow({mode:"open"})}static get observedAttributes(){return["organization-id","theme","layout","api-url"]}connectedCallback(){this.fetchData(),this.trackView()}disconnectedCallback(){this.removeAllListeners()}removeAllListeners(){var t,e;this.formListener&&((e=(t=this.shadowRoot)==null?void 0:t.getElementById("testimonial-form"))==null||e.removeEventListener("submit",this.formListener),this.formListener=null),this.clickListeners.forEach(i=>i()),this.clickListeners=[]}get apiUrl(){return this.getAttribute("api-url")||"http://hackathoncubepath-server-zzxmva-37677b-108-165-47-237.traefik.me"}attributeChangedCallback(t,e,i){e!==i&&(t==="organization-id"||t==="api-url"?this.fetchData():this.render())}async trackView(){const t=this.getAttribute("organization-id");if(t)try{await fetch(`${this.apiUrl}/analytics/track`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({organizationId:t,testimonialId:"all",type:"view",metadata:{widget:!0}})})}catch{}}async fetchData(){const t=this.getAttribute("organization-id");if(!t){this._error="Organization ID is missing",this._loading=!1,this.render();return}this._loading=!0,this._error=null,this.render();try{const e=await fetch(`${this.apiUrl}/widget/data?organizationId=${t}`);if(!e.ok)throw new Error("Failed to fetch testimonials");this._data=await e.json(),this._data.length>0?this._data.length===1?this._aiSummary=`Las personas comentan que: "${this._data[0].content}"`:this._data.length===2?this._aiSummary=`Las personas comentan que: "${this._data[0].content}" y "${this._data[1].content}"`:this._aiSummary=`Las personas comentan que: "${this._data[0].content}", "${this._data[1].content}" y otros ${this._data.length-2} testimonios más.`:this._aiSummary="Aún no hay testimonios para analizar."}catch(e){this._error=e.message||"Failed to load testimonials"}finally{this._loading=!1,this.render()}}render(){if(!this.shadowRoot)return;this.removeAllListeners();const t=this.getAttribute("theme")||"light",e=this.getAttribute("layout")||"grid",i=t==="dark",p=`
         :host {
           display: block;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -101,16 +101,16 @@
 
         .success-msg { color: #10b981; text-align: center; margin-top: 10px; font-weight: 500; }
         .error-msg { color: #ef4444; text-align: center; margin-top: 10px; }
-      `;let a="";if(this._loading)a='<div class="loading">Cargando testimonios...</div>';else if(this._error)a=`<div class="error">Error: ${this._error}</div>`;else{const m=this._aiSummary?`<div style="padding:18px 20px;background:${i?"#23272f":"#f1f5f9"};border-radius:10px;margin-bottom:28px;font-size:16px;font-style:italic;color:${i?"#cbd5e1":"#334155"};">${this._aiSummary}</div>`:"",u=this._data.map(o=>{const f=o.rating?"★".repeat(o.rating)+"☆".repeat(5-o.rating):"",g=o.imageUrl?`<div style="margin-bottom:10px;"><img src="${o.imageUrl}" alt="Testimonial" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #eee;" /></div>`:"";return`
+      `;let a="";if(this._loading)a='<div class="loading">Cargando testimonios...</div>';else if(this._error)a=`<div class="error">Error: ${this._error}</div>`;else{const c=this._aiSummary?`<div style="padding:18px 20px;background:${i?"#23272f":"#f1f5f9"};border-radius:10px;margin-bottom:28px;font-size:16px;font-style:italic;color:${i?"#cbd5e1":"#334155"};">${this._aiSummary}</div>`:"",h=this._data.map(o=>{const u=o.rating?"★".repeat(o.rating)+"☆".repeat(5-o.rating):"",b=o.imageUrl?`<div style="margin-bottom:10px;"><img src="${o.imageUrl}" alt="Testimonial" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #eee;" /></div>`:"";return`
             <div class="card" data-tid="${o.id}">
-              ${g}
+              ${b}
               <p>"${o.content}"</p>
               <div class="footer">
                 <strong>${o.author}</strong>
-                <div class="rating">${f}</div>
+                <div class="rating">${u}</div>
               </div>
             </div>
-          `}).join("");a=`${m}<div class="${e}" id="testimo-list">${u}</div>`}const l=`
+          `}).join("");a=`${c}<div class="${e}" id="testimo-list">${h}</div>`}const m=`
         <div class="form-section">
           <h3>Comparte tu experiencia</h3>
           <form id="testimonial-form" enctype="multipart/form-data">
@@ -129,10 +129,81 @@
             
             <div style="margin:8px 0 0 0;">
               <span style="font-size:14px;">Etiquetas:</span><br/>
-              <label><input type="checkbox" name="tags" value="PRODUCT" /> Producto</label>
-              <label><input type="checkbox" name="tags" value="SERVICE" /> Servicio</label>
-              <label><input type="checkbox" name="tags" value="SUPPORT" /> Soporte</label>
-              <label><input type="checkbox" name="tags" value="GENERAL" /> General</label>
+              
+<style>
+  .tags-container {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 16px 0;
+    max-width: 100%;
+  }
+
+  .tags-title {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 10px;
+  }
+
+  .tags-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .tag-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: #f3f4f6;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .tag-label:hover {
+    background-color: #e5e7eb;
+    border-color: #d1d5db;
+  }
+
+  .tag-label input[type="checkbox"] {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    accent-color: #2563eb; /* Color azul moderno para el check */
+    cursor: pointer;
+  }
+
+  /* Estado cuando el checkbox está marcado */
+  .tag-label:has(input:checked) {
+    background-color: #dbeafe;
+    border-color: #3b82f6;
+    color: #1e40af;
+  }
+</style>
+
+<div class="tags-container">
+  <span class="tags-title">Etiquetas:</span>
+  <div class="tags-group">
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="PRODUCT" /> Producto
+    </label>
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="SERVICE" /> Servicio
+    </label>
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="SUPPORT" /> Soporte
+    </label>
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="GENERAL" /> General
+    </label>
+  </div>
+</div>
+
             </div>
             <button type="submit">Enviar testimonio</button>
           </form>
@@ -143,6 +214,6 @@
         <div class="container">
           <h2>What People Say</h2>
           ${a}
-          ${l}
+          ${m}
         </div>
-      `;const c=this.shadowRoot.getElementById("testimonial-form");c&&(this.formListener=this._handleSubmit,c.addEventListener("submit",this.formListener));const h=this.shadowRoot.getElementById("testimo-list");h&&(this.clickListeners=[],h.querySelectorAll(".card").forEach(m=>{const u=()=>{const o=m.getAttribute("data-tid");o&&this.trackClick(o)};m.addEventListener("click",u),this.clickListeners.push(()=>m.removeEventListener("click",u))}))}async trackClick(t){const e=this.getAttribute("organization-id");if(!(!e||!t))try{await fetch(`${this.apiUrl}/analytics/track`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({organizationId:e,testimonialId:t,type:"click",metadata:{widget:!0}})})}catch{}}}customElements.define("testimo-widget",n)}});
+      `;const g=this.shadowRoot.getElementById("testimonial-form");g&&(this.formListener=this._handleSubmit,g.addEventListener("submit",this.formListener));const f=this.shadowRoot.getElementById("testimo-list");f&&(this.clickListeners=[],f.querySelectorAll(".card").forEach(c=>{const h=()=>{const o=c.getAttribute("data-tid");o&&this.trackClick(o)};c.addEventListener("click",h),this.clickListeners.push(()=>c.removeEventListener("click",h))}))}async trackClick(t){const e=this.getAttribute("organization-id");if(!(!e||!t))try{await fetch(`${this.apiUrl}/analytics/track`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({organizationId:e,testimonialId:t,type:"click",metadata:{widget:!0}})})}catch{}}}customElements.define("testimo-widget",r)}});

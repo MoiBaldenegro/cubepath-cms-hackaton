@@ -1,8 +1,8 @@
-var b = Object.defineProperty;
-var x = (l, n, d) => n in l ? b(l, n, { enumerable: !0, configurable: !0, writable: !0, value: d }) : l[n] = d;
-var r = (l, n, d) => (x(l, typeof n != "symbol" ? n + "" : n, d), d);
+var x = Object.defineProperty;
+var y = (s, n, d) => n in s ? x(s, n, { enumerable: !0, configurable: !0, writable: !0, value: d }) : s[n] = d;
+var r = (s, n, d) => (y(s, typeof n != "symbol" ? n + "" : n, d), d);
 if (typeof window < "u" && !customElements.get("testimo-widget")) {
-  class l extends HTMLElement {
+  class s extends HTMLElement {
     constructor() {
       super();
       r(this, "_data", []);
@@ -13,14 +13,14 @@ if (typeof window < "u" && !customElements.get("testimo-widget")) {
       r(this, "formListener", null);
       r(this, "clickListeners", []);
       r(this, "_handleSubmit", async (t) => {
-        var c;
+        var m;
         t.preventDefault();
-        const e = t.target, i = new FormData(e), p = this.getAttribute("organization-id"), a = (c = this.shadowRoot) == null ? void 0 : c.getElementById("form-feedback");
+        const e = t.target, i = new FormData(e), p = this.getAttribute("organization-id"), a = (m = this.shadowRoot) == null ? void 0 : m.getElementById("form-feedback");
         if (this._submitting || !p)
           return;
         this._submitting = !0;
-        const s = e.querySelector("button");
-        s && (s.disabled = !0, s.textContent = "Enviando...");
+        const l = e.querySelector("button");
+        l && (l.disabled = !0, l.textContent = "Enviando...");
         try {
           if (i.append("organizationId", p), !(await fetch(`${this.apiUrl}/widget/submit`, {
             method: "POST",
@@ -32,7 +32,7 @@ if (typeof window < "u" && !customElements.get("testimo-widget")) {
         } catch {
           a && (a.textContent = "Error al enviar el testimonio. Inténtalo de nuevo.", a.className = "error-msg");
         } finally {
-          this._submitting = !1, s && (s.disabled = !1, s.textContent = "Enviar testimonio");
+          this._submitting = !1, l && (l.disabled = !1, l.textContent = "Enviar testimonio");
         }
       });
       this.attachShadow({ mode: "open" });
@@ -205,22 +205,22 @@ if (typeof window < "u" && !customElements.get("testimo-widget")) {
       else if (this._error)
         a = `<div class="error">Error: ${this._error}</div>`;
       else {
-        const m = this._aiSummary ? `<div style="padding:18px 20px;background:${i ? "#23272f" : "#f1f5f9"};border-radius:10px;margin-bottom:28px;font-size:16px;font-style:italic;color:${i ? "#cbd5e1" : "#334155"};">${this._aiSummary}</div>` : "", g = this._data.map((o) => {
-          const u = o.rating ? "★".repeat(o.rating) + "☆".repeat(5 - o.rating) : "", f = o.imageUrl ? `<div style="margin-bottom:10px;"><img src="${o.imageUrl}" alt="Testimonial" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #eee;" /></div>` : "";
+        const c = this._aiSummary ? `<div style="padding:18px 20px;background:${i ? "#23272f" : "#f1f5f9"};border-radius:10px;margin-bottom:28px;font-size:16px;font-style:italic;color:${i ? "#cbd5e1" : "#334155"};">${this._aiSummary}</div>` : "", h = this._data.map((o) => {
+          const f = o.rating ? "★".repeat(o.rating) + "☆".repeat(5 - o.rating) : "", b = o.imageUrl ? `<div style="margin-bottom:10px;"><img src="${o.imageUrl}" alt="Testimonial" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #eee;" /></div>` : "";
           return `
             <div class="card" data-tid="${o.id}">
-              ${f}
+              ${b}
               <p>"${o.content}"</p>
               <div class="footer">
                 <strong>${o.author}</strong>
-                <div class="rating">${u}</div>
+                <div class="rating">${f}</div>
               </div>
             </div>
           `;
         }).join("");
-        a = `${m}<div class="${e}" id="testimo-list">${g}</div>`;
+        a = `${c}<div class="${e}" id="testimo-list">${h}</div>`;
       }
-      const s = `
+      const m = `
         <div class="form-section">
           <h3>Comparte tu experiencia</h3>
           <form id="testimonial-form" enctype="multipart/form-data">
@@ -239,10 +239,81 @@ if (typeof window < "u" && !customElements.get("testimo-widget")) {
             
             <div style="margin:8px 0 0 0;">
               <span style="font-size:14px;">Etiquetas:</span><br/>
-              <label><input type="checkbox" name="tags" value="PRODUCT" /> Producto</label>
-              <label><input type="checkbox" name="tags" value="SERVICE" /> Servicio</label>
-              <label><input type="checkbox" name="tags" value="SUPPORT" /> Soporte</label>
-              <label><input type="checkbox" name="tags" value="GENERAL" /> General</label>
+              
+<style>
+  .tags-container {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 16px 0;
+    max-width: 100%;
+  }
+
+  .tags-title {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 10px;
+  }
+
+  .tags-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .tag-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: #f3f4f6;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .tag-label:hover {
+    background-color: #e5e7eb;
+    border-color: #d1d5db;
+  }
+
+  .tag-label input[type="checkbox"] {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    accent-color: #2563eb; /* Color azul moderno para el check */
+    cursor: pointer;
+  }
+
+  /* Estado cuando el checkbox está marcado */
+  .tag-label:has(input:checked) {
+    background-color: #dbeafe;
+    border-color: #3b82f6;
+    color: #1e40af;
+  }
+</style>
+
+<div class="tags-container">
+  <span class="tags-title">Etiquetas:</span>
+  <div class="tags-group">
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="PRODUCT" /> Producto
+    </label>
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="SERVICE" /> Servicio
+    </label>
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="SUPPORT" /> Soporte
+    </label>
+    <label class="tag-label">
+      <input type="checkbox" name="tags" value="GENERAL" /> General
+    </label>
+  </div>
+</div>
+
             </div>
             <button type="submit">Enviar testimonio</button>
           </form>
@@ -254,18 +325,18 @@ if (typeof window < "u" && !customElements.get("testimo-widget")) {
         <div class="container">
           <h2>What People Say</h2>
           ${a}
-          ${s}
+          ${m}
         </div>
       `;
-      const c = this.shadowRoot.getElementById("testimonial-form");
-      c && (this.formListener = this._handleSubmit, c.addEventListener("submit", this.formListener));
-      const h = this.shadowRoot.getElementById("testimo-list");
-      h && (this.clickListeners = [], h.querySelectorAll(".card").forEach((m) => {
-        const g = () => {
-          const o = m.getAttribute("data-tid");
+      const g = this.shadowRoot.getElementById("testimonial-form");
+      g && (this.formListener = this._handleSubmit, g.addEventListener("submit", this.formListener));
+      const u = this.shadowRoot.getElementById("testimo-list");
+      u && (this.clickListeners = [], u.querySelectorAll(".card").forEach((c) => {
+        const h = () => {
+          const o = c.getAttribute("data-tid");
           o && this.trackClick(o);
         };
-        m.addEventListener("click", g), this.clickListeners.push(() => m.removeEventListener("click", g));
+        c.addEventListener("click", h), this.clickListeners.push(() => c.removeEventListener("click", h));
       }));
     }
     async trackClick(t) {
@@ -286,5 +357,5 @@ if (typeof window < "u" && !customElements.get("testimo-widget")) {
         }
     }
   }
-  customElements.define("testimo-widget", l);
+  customElements.define("testimo-widget", s);
 }

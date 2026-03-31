@@ -43,12 +43,15 @@ import { TestimonialIdempotencyKey } from '../../../domain/value-objects/Testimo
 import { TestimonialIsEdited } from '../../../domain/value-objects/TestimonialIsEdited';
 import { TestimonialCreatedAt } from '../../../domain/value-objects/TestimonialCreatedAt';
 import { TestimonialImageUrl } from '../../../domain/value-objects/TestimonialImageUrl';
+import type { MediaRepository } from 'src/features/media/domain/MediaRepository';
 
 @Controller('widget')
 export class WidgetController {
   constructor(
     @Inject('TestimonialRepository')
     private readonly testimonialRepository: TestimonialRepository,
+    @Inject('MediaRepository')
+    private readonly mediaRepository: MediaRepository,
   ) {}
 
   // ========================
@@ -68,12 +71,14 @@ export class WidgetController {
       return { success: false, message: 'Missing required fields' };
     }
 
-        // Procesar imagen subida y asignar URL si existe
+        // Subir imagen a Cloudinary y asignar URL si existe
         let imageUrl: TestimonialImageUrl | undefined = undefined;
-        if (image && image.filename) {
-          // Asegúrate que la ruta corresponda a donde Multer guarda los archivos
-          imageUrl = new TestimonialImageUrl(`/uploads/${image.filename}`);
-    }
+        if (image) {
+          const uploadedUrl = await this.mediaRepository.uploadImage(image);
+          if (uploadedUrl) {
+            imageUrl = new TestimonialImageUrl(uploadedUrl);
+          }
+        }
 
     const testimonial = new Testimonial(
       new TestimonialId(randomUUID()),
