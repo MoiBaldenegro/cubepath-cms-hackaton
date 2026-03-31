@@ -1,4 +1,6 @@
+
 import { useState } from 'react';
+import { useAuth } from '../../../../shared/contexts/AuthContext';
 import styles from './EmbedWidget.module.css'; // Ajusta la ruta según tu proyecto
 
 type Framework = 'react' | 'nextjs' | 'vue' | 'nuxt' | 'svelte' | 'solid' | 'angular' | 'html';
@@ -13,8 +15,7 @@ export const EmbedWidget = () => {
   const [installCopied, setInstallCopied] = useState(false);
 
   // Obtener organizationId del usuario logueado si existe
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { user } = require('../../../../shared/contexts/AuthContext').useAuth();
+  const { user } = useAuth();
   const organizationId = (user && user.organizationId) ? user.organizationId : (import.meta.env.VITE_ORG_ID || 'YOUR_ORG_ID');
   const API_URL = import.meta.env.VITE_API_URL || '';
   // Usar siempre el endpoint real del backend para la preview y el código generado
