@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import styles from './Register.module.css';
+import styles from '../AuthForm.module.css';
 import { registerUseCase } from '../../../../../di/auth';
 import { supabase } from '../../../../../shared/infrastructure/supabase';
 
@@ -20,9 +20,6 @@ export const Register = () => {
             alert('Registration failed.');
         }
     };
-    
-    // ... rest of component ...
-
 
     const handleSocialLogin = async (provider: 'google' | 'github') => {
         const { error } = await supabase.auth.signInWithOAuth({
@@ -35,42 +32,62 @@ export const Register = () => {
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <h2 className={styles.title}>Create Account</h2>
+                <div className={styles.header}>
+                    <div className={styles.logo}>💬</div>
+                    <h2 className={styles.title}>Create Account</h2>
+                    <p className={styles.subtitle}>Start collecting testimonials today</p>
+                </div>
                 
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <div className={styles.inputGroup}>
                         <label htmlFor="email" className={styles.label}>Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            className={styles.input}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
+                        <div className={styles.inputWrapper}>
+                            <span className={styles.inputIcon}>📧</span>
+                            <input
+                                type="email"
+                                id="email"
+                                className={styles.input}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="you@example.com"
+                                required
+                            />
+                        </div>
                     </div>
 
                     <div className={styles.inputGroup}>
                         <label htmlFor="password" className={styles.label}>Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            className={styles.input}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                        <div className={styles.inputWrapper}>
+                            <span className={styles.inputIcon}>🔒</span>
+                            <input
+                                type="password"
+                                id="password"
+                                className={styles.input}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Create a strong password"
+                                required
+                            />
+                        </div>
                     </div>
                     
-                    <button type="submit" className={styles.button}>Sign Up</button>
+                    <button type="submit" className={styles.button}>Create Account</button>
 
-                    <div style={{ margin: '20px 0', borderTop: '1px solid #ccc', position: 'relative', textAlign: 'center' }}>
-                        <span style={{ position: 'absolute', top: -10, background: '#fff', padding: '0 10px', color: '#666', left: '50%', transform: 'translateX(-50%)' }}>Or sign up with</span>
+                    <div className={styles.divider}>
+                        <span className={styles.dividerLine}></span>
+                        <span className={styles.dividerText}>Or sign up with</span>
+                        <span className={styles.dividerLine}></span>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '30px' }}>
-                        <button type="button" onClick={() => handleSocialLogin('google')} style={{ padding: '10px 20px', cursor: 'pointer', background: '#DB4437', color: 'white', border: 'none', borderRadius: '4px' }}>Google</button>
-                        <button type="button" onClick={() => handleSocialLogin('github')} style={{ padding: '10px 20px', cursor: 'pointer', background: '#333', color: 'white', border: 'none', borderRadius: '4px' }}>GitHub</button>
+                    <div className={styles.socialButtons}>
+                        <button type="button" onClick={() => handleSocialLogin('google')} className={styles.socialButton}>
+                            <span className={styles.socialIcon}>🌐</span>
+                            Google
+                        </button>
+                        <button type="button" onClick={() => handleSocialLogin('github')} className={styles.socialButton}>
+                            <span className={styles.socialIcon}>🐙</span>
+                            GitHub
+                        </button>
                     </div>
 
                     <p className={styles.link}>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import styles from './Login.module.css';
+import styles from '../AuthForm.module.css';
 import { loginUseCase, socialLoginUseCase } from '../../../../../di/auth';
 import { supabase } from '../../../../../shared/infrastructure/supabase';
 import { useAuth } from '../../../../../shared/contexts/AuthContext';
@@ -23,15 +23,10 @@ export const Login = () => {
                     );
                     
                     if (response.token) {
-                        // Assuming response struct is { token: string, user: User }
-                        // If socialLoginUseCase only returns token, we might need to change it or fetch user manually.
-                        // Based on server controller, socialLogin returns whatever socialAuthService.run returns.
-                        // Assuming it returns LoginResponse.
-                         const responseData = response as any; // Temporary cast until types are synced
+                         const responseData = response as any;
                          if(responseData.user) {
                              login({ ...responseData.user, role: responseData.user.role as UserRole }, responseData.token);
                          } else {
-                             // Fallback if only token is returned
                             localStorage.setItem('token', response.token);
                          }
                         navigate('/dashboard');
@@ -51,7 +46,7 @@ export const Login = () => {
         e.preventDefault();
         try {
             const response = await loginUseCase.run(email, password, 'local');
-            const data = response as any; // Temporary cast
+            const data = response as any;
             if (data.token) {
                  if(data.user) {
                      login({ ...data.user, role: data.user.role as UserRole }, data.token);
@@ -77,62 +72,71 @@ export const Login = () => {
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <h2 className={styles.title}>Welcome Back UPDATE</h2>
+                <div className={styles.header}>
+                    <div className={styles.logo}>💬</div>
+                    <h2 className={styles.title}>Welcome Back</h2>
+                    <p className={styles.subtitle}>Sign in to your CubePath account</p>
+                </div>
                 
                 <form className={styles.form} onSubmit={handleSubmit}>
                     <div className={styles.inputGroup}>
                         <label htmlFor="email" className={styles.label}>Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            className={styles.input}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
+                        <div className={styles.inputWrapper}>
+                            <span className={styles.inputIcon}>📧</span>
+                            <input
+                                type="email"
+                                id="email"
+                                className={styles.input}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="you@example.com"
+                                required
+                            />
+                        </div>
                     </div>
 
                     <div className={styles.inputGroup}>
                         <label htmlFor="password" className={styles.label}>Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            className={styles.input}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                        <div className={styles.inputWrapper}>
+                            <span className={styles.inputIcon}>🔒</span>
+                            <input
+                                type="password"
+                                id="password"
+                                className={styles.input}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
+                                required
+                            />
+                        </div>
                     </div>
 
                     <button type="submit" className={styles.button}>Sign In</button>
                     
-                    <div style={{ margin: '20px 0', borderTop: '1px solid #ccc', position: 'relative', textAlign: 'center' }}>
-                        <span style={{ position: 'absolute', top: -10, background: '#fff', padding: '0 10px', color: '#666', left: '50%', transform: 'translateX(-50%)' }}>Or continue with</span>
+                    <div className={styles.divider}>
+                        <span className={styles.dividerLine}></span>
+                        <span className={styles.dividerText}>Or continue with</span>
+                        <span className={styles.dividerLine}></span>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '30px' }}>
-                        <button type="button" onClick={() => handleSocialLogin('google')} style={{ padding: '10px 20px', cursor: 'pointer', background: '#DB4437', color: 'white', border: 'none', borderRadius: '4px' }}>Google</button>
-                        <button type="button" onClick={() => handleSocialLogin('github')} style={{ padding: '10px 20px', cursor: 'pointer', background: '#333', color: 'white', border: 'none', borderRadius: '4px' }}>GitHub</button>
-                    </div>
-
-                    <div style={{ marginTop: '25px', textAlign: 'center', borderTop: '1px solid #eee', paddingTop: '15px' }}>
-                        <button 
-                            type="button" 
-                            onClick={() => { loginAsDemo(); navigate('/dashboard'); }} 
-                            style={{ 
-                                padding: '10px 15px', 
-                                cursor: 'pointer', 
-                                background: '#f8f9fa', 
-                                color: '#333', 
-                                border: '1px solid #ddd', 
-                                borderRadius: '4px',
-                                width: '100%',
-                                fontWeight: 'bold'
-                            }}
-                        >
-                            🚀 Try Demo (No Login)
+                    <div className={styles.socialButtons}>
+                        <button type="button" onClick={() => handleSocialLogin('google')} className={styles.socialButton}>
+                            <span className={styles.socialIcon}>🌐</span>
+                            Google
+                        </button>
+                        <button type="button" onClick={() => handleSocialLogin('github')} className={styles.socialButton}>
+                            <span className={styles.socialIcon}>🐙</span>
+                            GitHub
                         </button>
                     </div>
+
+                    <button 
+                        type="button" 
+                        onClick={() => { loginAsDemo(); navigate('/dashboard'); }} 
+                        className={styles.demoButton}
+                    >
+                        🚀 Try Demo (No Login)
+                    </button>
 
                     <p className={styles.link}>
                         Don't have an account? <Link to="/register">Create one</Link>
