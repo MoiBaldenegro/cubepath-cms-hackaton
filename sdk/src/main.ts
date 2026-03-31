@@ -278,8 +278,39 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
       } else if (this._error) {
         content = `<div class="error">Error: ${this._error}</div>`;
       } else {
+        const watermarkHtml = `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid ${isDark ? '#333' : '#e5e7eb'};">
+            <div style="display:flex;align-items:center;">
+              <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:${isDark ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)'};border:1px solid ${isDark ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'};border-radius:100px;font-size:11px;font-weight:600;color:#6366f1;text-transform:uppercase;letter-spacing:0.03em;">
+                ✨ Generado con AI
+              </span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;opacity:0.5;">
+              <svg width="18" height="18" viewBox="0 0 512 512" fill="none">
+                <defs>
+                  <linearGradient id="notif_grad_sdk" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#38bdf8"/>
+                    <stop offset="100%" stop-color="#2563eb"/> 
+                  </linearGradient>
+                  <mask id="cutout-mask-sdk">
+                    <rect width="100%" height="100%" fill="white"/>
+                    <circle cx="416" cy="112" r="80" fill="black"/>
+                  </mask>
+                </defs>
+                <rect x="64" y="80" width="384" height="160" rx="80" fill="#18181B"/>
+                <rect x="176" y="208" width="160" height="256" rx="80" fill="#18181B"/>
+                <circle cx="416" cy="112" r="80" fill="#18181B"/>
+                <rect x="96" y="112" width="320" height="96" rx="48" fill="white" mask="url(#cutout-mask-sdk)"/>
+                <rect x="208" y="240" width="96" height="192" rx="48" fill="white"/>
+                <circle cx="416" cy="112" r="48" fill="url(#notif_grad_sdk)"/>
+              </svg>
+              <span style="font-size:12px;font-weight:600;color:${isDark ? '#94a3b8' : '#64748b'};">Testimo</span>
+            </div>
+          </div>
+        `;
+        
         const summaryBox = this._aiSummary
-          ? `<div style="padding:18px 20px;background:${isDark ? '#23272f' : '#f1f5f9'};border-radius:10px;margin-bottom:28px;font-size:16px;font-style:italic;color:${isDark ? '#cbd5e1' : '#334155'};">${this._aiSummary}</div>`
+          ? `<div style="padding:16px 18px;background:${isDark ? '#23272f' : '#f1f5f9'};border-radius:10px;margin-bottom:24px;font-size:15px;color:${isDark ? '#cbd5e1' : '#334155'};line-height:1.6;">${watermarkHtml}${this._aiSummary}</div>`
           : '';
 
         const items = this._data.map(t => {
