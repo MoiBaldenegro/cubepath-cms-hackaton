@@ -68,10 +68,11 @@ export class WidgetController {
       return { success: false, message: 'Missing required fields' };
     }
 
-    let imageUrl: TestimonialImageUrl | undefined = undefined;
-    if (image && image.filename) {
-      // Solo crea el value object si hay imagen subida
-      imageUrl = new TestimonialImageUrl(`/uploads/${image.filename}`);
+        // Procesar imagen subida y asignar URL si existe
+        let imageUrl: TestimonialImageUrl | undefined = undefined;
+        if (image && image.filename) {
+          // Asegúrate que la ruta corresponda a donde Multer guarda los archivos
+          imageUrl = new TestimonialImageUrl(`/uploads/${image.filename}`);
     }
 
     const testimonial = new Testimonial(
