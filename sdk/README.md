@@ -66,7 +66,7 @@ After installation, you can use the `<testimo-widget>` web component anywhere in
 ### Basic Usage
 
 ```html
-<testimo-widget organization-id="YOUR_ORG_ID"></testimo-widget>
+<testimo-widget organization-id="ORG_ID"></testimo-widget>
 ```
 
 ### Advanced Configuration
@@ -84,7 +84,7 @@ You can configure the widget with the following attributes:
 
 ```html
 <testimo-widget
-  organization-id="123e4567-e89b-12d3-a456-426614174000"
+  organization-id="ORG_ID"
   api-url="https://api.testimo.app"
   theme="dark"
   layout="list"
@@ -102,9 +102,10 @@ You can configure the widget with the following attributes:
 2. Usa el componente:
    ```jsx
    export default function Testimonials() {
+     const orgId = import.meta.env.VITE_ORG_ID;
      return (
        <testimo-widget
-         organization-id="YOUR_ORG_ID"
+         organization-id={orgId}
          theme="light"
          layout="grid"
        ></testimo-widget>

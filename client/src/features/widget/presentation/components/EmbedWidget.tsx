@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../../../shared/contexts/useAuth';
 import styles from './EmbedWidget.module.css';
 
-type Framework = 'react' | 'nextjs' | 'vue' | 'nuxt' | 'svelte' | 'solid' | 'angular' | 'html';
+type Framework = 'react' | 'astro' | 'vue' | 'nuxt' | 'svelte' | 'solid' | 'angular' | 'html';
 
 const API_URL = 'http://hackathoncubepath-server-zzxmva-37677b-108-165-47-237.traefik.me';
 
@@ -25,62 +25,27 @@ El código ya está configurado con tu Organization ID
 -->
 <script
   src="${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}"
-  type="module"
-  async>
-</script>
-
-<testimo-widget organization-id="${organizationId}" theme="${theme}" layout="${layout}"></testimo-widget>`;
-
-  const frameworkConfig: Record<Framework, {
-    label: string;
-    variable: string;
-    install: string;
-    code: string;
-  }> = {
-    react: {
-      label: 'React (Vite)',
-      variable: 'VITE_ORG_ID',
+    astro: {
+      label: 'Astro',
+      variable: 'PUBLIC_ORG_ID',
       install: 'npm install testimo-widget',
-      code: `import 'testimo-widget';
-
-export function Testimonials() {
-  const orgId = import.meta.env.VITE_ORG_ID;
-
-  return (
-    <testimo-widget 
-      organization-id={orgId} 
-      theme="${theme}" 
-      layout="${layout}"
-    ></testimo-widget>
+      code: `---
   );
 }`
-    },
-    nextjs: {
-      label: 'Next.js',
-      variable: 'NEXT_PUBLIC_ORG_ID',
+    astro: {
+      label: 'Astro',
+      variable: 'PUBLIC_ORG_ID',
       install: 'npm install testimo-widget',
-      code: `'use client';
-
-import { useEffect, useState } from 'react';
+      code: `---
 import 'testimo-widget';
+const orgId = import.meta.env.PUBLIC_ORG_ID;
+---
 
-export default function Testimonials() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
-  return (
-    <testimo-widget 
-      organization-id={process.env.NEXT_PUBLIC_ORG_ID} 
-      theme="${theme}" 
-      layout="${layout}" 
-    ></testimo-widget>
-  );
-}`
+<testimo-widget 
+  organization-id={orgId} 
+  theme="${theme}" 
+  layout="${layout}"
+></testimo-widget>`
     },
     vue: {
       label: 'Vue (Vite)',
