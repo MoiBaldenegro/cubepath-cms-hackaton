@@ -12,7 +12,10 @@ export const EmbedWidget = () => {
   const [envCopied, setEnvCopied] = useState(false);
   const [installCopied, setInstallCopied] = useState(false);
 
-  const organizationId = import.meta.env.VITE_ORG_ID || 'YOUR_ORG_ID';
+  // Obtener organizationId del usuario logueado si existe
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { user } = require('../../../../shared/contexts/AuthContext').useAuth();
+  const organizationId = (user && user.organizationId) ? user.organizationId : (import.meta.env.VITE_ORG_ID || 'YOUR_ORG_ID');
   const API_URL = import.meta.env.VITE_API_URL || '';
   // Usar siempre el endpoint real del backend para la preview y el código generado
   const scriptSrc = `${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}`;
