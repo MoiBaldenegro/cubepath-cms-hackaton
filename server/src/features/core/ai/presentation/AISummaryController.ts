@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { SummarizeTestimonialsUseCase } from '../application/SummarizeTestimonialsUseCase';
-
+// --force controller
 @Controller('ai/summary')
 export class AISummaryController {
   constructor(
