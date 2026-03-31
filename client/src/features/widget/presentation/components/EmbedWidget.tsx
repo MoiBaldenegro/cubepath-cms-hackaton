@@ -20,6 +20,10 @@ export const EmbedWidget = () => {
   // Usar siempre el endpoint real del backend para la preview y el código generado
   const scriptSrc = `${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}`;
 
+  // Generar el bloque de código para copiar y pegar, siempre con organizationId real si está logueado
+  const scriptExample = `<!--\nINTEGRACIÓN RÁPIDA (solo <script>):\nEl widget se monta automáticamente antes del <script>.\nDebes poner tu organizationId en la URL del script.\nSi quieres controlar el lugar exacto, pon <testimo-widget organization-id=\"${organizationId}\"></testimo-widget> donde quieras el widget.\nAmbos modos funcionan.\n-->
+<script\n  src=\"${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}\"\n  type=\"module\"\n  async>\n</script>\n\n<!-- Opción avanzada: usa el tag personalizado para controlar el lugar -->\n<testimo-widget organization-id=\"${organizationId}\" theme=\"${theme}\" layout=\"${layout}\"></testimo-widget>`;
+
   const frameworkConfig: Record<Framework, {
     label: string;
     variable: string;
@@ -185,25 +189,16 @@ import 'testimo-widget';
   };
 
   let embedCode = '';
-
   if (integrationMethod === 'script') {
-    embedCode = `<!--
-INTEGRACIÓN RÁPIDA (solo <script>):
-El widget se monta automáticamente antes del <script>.
-Debes poner tu organizationId en la URL del script.
-Si quieres controlar el lugar exacto, pon <testimo-widget></testimo-widget> donde quieras el widget.
-Ambos modos funcionan.
--->
-<script
-  src="${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}"
-  type="module"
-  async>
-</script>
-
-<!-- Opción avanzada: usa el tag personalizado para controlar el lugar -->
-<testimo-widget></testimo-widget>`;
+    embedCode = scriptExample;
   } else {
-    embedCode = frameworkConfig[selectedFramework].code;
+    // Para frameworks, si el usuario está logueado, sugerir cómo pasar el organizationId real
+    let code = frameworkConfig[selectedFramework].code;
+    if (organizationId && organizationId !== 'YOUR_ORG_ID') {
+      // Reemplazar el placeholder por el organizationId real si es posible
+      code = code.replace(/YOUR_ORG_ID|orgId|process.env.(NEXT_PUBLIC_ORG_ID|NUXT_PUBLIC_ORG_ID|PUBLIC_ORG_ID)/g, organizationId);
+    }
+    embedCode = code;
   }
 
   const handleCopy = () => {
