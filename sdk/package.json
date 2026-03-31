@@ -1,9 +1,14 @@
 {
   "name": "testimo-widget",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist",
+    "types.d.ts"
+  ],
   "main": "./dist/sdk.umd.cjs",
+  "sideEffects": true,
+  "types": "./types.d.ts",
   "module": "./dist/sdk.js",
   "exports": {
     ".": {

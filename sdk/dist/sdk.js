@@ -1,82 +1,112 @@
-var h = Object.defineProperty;
-var u = (n, r, l) => r in n ? h(n, r, { enumerable: !0, configurable: !0, writable: !0, value: l }) : n[r] = l;
-var c = (n, r, l) => (u(n, typeof r != "symbol" ? r + "" : r, l), l);
-if (typeof window < "u" && !customElements.get("cubepath-widget")) {
-  class n extends HTMLElement {
+var b = Object.defineProperty;
+var x = (d, n, m) => n in d ? b(d, n, { enumerable: !0, configurable: !0, writable: !0, value: m }) : d[n] = m;
+var r = (d, n, m) => (x(d, typeof n != "symbol" ? n + "" : n, m), m);
+if (typeof window < "u" && !customElements.get("testimo-widget")) {
+  class d extends HTMLElement {
     constructor() {
       super();
-      c(this, "_data", []);
-      c(this, "_loading", !0);
-      c(this, "_error", null);
-      c(this, "_submitting", !1);
+      r(this, "_data", []);
+      r(this, "_aiSummary", "");
+      r(this, "_loading", !0);
+      r(this, "_error", null);
+      r(this, "_submitting", !1);
+      // Referencias a elementos que necesitamos manipular
+      r(this, "formListener", null);
+      r(this, "clickListeners", []);
+      r(this, "_handleSubmit", async (e) => {
+        var h;
+        e.preventDefault();
+        const i = e.target, t = new FormData(i), g = Object.fromEntries(t.entries()), l = this.getAttribute("organization-id"), s = (h = this.shadowRoot) == null ? void 0 : h.getElementById("form-feedback");
+        if (this._submitting || !l)
+          return;
+        this._submitting = !0;
+        const a = i.querySelector("button");
+        a && (a.disabled = !0, a.textContent = "Submitting...");
+        try {
+          if (!(await fetch(`${this.apiUrl}/widget/submit`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...g, organizationId: l })
+          })).ok)
+            throw new Error("Failed to submit");
+          i.reset(), s && (s.textContent = "Thank you! Your testimonial has been submitted for review.", s.className = "success-msg");
+        } catch {
+          s && (s.textContent = "Error submitting testimonial. Please try again.", s.className = "error-msg");
+        } finally {
+          this._submitting = !1, a && (a.disabled = !1, a.textContent = "Submit Testimonial");
+        }
+      });
       this.attachShadow({ mode: "open" });
     }
     static get observedAttributes() {
       return ["organization-id", "theme", "layout", "api-url"];
     }
     connectedCallback() {
-      this.fetchData();
+      this.fetchData(), this.trackView();
+    }
+    disconnectedCallback() {
+      this.removeAllListeners();
+    }
+    removeAllListeners() {
+      var e, i;
+      this.formListener && ((i = (e = this.shadowRoot) == null ? void 0 : e.getElementById("testimonial-form")) == null || i.removeEventListener("submit", this.formListener), this.formListener = null), this.clickListeners.forEach((t) => t()), this.clickListeners = [];
+    }
+    async trackView() {
+      const e = this.getAttribute("organization-id");
+      if (e)
+        try {
+          await fetch(`${this.apiUrl}/analytics/track`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              organizationId: e,
+              testimonialId: "all",
+              type: "view",
+              metadata: { widget: !0 }
+            })
+          });
+        } catch {
+        }
     }
     get apiUrl() {
       return this.getAttribute("api-url") || "http://cubepathhackaton-api-aymrvj-31e30c-108-165-47-144.traefik.me";
     }
-    attributeChangedCallback(i, t, e) {
-      t !== e && (i === "organization-id" || i === "api-url") ? this.fetchData() : t !== e && this.render();
+    attributeChangedCallback(e, i, t) {
+      i !== t && (e === "organization-id" || e === "api-url" ? this.fetchData() : this.render());
     }
     async fetchData() {
-      const i = this.getAttribute("organization-id");
-      if (!i) {
+      const e = this.getAttribute("organization-id");
+      if (!e) {
         this._error = "Organization ID is missing", this._loading = !1, this.render();
         return;
       }
-      this._loading = !0, this.render();
+      this._loading = !0, this._error = null, this.render();
       try {
-        const t = await fetch(`${this.apiUrl}/widget/data?organizationId=${i}`);
-        if (!t.ok)
+        const i = await fetch(`${this.apiUrl}/widget/data?organizationId=${e}`);
+        if (!i.ok)
           throw new Error("Failed to fetch testimonials");
-        this._data = await t.json();
-      } catch (t) {
-        this._error = t.message;
+        this._data = await i.json();
+        let t = "";
+        this._data.length > 0 ? this._data.length === 1 ? t = `Las personas comentan que: "${this._data[0].content}"` : this._data.length === 2 ? t = `Las personas comentan que: "${this._data[0].content}" y "${this._data[1].content}"` : t = `Las personas comentan que: "${this._data[0].content}", "${this._data[1].content}" y otros ${this._data.length - 2} testimonios más.` : t = "Aún no hay testimonios para analizar.", this._aiSummary = t;
+      } catch (i) {
+        this._error = i.message || "Failed to load testimonials";
       } finally {
         this._loading = !1, this.render();
       }
     }
-    async _handleSubmit(i) {
-      var p;
-      i.preventDefault();
-      const t = i.target, e = new FormData(t), g = Object.fromEntries(e.entries()), s = this.getAttribute("organization-id"), a = (p = this.shadowRoot) == null ? void 0 : p.getElementById("form-feedback");
-      if (this._submitting)
-        return;
-      this._submitting = !0;
-      const o = t.querySelector("button");
-      o && (o.disabled = !0), o && (o.textContent = "Submitting...");
-      try {
-        if (!(await fetch(`${this.apiUrl}/widget/submit`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...g, organizationId: s })
-        })).ok)
-          throw new Error("Failed to submit");
-        t.reset(), a && (a.textContent = "Thank you! Your testimonial has been submitted for review.", a.className = "success-msg");
-      } catch {
-        a && (a.textContent = "Error submitting testimonial. Please try again.", a.className = "error-msg");
-      } finally {
-        this._submitting = !1, o && (o.disabled = !1, o.textContent = "Submit Testimonial");
-      }
-    }
     render() {
-      var o;
       if (!this.shadowRoot)
         return;
-      const i = this.getAttribute("theme") || "light", t = this.getAttribute("layout") || "grid", e = i === "dark", g = `
+      this.removeAllListeners();
+      const e = this.getAttribute("theme") || "light", i = this.getAttribute("layout") || "grid", t = e === "dark", g = `
         :host {
           display: block;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
         }
         .container {
           padding: 24px;
-          background-color: ${e ? "#1a1a1a" : "#ffffff"};
-          color: ${e ? "#ffffff" : "#333333"};
+          background-color: ${t ? "#1a1a1a" : "#ffffff"};
+          color: ${t ? "#ffffff" : "#333333"};
           border-radius: 12px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           max-width: 100%;
@@ -100,11 +130,15 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
           gap: 20px;
         }
         .card {
-          border: 1px solid ${e ? "#333" : "#eee"};
+          border: 1px solid ${t ? "#333" : "#eee"};
           padding: 20px;
           border-radius: 12px;
-          background-color: ${e ? "#2d2d2d" : "#f8f9fa"};
+          background-color: ${t ? "#2d2d2d" : "#f8f9fa"};
           transition: transform 0.2s ease;
+          cursor: pointer;
+        }
+        .card:hover {
+          transform: translateY(-4px);
         }
         .card p {
           font-style: italic;
@@ -135,76 +169,75 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
         
         /* Form Styles */
         .form-section {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid ${e ? "#333" : "#eee"};
+          margin-top: 40px;
+          padding-top: 20px;
+          border-top: 1px solid ${t ? "#333" : "#eee"};
         }
         form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-width: 500px;
-            margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          max-width: 500px;
+          margin: 0 auto;
         }
         input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid ${e ? "#444" : "#ccc"};
-            background-color: ${e ? "#2d2d2d" : "#fff"};
-            color: ${e ? "#fff" : "#333"};
-            font-family: inherit;
-            box-sizing: border-box; 
+          width: 100%;
+          padding: 12px;
+          border-radius: 8px;
+          border: 1px solid ${t ? "#444" : "#ccc"};
+          background-color: ${t ? "#2d2d2d" : "#fff"};
+          color: ${t ? "#fff" : "#333"};
+          font-family: inherit;
+          box-sizing: border-box;
         }
         textarea { resize: vertical; min-height: 80px; }
         button {
-            padding: 12px 24px;
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
+          padding: 12px 24px;
+          background-color: #3b82f6;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background-color 0.2s;
         }
-        button:hover { background-color: #2563eb; }
+        button:hover:not(:disabled) { background-color: #2563eb; }
         button:disabled { background-color: #93c5fd; cursor: not-allowed; }
-        .success-msg { color: #10b981; text-align: center; margin-top: 10px; font-weight: 500;}
+        .success-msg { color: #10b981; text-align: center; margin-top: 10px; font-weight: 500; }
         .error-msg { color: #ef4444; text-align: center; margin-top: 10px; }
       `;
-      let s = "";
+      let l = "";
       if (this._loading)
-        s = '<div class="loading">Loading testimonials...</div>';
+        l = '<div class="loading">Loading testimonials...</div>';
       else if (this._error)
-        s = `<div class="error">Error: ${this._error}</div>`;
-      else if (this._data.length === 0)
-        s = '<div class="loading">No approved testimonials yet.</div>';
+        l = `<div class="error">Error: ${this._error}</div>`;
       else {
-        const p = this._data.map((d) => {
-          const f = d.rating ? "★".repeat(d.rating) + "☆".repeat(5 - d.rating) : "";
+        const c = this._aiSummary ? `<div style="padding:18px 20px;background:${t ? "#23272f" : "#f1f5f9"};border-radius:10px;margin-bottom:28px;font-size:16px;font-style:italic;color:${t ? "#cbd5e1" : "#334155"};">${this._aiSummary}</div>` : "", p = this._data.map((o) => {
+          const f = o.rating ? "★".repeat(o.rating) + "☆".repeat(5 - o.rating) : "", u = o.imageUrl ? `<div style="margin-bottom:10px;"><img src="${o.imageUrl}" alt="Testimonial" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #eee;" /></div>` : "";
           return `
-            <div class="card">
-              <p>"${d.content}"</p>
+            <div class="card" data-tid="${o.id}">
+              ${u}
+              <p>"${o.content}"</p>
               <div class="footer">
-                <strong>${d.author}</strong>
+                <strong>${o.author}</strong>
                 <div class="rating">${f}</div>
               </div>
             </div>
           `;
         }).join("");
-        s = `<div class="${t}">${p}</div>`;
+        l = `${c}<div class="${i}" id="testimo-list">${p}</div>`;
       }
-      const a = `
+      const s = `
         <div class="form-section">
           <h3>Share your experience</h3>
           <form id="testimonial-form">
             <input type="text" name="author" placeholder="Your Name" required />
             <select name="rating">
-                <option value="5">★★★★★ Excellent</option>
-                <option value="4">★★★★☆ Good</option>
-                <option value="3">★★★☆☆ Average</option>
-                <option value="2">★★☆☆☆ Poor</option>
-                <option value="1">★☆☆☆☆ Terrible</option>
+              <option value="5">★★★★★ Excellent</option>
+              <option value="4">★★★★☆ Good</option>
+              <option value="3">★★★☆☆ Average</option>
+              <option value="2">★★☆☆☆ Poor</option>
+              <option value="1">★☆☆☆☆ Terrible</option>
             </select>
             <textarea name="content" placeholder="Your Testimonial" required></textarea>
             <button type="submit">Submit Testimonial</button>
@@ -216,11 +249,38 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
         <style>${g}</style>
         <div class="container">
           <h2>What People Say</h2>
+          ${l}
           ${s}
-          ${a}
         </div>
-      `, (o = this.shadowRoot.getElementById("testimonial-form")) == null || o.addEventListener("submit", this._handleSubmit.bind(this));
+      `;
+      const a = this.shadowRoot.getElementById("testimonial-form");
+      a && (this.formListener = this._handleSubmit, a.addEventListener("submit", this.formListener));
+      const h = this.shadowRoot.getElementById("testimo-list");
+      h && (this.clickListeners = [], h.querySelectorAll(".card").forEach((c) => {
+        const p = () => {
+          const o = c.getAttribute("data-tid");
+          o && this.trackClick(o);
+        };
+        c.addEventListener("click", p), this.clickListeners.push(() => c.removeEventListener("click", p));
+      }));
+    }
+    async trackClick(e) {
+      const i = this.getAttribute("organization-id");
+      if (!(!i || !e))
+        try {
+          await fetch(`${this.apiUrl}/analytics/track`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              organizationId: i,
+              testimonialId: e,
+              type: "click",
+              metadata: { widget: !0 }
+            })
+          });
+        } catch {
+        }
     }
   }
-  customElements.define("cubepath-widget", n);
+  customElements.define("testimo-widget", d);
 }

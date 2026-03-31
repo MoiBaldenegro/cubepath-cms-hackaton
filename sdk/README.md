@@ -1,21 +1,61 @@
+### Ejemplo de uso en React + TypeScript
+
+```tsx
+import "testimo-widget";
+
+function App() {
+  return (
+    <testimo-widget 
+      organization-id="tu-org-id" 
+      theme="light" 
+      layout="grid"
+    ></testimo-widget>
+  );
+}
+```
+
+Con testimo-widget-types instalado, tendrás autocompletado y validación de props en JSX automáticamente.
+
 # testimo-widget
+
+[![npm version](https://img.shields.io/npm/v/testimo-widget.svg?style=flat-square)](https://www.npmjs.com/package/testimo-widget)
 
 The official SDK for integrating Testimo Testimonial Widgets into your web application.
 
+📦 [Ver en npm](https://www.npmjs.com/package/testimo-widget)
+
+
+
 ## Installation
 
-### Option 1: Using NPM (Recommended for React/Vue/Angular)
+
+### Install from npm
 
 ```bash
 npm install testimo-widget
 ```
 
-### Option 2: Using a Script Tag (Vanilla JS / Static Sites)
+#### TypeScript/JSX Typings
 
-You can host the `sdk.js` file yourself or use a CDN (once published).
+Si usas TypeScript y/o JSX (React, Preact, etc.), instala también los tipos:
+
+```bash
+npm install testimo-widget-types
+```
+
+Esto habilita el autocompletado y tipado para <testimo-widget> en proyectos TypeScript/JSX automáticamente.
+
+### Documentation
+
+Consulta la documentación y ejemplos en:
+https://www.npmjs.com/package/testimo-widget
+
+### Option: Script Tag (Vanilla JS / Static Sites)
+
+Puedes hostear el `sdk.js` tú mismo o usar un CDN (cuando esté disponible).
 
 ```html
-<!-- If self-hosted (e.g. copied to your public folder) -->
+<!-- Si es self-hosted (copiado a tu public folder) -->
 <script src="/path/to/sdk.js"></script>
 ```
 
@@ -51,24 +91,29 @@ You can configure the widget with the following attributes:
 ></testimo-widget>
 ```
 
+
 ### React Example
 
-1. Import the package in your entry point (e.g., `main.tsx` or `App.tsx`):
-   ```typescript
+1. Import the package in tu entry point (por ejemplo, `main.tsx` o `App.tsx`):
+   ```js
    import 'testimo-widget';
    ```
 
-2. Use the component (you may need to extend JSX types for TypeScript):
-   ```tsx
+2. Usa el componente:
+   ```jsx
    export default function Testimonials() {
      return (
        <testimo-widget
-         organization-id="my-org-id"
-         api-url="https://api.testimo.app"
+         organization-id="YOUR_ORG_ID"
+         theme="light"
+         layout="grid"
        ></testimo-widget>
      );
    }
    ```
+
+
+---
 
 ## Development
 

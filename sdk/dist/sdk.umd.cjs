@@ -1,12 +1,12 @@
-(function(i){typeof define=="function"&&define.amd?define(i):i()})(function(){"use strict";var u=Object.defineProperty;var h=(i,a,l)=>a in i?u(i,a,{enumerable:!0,configurable:!0,writable:!0,value:l}):i[a]=l;var c=(i,a,l)=>(h(i,typeof a!="symbol"?a+"":a,l),l);if(typeof window<"u"&&!customElements.get("cubepath-widget")){class i extends HTMLElement{constructor(){super();c(this,"_data",[]);c(this,"_loading",!0);c(this,"_error",null);c(this,"_submitting",!1);this.attachShadow({mode:"open"})}static get observedAttributes(){return["organization-id","theme","layout","api-url"]}connectedCallback(){this.fetchData()}get apiUrl(){return this.getAttribute("api-url")||"http://cubepathhackaton-api-aymrvj-31e30c-108-165-47-144.traefik.me"}attributeChangedCallback(o,t,e){t!==e&&(o==="organization-id"||o==="api-url")?this.fetchData():t!==e&&this.render()}async fetchData(){const o=this.getAttribute("organization-id");if(!o){this._error="Organization ID is missing",this._loading=!1,this.render();return}this._loading=!0,this.render();try{const t=await fetch(`${this.apiUrl}/widget/data?organizationId=${o}`);if(!t.ok)throw new Error("Failed to fetch testimonials");this._data=await t.json()}catch(t){this._error=t.message}finally{this._loading=!1,this.render()}}async _handleSubmit(o){var p;o.preventDefault();const t=o.target,e=new FormData(t),f=Object.fromEntries(e.entries()),s=this.getAttribute("organization-id"),n=(p=this.shadowRoot)==null?void 0:p.getElementById("form-feedback");if(this._submitting)return;this._submitting=!0;const r=t.querySelector("button");r&&(r.disabled=!0),r&&(r.textContent="Submitting...");try{if(!(await fetch(`${this.apiUrl}/widget/submit`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...f,organizationId:s})})).ok)throw new Error("Failed to submit");t.reset(),n&&(n.textContent="Thank you! Your testimonial has been submitted for review.",n.className="success-msg")}catch{n&&(n.textContent="Error submitting testimonial. Please try again.",n.className="error-msg")}finally{this._submitting=!1,r&&(r.disabled=!1,r.textContent="Submit Testimonial")}}render(){var r;if(!this.shadowRoot)return;const o=this.getAttribute("theme")||"light",t=this.getAttribute("layout")||"grid",e=o==="dark",f=`
+(function(a){typeof define=="function"&&define.amd?define(a):a()})(function(){"use strict";var b=Object.defineProperty;var x=(a,s,m)=>s in a?b(a,s,{enumerable:!0,configurable:!0,writable:!0,value:m}):a[s]=m;var n=(a,s,m)=>(x(a,typeof s!="symbol"?s+"":s,m),m);if(typeof window<"u"&&!customElements.get("testimo-widget")){class a extends HTMLElement{constructor(){super();n(this,"_data",[]);n(this,"_aiSummary","");n(this,"_loading",!0);n(this,"_error",null);n(this,"_submitting",!1);n(this,"formListener",null);n(this,"clickListeners",[]);n(this,"_handleSubmit",async e=>{var h;e.preventDefault();const i=e.target,t=new FormData(i),p=Object.fromEntries(t.entries()),l=this.getAttribute("organization-id"),d=(h=this.shadowRoot)==null?void 0:h.getElementById("form-feedback");if(this._submitting||!l)return;this._submitting=!0;const r=i.querySelector("button");r&&(r.disabled=!0,r.textContent="Submitting...");try{if(!(await fetch(`${this.apiUrl}/widget/submit`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...p,organizationId:l})})).ok)throw new Error("Failed to submit");i.reset(),d&&(d.textContent="Thank you! Your testimonial has been submitted for review.",d.className="success-msg")}catch{d&&(d.textContent="Error submitting testimonial. Please try again.",d.className="error-msg")}finally{this._submitting=!1,r&&(r.disabled=!1,r.textContent="Submit Testimonial")}});this.attachShadow({mode:"open"})}static get observedAttributes(){return["organization-id","theme","layout","api-url"]}connectedCallback(){this.fetchData(),this.trackView()}disconnectedCallback(){this.removeAllListeners()}removeAllListeners(){var e,i;this.formListener&&((i=(e=this.shadowRoot)==null?void 0:e.getElementById("testimonial-form"))==null||i.removeEventListener("submit",this.formListener),this.formListener=null),this.clickListeners.forEach(t=>t()),this.clickListeners=[]}async trackView(){const e=this.getAttribute("organization-id");if(e)try{await fetch(`${this.apiUrl}/analytics/track`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({organizationId:e,testimonialId:"all",type:"view",metadata:{widget:!0}})})}catch{}}get apiUrl(){return this.getAttribute("api-url")||"http://cubepathhackaton-api-aymrvj-31e30c-108-165-47-144.traefik.me"}attributeChangedCallback(e,i,t){i!==t&&(e==="organization-id"||e==="api-url"?this.fetchData():this.render())}async fetchData(){const e=this.getAttribute("organization-id");if(!e){this._error="Organization ID is missing",this._loading=!1,this.render();return}this._loading=!0,this._error=null,this.render();try{const i=await fetch(`${this.apiUrl}/widget/data?organizationId=${e}`);if(!i.ok)throw new Error("Failed to fetch testimonials");this._data=await i.json();let t="";this._data.length>0?this._data.length===1?t=`Las personas comentan que: "${this._data[0].content}"`:this._data.length===2?t=`Las personas comentan que: "${this._data[0].content}" y "${this._data[1].content}"`:t=`Las personas comentan que: "${this._data[0].content}", "${this._data[1].content}" y otros ${this._data.length-2} testimonios más.`:t="Aún no hay testimonios para analizar.",this._aiSummary=t}catch(i){this._error=i.message||"Failed to load testimonials"}finally{this._loading=!1,this.render()}}render(){if(!this.shadowRoot)return;this.removeAllListeners();const e=this.getAttribute("theme")||"light",i=this.getAttribute("layout")||"grid",t=e==="dark",p=`
         :host {
           display: block;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
         }
         .container {
           padding: 24px;
-          background-color: ${e?"#1a1a1a":"#ffffff"};
-          color: ${e?"#ffffff":"#333333"};
+          background-color: ${t?"#1a1a1a":"#ffffff"};
+          color: ${t?"#ffffff":"#333333"};
           border-radius: 12px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           max-width: 100%;
@@ -30,11 +30,15 @@
           gap: 20px;
         }
         .card {
-          border: 1px solid ${e?"#333":"#eee"};
+          border: 1px solid ${t?"#333":"#eee"};
           padding: 20px;
           border-radius: 12px;
-          background-color: ${e?"#2d2d2d":"#f8f9fa"};
+          background-color: ${t?"#2d2d2d":"#f8f9fa"};
           transition: transform 0.2s ease;
+          cursor: pointer;
+        }
+        .card:hover {
+          transform: translateY(-4px);
         }
         .card p {
           font-style: italic;
@@ -65,61 +69,62 @@
         
         /* Form Styles */
         .form-section {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid ${e?"#333":"#eee"};
+          margin-top: 40px;
+          padding-top: 20px;
+          border-top: 1px solid ${t?"#333":"#eee"};
         }
         form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-width: 500px;
-            margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          max-width: 500px;
+          margin: 0 auto;
         }
         input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid ${e?"#444":"#ccc"};
-            background-color: ${e?"#2d2d2d":"#fff"};
-            color: ${e?"#fff":"#333"};
-            font-family: inherit;
-            box-sizing: border-box; 
+          width: 100%;
+          padding: 12px;
+          border-radius: 8px;
+          border: 1px solid ${t?"#444":"#ccc"};
+          background-color: ${t?"#2d2d2d":"#fff"};
+          color: ${t?"#fff":"#333"};
+          font-family: inherit;
+          box-sizing: border-box;
         }
         textarea { resize: vertical; min-height: 80px; }
         button {
-            padding: 12px 24px;
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
+          padding: 12px 24px;
+          background-color: #3b82f6;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background-color 0.2s;
         }
-        button:hover { background-color: #2563eb; }
+        button:hover:not(:disabled) { background-color: #2563eb; }
         button:disabled { background-color: #93c5fd; cursor: not-allowed; }
-        .success-msg { color: #10b981; text-align: center; margin-top: 10px; font-weight: 500;}
+        .success-msg { color: #10b981; text-align: center; margin-top: 10px; font-weight: 500; }
         .error-msg { color: #ef4444; text-align: center; margin-top: 10px; }
-      `;let s="";if(this._loading)s='<div class="loading">Loading testimonials...</div>';else if(this._error)s=`<div class="error">Error: ${this._error}</div>`;else if(this._data.length===0)s='<div class="loading">No approved testimonials yet.</div>';else{const p=this._data.map(d=>{const g=d.rating?"★".repeat(d.rating)+"☆".repeat(5-d.rating):"";return`
-            <div class="card">
-              <p>"${d.content}"</p>
+      `;let l="";if(this._loading)l='<div class="loading">Loading testimonials...</div>';else if(this._error)l=`<div class="error">Error: ${this._error}</div>`;else{const c=this._aiSummary?`<div style="padding:18px 20px;background:${t?"#23272f":"#f1f5f9"};border-radius:10px;margin-bottom:28px;font-size:16px;font-style:italic;color:${t?"#cbd5e1":"#334155"};">${this._aiSummary}</div>`:"",f=this._data.map(o=>{const g=o.rating?"★".repeat(o.rating)+"☆".repeat(5-o.rating):"",u=o.imageUrl?`<div style="margin-bottom:10px;"><img src="${o.imageUrl}" alt="Testimonial" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #eee;" /></div>`:"";return`
+            <div class="card" data-tid="${o.id}">
+              ${u}
+              <p>"${o.content}"</p>
               <div class="footer">
-                <strong>${d.author}</strong>
+                <strong>${o.author}</strong>
                 <div class="rating">${g}</div>
               </div>
             </div>
-          `}).join("");s=`<div class="${t}">${p}</div>`}const n=`
+          `}).join("");l=`${c}<div class="${i}" id="testimo-list">${f}</div>`}const d=`
         <div class="form-section">
           <h3>Share your experience</h3>
           <form id="testimonial-form">
             <input type="text" name="author" placeholder="Your Name" required />
             <select name="rating">
-                <option value="5">★★★★★ Excellent</option>
-                <option value="4">★★★★☆ Good</option>
-                <option value="3">★★★☆☆ Average</option>
-                <option value="2">★★☆☆☆ Poor</option>
-                <option value="1">★☆☆☆☆ Terrible</option>
+              <option value="5">★★★★★ Excellent</option>
+              <option value="4">★★★★☆ Good</option>
+              <option value="3">★★★☆☆ Average</option>
+              <option value="2">★★☆☆☆ Poor</option>
+              <option value="1">★☆☆☆☆ Terrible</option>
             </select>
             <textarea name="content" placeholder="Your Testimonial" required></textarea>
             <button type="submit">Submit Testimonial</button>
@@ -127,10 +132,10 @@
           <div id="form-feedback"></div>
         </div>
       `;this.shadowRoot.innerHTML=`
-        <style>${f}</style>
+        <style>${p}</style>
         <div class="container">
           <h2>What People Say</h2>
-          ${s}
-          ${n}
+          ${l}
+          ${d}
         </div>
-      `,(r=this.shadowRoot.getElementById("testimonial-form"))==null||r.addEventListener("submit",this._handleSubmit.bind(this))}}customElements.define("cubepath-widget",i)}});
+      `;const r=this.shadowRoot.getElementById("testimonial-form");r&&(this.formListener=this._handleSubmit,r.addEventListener("submit",this.formListener));const h=this.shadowRoot.getElementById("testimo-list");h&&(this.clickListeners=[],h.querySelectorAll(".card").forEach(c=>{const f=()=>{const o=c.getAttribute("data-tid");o&&this.trackClick(o)};c.addEventListener("click",f),this.clickListeners.push(()=>c.removeEventListener("click",f))}))}async trackClick(e){const i=this.getAttribute("organization-id");if(!(!i||!e))try{await fetch(`${this.apiUrl}/analytics/track`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({organizationId:i,testimonialId:e,type:"click",metadata:{widget:!0}})})}catch{}}}customElements.define("testimo-widget",a)}});

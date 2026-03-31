@@ -1,0 +1,16 @@
+# Ignora archivos fuente y de desarrollo
+src/
+node_modules/
+test/
+.vite/
+.vscode/
+.git/
+.gitignore
+README.md
+*.log
+*.tsbuildinfo
+*.env
+*.env.*
+
+# Solo publica dist/
+dist/
