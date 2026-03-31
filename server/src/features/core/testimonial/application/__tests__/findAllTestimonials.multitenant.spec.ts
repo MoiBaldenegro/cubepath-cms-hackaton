@@ -13,12 +13,18 @@ describe('FindAllTestimonials Multi-Tenant', () => {
         // Simula datos de dos organizaciones
         if (orgId.value === 'org-1') {
           return Promise.resolve([
-            { id: 't1', organizationId: new OrganizationId('org-1') } as unknown as Testimonial,
+            {
+              id: 't1',
+              organizationId: new OrganizationId('org-1'),
+            } as unknown as Testimonial,
           ]);
         }
         if (orgId.value === 'org-2') {
           return Promise.resolve([
-            { id: 't2', organizationId: new OrganizationId('org-2') } as unknown as Testimonial,
+            {
+              id: 't2',
+              organizationId: new OrganizationId('org-2'),
+            } as unknown as Testimonial,
           ]);
         }
         return Promise.resolve([]);

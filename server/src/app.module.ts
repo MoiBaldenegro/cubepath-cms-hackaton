@@ -3,7 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TestimonialModule } from './features/core/testimonial/infraestructure/nest/testimonial.module';
 import { AuthModule } from './features/auth/infrastructure/nest/auth.module';
+
 import { AnalyticsModule } from './features/core/analytics/infraestructure/analytics.module';
+import { AIModule } from './features/core/ai/infrastructure/ai.module';
 
 @Module({
   imports: [
@@ -23,6 +25,7 @@ import { AnalyticsModule } from './features/core/analytics/infraestructure/analy
     AuthModule,
     TestimonialModule,
     AnalyticsModule,
+    AIModule,
   ],
   controllers: [],
   providers: [],

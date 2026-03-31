@@ -10,7 +10,11 @@ export class GetAnalyticsStats {
     type: AnalyticsEventType;
   }): Promise<number> {
     if (params.testimonialId) {
-      return this.repo.countByTestimonial(params.organizationId, params.testimonialId, params.type);
+      return this.repo.countByTestimonial(
+        params.organizationId,
+        params.testimonialId,
+        params.type,
+      );
     }
     return this.repo.countByOrganization(params.organizationId, params.type);
   }

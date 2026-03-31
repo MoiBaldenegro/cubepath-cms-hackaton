@@ -48,5 +48,6 @@ const MEDIA_REPOSITORY_PROVIDER = {
       ],
     },
   ],
+  exports: [TESTIMONIAL_REPOSITORY_PROVIDER],
 })
 export class TestimonialModule {}

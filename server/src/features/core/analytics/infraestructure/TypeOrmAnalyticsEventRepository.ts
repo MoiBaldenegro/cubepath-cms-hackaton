@@ -22,13 +22,20 @@ export class TypeOrmAnalyticsEventRepository {
     await this.repository.save(entity);
   }
 
-  async countByTestimonial(organizationId: string, testimonialId: string, type: AnalyticsEventType): Promise<number> {
+  async countByTestimonial(
+    organizationId: string,
+    testimonialId: string,
+    type: AnalyticsEventType,
+  ): Promise<number> {
     return this.repository.count({
       where: { organizationId, testimonialId, type },
     });
   }
 
-  async countByOrganization(organizationId: string, type: AnalyticsEventType): Promise<number> {
+  async countByOrganization(
+    organizationId: string,
+    type: AnalyticsEventType,
+  ): Promise<number> {
     return this.repository.count({
       where: { organizationId, type },
     });
