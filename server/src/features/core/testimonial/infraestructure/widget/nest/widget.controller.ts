@@ -70,6 +70,15 @@ export class WidgetController {
       return { success: false, message: 'Missing required fields' };
     }
 
+    let testimonialImageUrl = undefined;
+    if (image && image.filename) {
+      testimonialImageUrl = new TestimonialImageUrl(`/uploads/${image.filename}`);
+    }
+    // Si en el futuro quieres aceptar imageUrl directo del body, puedes agregar:
+    // else if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '') {
+    //   testimonialImageUrl = new TestimonialImageUrl(imageUrl);
+    // }
+
     const testimonial = new Testimonial(
       new TestimonialId(randomUUID()),
       new TestimonialIdempotencyKey(randomUUID()),
@@ -81,7 +90,7 @@ export class WidgetController {
       new TestimonialCategory(TestimonialCategoryEnum.OTHER),
       new TestimonialIsEdited(false),
       new OrganizationId(organizationId),
-      image ? new TestimonialImageUrl(`/uploads/${image.filename}`) : undefined, // ← CORREGIDO
+      testimonialImageUrl,
       videoUrl || undefined,
       new TestimonialCreatedAt(new Date()),
       undefined,
