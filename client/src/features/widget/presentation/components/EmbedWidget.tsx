@@ -25,13 +25,13 @@ export const EmbedWidget = () => {
     label: string;
     variable: string;
     install: string;
-    getCode: (orgId: string, theme: string, layout: string) => string;
+    getCode: (_orgId: string, theme: string, layout: string) => string;
   }> = {
     react: {
       label: 'React (Vite)',
       variable: 'VITE_ORG_ID',
       install: 'npm install testimo-widget',
-      getCode: (orgId, theme, layout) => `import 'testimo-widget';
+      getCode: (_orgId, theme, layout) => `import 'testimo-widget';
 
 export function Testimonials() {
   const orgId = import.meta.env.VITE_ORG_ID;
@@ -49,7 +49,7 @@ export function Testimonials() {
       label: 'Astro',
       variable: 'PUBLIC_ORG_ID',
       install: 'npm install testimo-widget',
-      getCode: (orgId, theme, layout) => `---
+      getCode: (_orgId, theme, layout) => `---
 import 'testimo-widget';
 const orgId = import.meta.env.PUBLIC_ORG_ID;
 ---
@@ -64,7 +64,7 @@ const orgId = import.meta.env.PUBLIC_ORG_ID;
       label: 'Vue (Vite)',
       variable: 'VITE_ORG_ID',
       install: 'npm install testimo-widget',
-      getCode: (orgId, theme, layout) => `<script setup>
+      getCode: (_orgId, theme, layout) => `<script setup>
 import 'testimo-widget';
 const orgId = import.meta.env.VITE_ORG_ID;
 </script>
@@ -81,7 +81,7 @@ const orgId = import.meta.env.VITE_ORG_ID;
       label: 'Nuxt 3',
       variable: 'NUXT_PUBLIC_ORG_ID',
       install: 'npm install testimo-widget',
-      getCode: (orgId, theme, layout) => `<!-- plugins/testimo.client.ts -->
+      getCode: (_orgId, theme, layout) => `<!-- plugins/testimo.client.ts -->
 import 'testimo-widget';
 
 <!-- Component.vue -->
@@ -102,7 +102,7 @@ const orgId = config.public.orgId;
       label: 'Svelte/Kit',
       variable: 'PUBLIC_ORG_ID',
       install: 'npm install testimo-widget',
-      getCode: (orgId, theme, layout) => `<script>
+      getCode: (_orgId, theme, layout) => `<script>
   import { onMount } from 'svelte';
   import { env } from '$env/dynamic/public';
 
@@ -121,7 +121,7 @@ const orgId = config.public.orgId;
       label: 'SolidJS',
       variable: 'VITE_ORG_ID',
       install: 'npm install testimo-widget',
-      getCode: (orgId, theme, layout) => `import 'testimo-widget';
+      getCode: (_orgId, theme, layout) => `import 'testimo-widget';
 
 export default function Testimonials() {
   const orgId = import.meta.env.VITE_ORG_ID;
@@ -139,7 +139,7 @@ export default function Testimonials() {
       label: 'Angular',
       variable: 'NG_APP_ORG_ID',
       install: 'npm install testimo-widget',
-      getCode: (orgId, theme, layout) => `// app.module.ts
+      getCode: (_orgId, theme, layout) => `// app.module.ts
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import 'testimo-widget';
 
@@ -173,7 +173,7 @@ import 'testimo-widget';
     }
   };
 
-  // Código final que se muestra (corregido)
+  // Código final que se muestra (se actualiza automáticamente)
   const embedCode = useMemo(() => {
     if (integrationMethod === 'script') {
       return `<!--
@@ -193,17 +193,12 @@ El código ya está configurado con tu Organization ID
 ></testimo-widget>`;
     }
 
-    // Para NPM
+    // Para NPM Package
     const config = frameworkConfig[selectedFramework];
     let code = config.getCode(organizationId, theme, layout);
 
-    // REEMPLAZO CORREGIDO: Solo reemplazamos el valor real, NO la variable "orgId"
+    // Reemplazo seguro del Organization ID
     if (organizationId !== 'TU_ORG_ID') {
-      // Reemplazamos solo cuando el valor está entre comillas o como string literal
-      const orgIdRegex = new RegExp(`(["'])${organizationId}([\"'])`, 'g'); // evita reemplazos erróneos
-      code = code.replace(orgIdRegex, `$1${organizationId}$2`);
-
-      // Reemplazo seguro para los casos donde aún aparece el placeholder
       code = code.replace(/TU_ORG_ID/g, organizationId);
     }
 
@@ -314,6 +309,7 @@ El código ya está configurado con tu Organization ID
         )}
       </div>
 
+      {/* Variable de entorno */}
       {integrationMethod === 'npm' && (
         <div className={styles.envSection}>
           <label className={styles.label}>Variable de Entorno (.env)</label>
@@ -334,6 +330,7 @@ El código ya está configurado con tu Organization ID
         </div>
       )}
 
+      {/* Comando de instalación */}
       {integrationMethod === 'npm' && (
         <div className={styles.installRow}>
           <code className={styles.installCode}>
@@ -348,6 +345,7 @@ El código ya está configurado con tu Organization ID
         </div>
       )}
 
+      {/* Bloque de código */}
       <div className={styles.codeBlock}>
         <pre className={styles.codePre}>{embedCode}</pre>
         <button 
@@ -358,6 +356,7 @@ El código ya está configurado con tu Organization ID
         </button>
       </div>
 
+      {/* Vista previa */}
       <div className={styles.previewSection}>
         <h3 className={styles.previewTitle}>Vista Previa</h3>
         <div className={styles.previewContainer}>

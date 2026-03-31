@@ -52,18 +52,18 @@ export class WidgetController {
     private readonly testimonialRepository: TestimonialRepository,
   ) {}
 
+import { UploadedFile, UseInterceptors, Req } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import type { Request } from 'express';
+
   @Public()
   @Post('submit')
+  @UseInterceptors(FileInterceptor('image'))
   async submit(
-    @Body()
-    body: {
-      organizationId: string;
-      content: string;
-      author: string;
-      rating: number;
-    },
+    @UploadedFile() image: Express.Multer.File,
+    @Req() req: Request
   ) {
-    const { organizationId, content, author, rating } = body;
+    const { organizationId, content, author, rating } = req.body;
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
