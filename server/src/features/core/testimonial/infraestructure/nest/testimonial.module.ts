@@ -31,6 +31,7 @@ const MEDIA_REPOSITORY_PROVIDER = {
     TypeOrmModule.forFeature([TestimonialEntity]),
     AuthModule,
     ConfigModule,
+    // AIModule, // No debe importar AIModule para evitar dependencia circular
   ],
   controllers: [TestimonialController, WidgetController],
   providers: [

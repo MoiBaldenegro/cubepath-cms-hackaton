@@ -240,7 +240,22 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
       } else if (this._data.length === 0) {
         content = '<div class="loading">No approved testimonials yet.</div>';
       } else {
-        const items = this._data.map(t => {
+        let items = '';
+        if (this._data[0]?.aiGenerated) {
+          const t = this._data[0];
+          const stars = t.rating ? '★'.repeat(t.rating) + '☆'.repeat(5 - t.rating) : '';
+          items += `
+            <div class="card ai-testimonial" style="border:2px dashed #6b7280;background:linear-gradient(90deg,#f8fafc 60%,#e0e7ef 100%);margin-bottom:18px;position:relative;">
+              <div style="position:absolute;top:8px;right:16px;color:#64748b;font-weight:600;font-size:13px;opacity:0.7;"><span style="background:#e0e7ef;border-radius:4px;padding:2px 8px;">Generado por AI</span></div>
+              <p style="font-size:17px;font-style:italic;margin-bottom:8px;">"${t.content}"</p>
+              <div class="footer" style="display:flex;align-items:center;gap:12px;">
+                <strong>${t.author}</strong>
+                <div class="rating" style="color:#f59e42;font-size:18px;">${stars}</div>
+              </div>
+            </div>
+          `;
+        }
+        items += this._data.filter((t, i) => !t.aiGenerated || i !== 0).map(t => {
           const stars = t.rating ? '★'.repeat(t.rating) + '☆'.repeat(5 - t.rating) : '';
           const image = t.imageUrl ? `<div style="margin-bottom:10px;"><img src="${t.imageUrl}" alt="Testimonial" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #eee;" /></div>` : '';
           return `

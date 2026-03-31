@@ -3,7 +3,7 @@ import { AISummaryService } from '../domain/ports/AISummaryService';
 export class OpenRouterAISummaryService implements AISummaryService {
   private readonly apiKey: string;
   private readonly apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
-  private readonly model = 'mistralai/mixtral-8x7b'; // Puedes cambiar el modelo si lo deseas
+  private readonly model = 'openrouter/free'; // Puedes cambiar el modelo si lo deseas
 
   constructor(apiKey?: string) {
     this.apiKey = apiKey || process.env.OPENROUTER_API_KEY || '';
@@ -13,38 +13,137 @@ export class OpenRouterAISummaryService implements AISummaryService {
   }
 
   async summarizeTestimonials(testimonials: string[]): Promise<string> {
-    const prompt = `Resume los siguientes testimonios en español, resaltando los puntos clave y el sentimiento general.\n\nTestimonios:\n${testimonials.map((t, i) => `${i + 1}. ${t}`).join('\n')}`;
+    if (!testimonials || testimonials.length === 0) {
+      return JSON.stringify({
+        content: 'Aún no hay testimonios. ¡Sé el primero en dejar el tuyo!',
+        rating: 0,
+        author: 'Generado por AI',
+        aiGenerated: true,
+      });
+    }
+
+    // Calcular promedio de estrellas (asumiendo que cada testimonio es un string con formato JSON o incluye la estrella)
+    const ratings: number[] = [];
+    const parsedTestimonials: {
+      content: string;
+      rating: number;
+      author?: string;
+    }[] = [];
+    for (const t of testimonials) {
+      try {
+        // Si el testimonio es JSON, parsear
+        const objUnknown: unknown = JSON.parse(t);
+        if (
+          objUnknown &&
+          typeof objUnknown === 'object' &&
+          'content' in objUnknown &&
+          typeof (objUnknown as Record<string, unknown>).content === 'string' &&
+          'rating' in objUnknown &&
+          typeof (objUnknown as Record<string, unknown>).rating === 'number'
+        ) {
+          const obj = objUnknown as {
+            content: string;
+            rating: number;
+            author?: string;
+          };
+          ratings.push(obj.rating);
+          parsedTestimonials.push({
+            content: obj.content,
+            rating: obj.rating,
+            author: typeof obj.author === 'string' ? obj.author : undefined,
+          });
+        }
+      } catch {
+        // Si no es JSON, intentar extraer rating con regex (ejemplo: "5 estrellas")
+        const match = t.match(/([1-5])\s*estrellas?/i);
+        const rating = match ? parseInt(match[1], 10) : 5;
+        ratings.push(rating);
+        parsedTestimonials.push({ content: t, rating });
+      }
+    }
+    const avg =
+      ratings.length > 0
+        ? ratings.reduce((a, b) => a + b, 0) / ratings.length
+        : 5;
+    const avgRounded = Math.round(avg * 10) / 10;
+
+    // Prompt personalizado para generar un "testimonio" realista
+    const prompt = `Actúa como un usuario real y escribe un testimonio único y personal, en español, usando un tono cálido y humano. El testimonio debe reflejar el promedio de estrellas (${avgRounded}) de los siguientes testimonios y resumir los puntos clave y el sentimiento general. Devuelve solo el texto del testimonio, sin encabezados ni listas.\n\nTestimonios:\n${parsedTestimonials.map((t, i) => `${i + 1}. ${t.content}`).join('\n')}`;
+
     try {
       const response = await fetch(this.apiUrl, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://cubepath.com',
-          'X-Title': 'CubePath CMS',
         },
         body: JSON.stringify({
           model: this.model,
           messages: [
             {
-              role: 'system',
-              content: 'Eres un asistente experto en análisis de texto.',
+              role: 'user',
+              content: prompt,
             },
-            { role: 'user', content: prompt },
           ],
         }),
       });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData?.error?.message || response.statusText);
+      const dataUnknown: unknown = await response.json();
+      let aiContent = '';
+      if (
+        dataUnknown &&
+        typeof dataUnknown === 'object' &&
+        'choices' in dataUnknown &&
+        Array.isArray((dataUnknown as Record<string, unknown>).choices)
+      ) {
+        const choicesArr = (dataUnknown as Record<string, unknown>).choices;
+        if (
+          Array.isArray(choicesArr) &&
+          choicesArr[0] &&
+          typeof choicesArr[0] === 'object' &&
+          'message' in choicesArr[0]
+        ) {
+          const msgObj = (choicesArr[0] as Record<string, unknown>).message;
+          if (
+            msgObj &&
+            typeof msgObj === 'object' &&
+            'content' in msgObj &&
+            typeof (msgObj as Record<string, unknown>).content === 'string'
+          ) {
+            aiContent = (msgObj as { content: string }).content;
+          }
+        }
       }
-      const data = await response.json();
-      return data.choices[0].message.content.trim();
-    } catch (error: any) {
-      throw new Error(
-        'Error al resumir testimonios con OpenRouter: ' +
-          (error.message || error),
-      );
+      if (!response.ok) {
+        let errorMsg = 'Error al resumir testimonios con OpenRouter';
+        if (
+          dataUnknown &&
+          typeof dataUnknown === 'object' &&
+          'error' in dataUnknown &&
+          (dataUnknown as Record<string, unknown>).error &&
+          typeof ((dataUnknown as { error: { message?: unknown } }).error).message === 'string'
+        ) {
+          errorMsg = (dataUnknown as { error: { message: string } }).error.message;
+        }
+        throw new Error(errorMsg);
+      }
+      // Formato idéntico a un testimonio real
+      return JSON.stringify({
+        content: aiContent,
+        rating: avgRounded,
+        author: 'Generado por AI',
+        aiGenerated: true,
+      });
+    } catch (error) {
+      let msg = 'Error al resumir testimonios con OpenRouter';
+      if (
+        error &&
+        typeof error === 'object' &&
+        'message' in error &&
+        typeof (error as { message?: unknown }).message === 'string'
+      ) {
+        msg = `Error al resumir testimonios con OpenRouter: ${(error as { message: string }).message}`;
+      }
+      throw new Error(msg);
     }
   }
 }

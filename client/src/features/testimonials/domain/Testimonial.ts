@@ -22,18 +22,19 @@ export const TestimonialTag = {
 export type TestimonialTag = (typeof TestimonialTag)[keyof typeof TestimonialTag];
 
 export interface Testimonial {
-    id: string;
-    organizationId: string;
-    iKey: string;
-    author: string;
-    content: string;
-    status: TestimonialStatus;
-    tags: TestimonialTag[];
-    rating: number;
-    category: TestimonialCategory;
-    imageUrl?: string;
-    videoUrl?: string;
-    isEdited?: boolean;
-    createdAt?: Date | string;
-    updatedAt?: Date | string;
+  id: string;
+  organizationId: string;
+  iKey: string;
+  author: string;
+  content: string;
+  status: TestimonialStatus;
+  tags: TestimonialTag[];
+  rating: number;
+  category: TestimonialCategory;
+  imageUrl?: string;
+  videoUrl?: string;
+  isEdited?: boolean;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  aiGenerated?: boolean; // Indica si es generado por AI
 }

@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { TestimonialServiceContainer } from '../../../../shared/infrastructure/TestimonialServiceContainer';
+import { SummarizeTestimonialsUseCase } from '../../../ai/application/SummarizeTestimonialsUseCase';
 import { CreateTestimonialDto } from './dtos/CreateTestimonialDto';
 import { UpdateTestimonialDto } from './dtos/UpdateTestimonialDto';
 import { FindAllTestimonialsDto } from './dtos/FindAllTestimonialsDto';
@@ -28,6 +29,7 @@ import { Public } from '../../../../auth/infrastructure/nest/decorators/public.d
 export class TestimonialController {
   constructor(
     private readonly testimonialServices: TestimonialServiceContainer,
+    private readonly summarizeTestimonialsUseCase: SummarizeTestimonialsUseCase,
   ) {}
 
   @Post()
@@ -62,10 +64,31 @@ export class TestimonialController {
 
   @Public()
   @Get('approved')
-  async findApproved(@Query() query: FindApprovedTestimonialsDto) {
-    const testimonials =
-      await this.testimonialServices.findApprovedTestimonials.run(query);
-    return testimonials.map((t) => t.toPrimitives());
+  async findApproved(@Query() query: FindApprovedTestimonialsDto, @Request() req) {
+    const testimonials = await this.testimonialServices.findApprovedTestimonials.run(query);
+    let aiTestimonial;
+    try {
+      const organizationId = req.user?.organizationId || (testimonials[0] && testimonials[0].organizationId);
+      if (organizationId) {
+        const aiResult = await this.summarizeTestimonialsUseCase.execute(organizationId);
+        aiTestimonial = typeof aiResult === 'string' ? JSON.parse(aiResult) : aiResult;
+      } else {
+        aiTestimonial = {
+          content: 'Aún no hay testimonios. ¡Sé el primero en dejar el tuyo!',
+          rating: 0,
+          author: 'Generado por AI',
+          aiGenerated: true
+        };
+      }
+    } catch {
+      aiTestimonial = {
+        content: 'Aún no hay testimonios. ¡Sé el primero en dejar el tuyo!',
+        rating: 0,
+        author: 'Generado por AI',
+        aiGenerated: true
+      };
+    }
+    return [aiTestimonial, ...testimonials.map((t) => t.toPrimitives())];
   }
 
   @Get(':id')

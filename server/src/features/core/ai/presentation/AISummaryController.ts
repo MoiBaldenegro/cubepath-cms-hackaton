@@ -9,8 +9,12 @@ export class AISummaryController {
 
   @Post()
   async summarize(@Body('organizationId') organizationId: string) {
-    return {
-      summary: await this.summarizeUseCase.execute(organizationId),
-    };
+    const result = await this.summarizeUseCase.execute(organizationId);
+    // Si el resultado es un string JSON, parsear, si no, devolver como está
+    try {
+      return typeof result === 'string' ? JSON.parse(result) : result;
+    } catch {
+      return { content: result, aiGenerated: true, author: 'Generado por AI' };
+    }
   }
 }

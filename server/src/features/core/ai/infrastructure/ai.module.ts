@@ -33,5 +33,6 @@ import { NestTestimonialsProvider } from './NestTestimonialsProvider';
     },
     NestTestimonialsProvider,
   ],
+  exports: [SummarizeTestimonialsUseCase],
 })
 export class AIModule {}

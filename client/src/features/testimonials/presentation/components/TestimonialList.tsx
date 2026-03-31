@@ -86,6 +86,29 @@ function TestimonialList({ isAdmin }: { isAdmin: boolean }) {
         <p>No testimonials found.</p>
       ) : (
         <>
+          {/* Mostrar testimonio AI si existe y es el primero */}
+          {filtered[0]?.aiGenerated && (
+            <div style={{
+              background: 'linear-gradient(90deg, #f8fafc 60%, #e0e7ef 100%)',
+              border: '2px dashed #6b7280',
+              borderRadius: 10,
+              padding: 18,
+              marginBottom: 18,
+              position: 'relative',
+              boxShadow: '0 2px 8px #e0e7ef',
+            }}>
+              <div style={{ position: 'absolute', top: 8, right: 16, color: '#64748b', fontWeight: 600, fontSize: 13, opacity: 0.7 }}>
+                <span style={{ background: '#e0e7ef', borderRadius: 4, padding: '2px 8px' }}>Generado por AI</span>
+              </div>
+              <div style={{ fontSize: 17, fontStyle: 'italic', marginBottom: 8 }}>
+                "{filtered[0].content}"
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontWeight: 600 }}>{filtered[0].author}</span>
+                <span style={{ color: '#f59e42', fontSize: 18 }}>{'★'.repeat(filtered[0].rating || 0)}{'☆'.repeat(5 - (filtered[0].rating || 0))}</span>
+              </div>
+            </div>
+          )}
           <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #ddd', textAlign: 'left' }}>

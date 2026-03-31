@@ -41,17 +41,18 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
     setError('');
 
     try {
-      await TestimonialService.create({
+      // Solo enviar imageUrl y videoUrl si existen
+      const testimonialData: any = {
         author,
         content,
         rating,
         category,
         tags,
         iKey: generateIdempotencyKey(),
-        imageUrl: imageUrl || undefined,
-        videoUrl: videoUrl || undefined,
-        imageFile,
-      });
+      };
+      if (imageUrl) testimonialData.imageUrl = imageUrl;
+      if (videoUrl) testimonialData.videoUrl = videoUrl;
+      await TestimonialService.create(testimonialData);
       setAuthor('');
       setContent('');
       setRating(5);
@@ -140,6 +141,9 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
           {imageError && (
             <div style={{ color: 'red', marginTop: '5px' }}>{imageError}</div>
           )}
+            <p style={{ color: '#888', fontSize: '12px' }}>
+              Puedes dejar este campo vacío si no deseas subir una imagen.
+            </p>
         </div>
         <div style={{ marginBottom: '10px' }}>
           <label>Video URL (Optional):</label>
