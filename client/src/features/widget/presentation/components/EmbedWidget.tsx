@@ -183,13 +183,19 @@ import 'testimo-widget';
   let embedCode = '';
 
   if (integrationMethod === 'script') {
-    embedCode = `<!-- Embed via Script Tag -->
+    embedCode = `<!--
+  INTEGRACIÓN RÁPIDA (solo <script>):
+  El widget se monta automáticamente antes del <script>.
+  Si quieres controlar el lugar exacto, pon <testimo-widget></testimo-widget> donde quieras el widget.
+  Ambos modos funcionan.
+-->
 <script 
   src="${scriptSrc}" 
   type="module"
   async>
 </script>
 
+<!-- Opción avanzada: usa el tag personalizado para controlar el lugar -->
 <testimo-widget 
   organization-id="${organizationId}" 
   theme="${theme}" 

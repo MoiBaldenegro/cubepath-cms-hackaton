@@ -34,6 +34,17 @@ import { TestimonialCreatedAt } from '../../../domain/value-objects/TestimonialC
 import { randomUUID } from 'crypto';
 import { join } from 'path';
 
+/**
+ * WidgetController
+ *
+ * Permite dos formas de integración:
+ * 1. Script embed: <script src=".../widget/embed.js?..." /> (auto-montaje, sin tag especial)
+ *    - El widget se monta automáticamente antes del <script>.
+ *    - Renderiza: resumen IA, lista de testimonios, formulario.
+ * 2. SDK npm: para integración avanzada en frameworks modernos.
+ *
+ * El endpoint /widget/embed.js soporta ambos modos y ahora incluye el resumen IA.
+ */
 @Controller('widget')
 export class WidgetController {
   constructor(
@@ -135,8 +146,8 @@ export class WidgetController {
     @Query('layout') layout: string = 'grid',
     @Res() res: Response,
   ) {
+    // 1. Obtener testimonios
     let data;
-
     if (organizationId === 'demo-org-id') {
       data = [
         {
@@ -161,20 +172,27 @@ export class WidgetController {
         await this.testimonialRepository.findApprovedByOrganization(
           new OrganizationId(organizationId),
         );
-
-      // Transform domain entities to primitive objects
       data = testimonials.map((t) => ({
         id: t.id.value,
         content: t.content.value,
         author: t.author.value,
         rating: t.rating.value,
         createdAt: t.createdAt?.value,
-        // Add other needed fields
       }));
+    }
+
+    // 2. Obtener resumen IA (mock/demo)
+    // TODO: Reemplazar por llamada real a IA si existe endpoint
+    let summary = '';
+    if (data.length > 0) {
+      summary = `Resumen IA: ${data.length} testimonios. Ejemplo: "${data[0].content}"`;
+    } else {
+      summary = 'Aún no hay testimonios para analizar.';
     }
 
     const apiUrl = process.env.API_URL || 'http://localhost:3000';
 
+    // 3. Generar JS para el widget
     const jsCode = `
       (function() {
         // Create container
@@ -191,26 +209,38 @@ export class WidgetController {
         container.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
         container.style.maxWidth = '100%';
         container.style.margin = '20px auto';
-        
+
+        // --- IA SUMMARY BOX ---
+        const summaryBox = document.createElement('div');
+        summaryBox.style.padding = '18px 20px';
+        summaryBox.style.background = '${theme === 'dark' ? '#23272f' : '#f1f5f9'}';
+        summaryBox.style.borderRadius = '10px';
+        summaryBox.style.marginBottom = '28px';
+        summaryBox.style.fontSize = '16px';
+        summaryBox.style.fontStyle = 'italic';
+        summaryBox.style.color = '${theme === 'dark' ? '#cbd5e1' : '#334155'}';
+        summaryBox.innerText = ${JSON.stringify(summary)};
+        container.appendChild(summaryBox);
+
         // Header
         const header = document.createElement('div');
         header.style.marginBottom = '24px';
         header.style.textAlign = 'center';
-        
+
         const title = document.createElement('h2');
         title.innerText = 'What People Say';
         title.style.margin = '0 0 8px 0';
         title.style.fontSize = '24px';
         title.style.fontWeight = '600';
         header.appendChild(title);
-        
+
         container.appendChild(header);
 
         // Grid/List Layout
         const list = document.createElement('div');
         list.style.display = '${layout === 'grid' ? 'grid' : 'flex'}';
         list.style.gap = '20px';
-        
+
         if ('${layout}' === 'grid') {
           list.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
         } else {
@@ -234,7 +264,7 @@ export class WidgetController {
                 item.style.borderRadius = '12px';
                 item.style.backgroundColor = '${theme === 'dark' ? '#2d2d2d' : '#f8f9fa'}';
                 item.style.transition = 'transform 0.2sease';
-                
+
                 // Content
                 const text = document.createElement('p');
                 text.innerText = '"' + t.content + '"';
@@ -274,7 +304,7 @@ export class WidgetController {
         formSection.style.marginTop = '40px';
         formSection.style.paddingTop = '20px';
         formSection.style.borderTop = '1px solid ${theme === 'dark' ? '#333' : '#eee'}';
-        
+
         const formTitle = document.createElement('h3');
         formTitle.innerText = 'Share your experience';
         formTitle.style.textAlign = 'center';
@@ -373,12 +403,18 @@ export class WidgetController {
         formSection.appendChild(feedback);
         container.appendChild(formSection);
 
-        // Inject widget
-        const currentScript = document.currentScript;
-        if (currentScript && currentScript.parentNode) {
-            currentScript.parentNode.insertBefore(container, currentScript);
+        // --- INYECCIÓN: Si existe <testimo-widget>, renderiza ahí. Si no, modo clásico ---
+        const customTag = document.querySelector('testimo-widget');
+        if (customTag) {
+          customTag.innerHTML = '';
+          customTag.appendChild(container);
         } else {
-             document.body.appendChild(container); // Fallback
+          const currentScript = document.currentScript;
+          if (currentScript && currentScript.parentNode) {
+            currentScript.parentNode.insertBefore(container, currentScript);
+          } else {
+            document.body.appendChild(container); // Fallback
+          }
         }
       })();
     `;
