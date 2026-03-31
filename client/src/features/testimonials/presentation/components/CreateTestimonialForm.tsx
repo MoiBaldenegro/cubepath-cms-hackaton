@@ -58,7 +58,6 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
       setCategory(TestimonialCategory.TECHNOLOGY);
       setTags([]);
       setImageUrl('');
-      setImageFile(null);
       setVideoUrl('');
       onSuccess();
       alert('Testimonial created successfully!');
@@ -125,14 +124,12 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
                 const file = e.target.files[0];
                 const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
                 if (!validTypes.includes(file.type)) {
-                  setImageFile(null);
                   setImageError('Formato de imagen no válido. Solo se permiten archivos JPEG, JPG o PNG.');
                   return;
                 }
-                setImageFile(file);
                 setImageUrl(''); // Limpiar el campo de URL si se sube archivo
               } else {
-                setImageFile(null);
+                // No hay imageFile, solo limpiar error
               }
             }}
             style={{ display: 'block', width: '100%' }}
