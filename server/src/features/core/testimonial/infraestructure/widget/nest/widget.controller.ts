@@ -44,6 +44,7 @@ import { TestimonialIsEdited } from '../../../domain/value-objects/TestimonialIs
 import { TestimonialCreatedAt } from '../../../domain/value-objects/TestimonialCreatedAt';
 import { TestimonialImageUrl } from '../../../domain/value-objects/TestimonialImageUrl';
 import type { MediaRepository } from 'src/features/media/domain/MediaRepository';
+import { TestimonialVideoUrl } from '../../../domain/value-objects/TestimonialVideoUrl';
 
 @Controller('widget')
 export class WidgetController {
@@ -93,7 +94,7 @@ export class WidgetController {
       new TestimonialIsEdited(false),
       new OrganizationId(organizationId),
       imageUrl,
-      videoUrl,
+      new TestimonialVideoUrl(videoUrl),
       new TestimonialCreatedAt(new Date()),
       undefined,
     );
