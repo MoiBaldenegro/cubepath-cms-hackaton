@@ -44,17 +44,18 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
     async _handleSubmit(i) {
       var p;
       i.preventDefault();
-      const t = i.target, e = new FormData(t), g = Object.fromEntries(e.entries()), s = this.getAttribute("organization-id"), a = (p = this.shadowRoot) == null ? void 0 : p.getElementById("form-feedback");
+      const t = i.target, e = new FormData(t), s = this.getAttribute("organization-id"), a = (p = this.shadowRoot) == null ? void 0 : p.getElementById("form-feedback");
       if (this._submitting)
         return;
       this._submitting = !0;
       const o = t.querySelector("button");
       o && (o.disabled = !0), o && (o.textContent = "Submitting...");
+      // Agregar organizationId al formData
+      e.append("organizationId", s);
       try {
         if (!(await fetch(`${this.apiUrl}/widget/submit`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...g, organizationId: s })
+          body: e
         })).ok)
           throw new Error("Failed to submit");
         t.reset(), a && (a.textContent = "Thank you! Your testimonial has been submitted for review.", a.className = "success-msg");
@@ -211,7 +212,7 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
       const a = `
         <div class="form-section">
           <h3>Share your experience</h3>
-          <form id="testimonial-form">
+          <form id="testimonial-form" enctype="multipart/form-data">
             <input type="text" name="author" placeholder="Your Name" required />
             <select name="rating">
                 <option value="5">★★★★★ Excellent</option>
@@ -221,6 +222,17 @@ if (typeof window < "u" && !customElements.get("cubepath-widget")) {
                 <option value="1">★☆☆☆☆ Terrible</option>
             </select>
             <textarea name="content" placeholder="Your Testimonial" required></textarea>
+            <label>Image (optional):
+              <input type="file" name="image" accept="image/*" />
+            </label>
+            <input type="text" name="videoUrl" placeholder="YouTube Video URL (optional)" />
+            <fieldset style="border:none;padding:0;margin:0;">
+              <legend style="font-size:14px;margin-bottom:4px;">Tags:</legend>
+              <label><input type="checkbox" name="tags" value="PRODUCT" /> Product</label>
+              <label><input type="checkbox" name="tags" value="SERVICE" /> Service</label>
+              <label><input type="checkbox" name="tags" value="SUPPORT" /> Support</label>
+              <label><input type="checkbox" name="tags" value="GENERAL" /> General</label>
+            </fieldset>
             <button type="submit">Submit Testimonial</button>
           </form>
           <div id="form-feedback"></div>

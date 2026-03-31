@@ -61,7 +61,7 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
     }
 
     get apiUrl() {
-      return this.getAttribute('api-url') || 'http://cubepathhackaton-api-aymrvj-31e30c-108-165-47-144.traefik.me';
+      return this.getAttribute('api-url') || 'http://hackathoncubepath-server-zzxmva-37677b-108-165-47-237.traefik.me/';
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -180,7 +180,6 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
           padding: 24px;
           background-color: ${isDark ? '#1a1a1a' : '#ffffff'};
           color: ${isDark ? '#ffffff' : '#333333'};
-          border-radius: 12px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           max-width: 100%;
           margin: 20px auto;
@@ -194,13 +193,13 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
         h3 { font-size: 20px; margin-bottom: 20px; }
         .grid {
           display: grid;
+        formData.append('organizationId', orgId);
           grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
           gap: 20px;
-        }
-        .list {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
+          const response = await fetch(`${this.apiUrl}/widget/submit`, {
+            method: 'POST',
+            body: formData,
+          });
         }
         .card {
           border: 1px solid ${isDark ? '#333' : '#eee'};
@@ -314,18 +313,28 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
 
       const formHtml = `
         <div class="form-section">
-          <h3>Share your experience</h3>
-          <form id="testimonial-form">
-            <input type="text" name="author" placeholder="Your Name" required />
-            <select name="rating">
-              <option value="5">★★★★★ Excellent</option>
-              <option value="4">★★★★☆ Good</option>
-              <option value="3">★★★☆☆ Average</option>
-              <option value="2">★★☆☆☆ Poor</option>
+          <h3>Comparte tu experiencia</h3>
+          <form id="testimonial-form" enctype="multipart/form-data">
+            <input type="text" name="author" placeholder="Tu nombre" required />
+            <select name="rating" required>
+              <option value="">Calificación</option>
+              <option value="5">★★★★★ Excelente</option>
+              <option value="4">★★★★☆ Buena</option>
+              <option value="3">★★★☆☆ Regular</option>
+              <option value="2">★★☆☆☆ Mala</option>
               <option value="1">★☆☆☆☆ Terrible</option>
             </select>
-            <textarea name="content" placeholder="Your Testimonial" required></textarea>
-            <button type="submit">Submit Testimonial</button>
+            <textarea name="content" placeholder="Tu testimonio" required></textarea>
+            <label>Imagen (opcional): <input type="file" name="image" accept="image/*" /></label>
+            <input type="text" name="videoUrl" placeholder="URL de video (opcional)" />
+            <div style="margin:8px 0 0 0;">
+              <span style="font-size:14px;">Etiquetas:</span><br/>
+              <label><input type="checkbox" name="tags" value="PRODUCT" /> Producto</label>
+              <label><input type="checkbox" name="tags" value="SERVICE" /> Servicio</label>
+              <label><input type="checkbox" name="tags" value="SUPPORT" /> Soporte</label>
+              <label><input type="checkbox" name="tags" value="GENERAL" /> General</label>
+            </div>
+            <button type="submit">Enviar testimonio</button>
           </form>
           <div id="form-feedback"></div>
         </div>
