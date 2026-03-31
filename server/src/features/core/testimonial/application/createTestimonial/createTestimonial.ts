@@ -74,9 +74,14 @@ export class TestimonialCreate {
     const createdAt = new TestimonialCreatedAt(new Date());
     const updatedAt = new TestimonialUpdatedAt(new Date());
 
-    const imageUrl = request.imageUrl
-      ? new TestimonialImageUrl(request.imageUrl)
-      : undefined;
+    let imageUrl = undefined;
+    if (
+      request.imageUrl &&
+      typeof request.imageUrl === 'string' &&
+      request.imageUrl.trim() !== ''
+    ) {
+      imageUrl = new TestimonialImageUrl(request.imageUrl);
+    }
     const videoUrl = request.videoUrl
       ? new TestimonialVideoUrl(request.videoUrl)
       : undefined;
