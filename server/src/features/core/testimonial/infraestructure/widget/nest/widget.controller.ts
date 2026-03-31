@@ -17,9 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 
-// Importaciones con 'import type' para evitar TS1272
-import type { TestimonialRepository } from '../../../domain/ports/TestimonialRepository';
-
+import { TestimonialRepository } from '../../../domain/ports/TestimonialRepository';
 import { OrganizationId } from '../../../domain/value-objects/OrganizationId';
 import { Public } from '../../../../../auth/infrastructure/nest/decorators/public.decorator';
 
@@ -43,18 +41,16 @@ import {
 import { TestimonialIdempotencyKey } from '../../../domain/value-objects/TestimonialIdempotencyKey';
 import { TestimonialIsEdited } from '../../../domain/value-objects/TestimonialIsEdited';
 import { TestimonialCreatedAt } from '../../../domain/value-objects/TestimonialCreatedAt';
-// Si tienes TestimonialImageUrl, impórtalo aquí:
-import { TestimonialImageUrl } from '../../../domain/value-objects/TestimonialImageUrl';
 
 @Controller('widget')
 export class WidgetController {
   constructor(
     @Inject('TestimonialRepository')
-    private readonly testimonialRepository: TestimonialRepository, // ← ahora es tipo
+    private readonly testimonialRepository: TestimonialRepository,
   ) {}
 
   // ========================
-  // SUBMIT TESTIMONIAL
+  // SUBMIT TESTIMONIAL (con imagen)
   // ========================
   @Public()
   @Post('submit')
@@ -70,15 +66,6 @@ export class WidgetController {
       return { success: false, message: 'Missing required fields' };
     }
 
-    let testimonialImageUrl = undefined;
-    if (image && image.filename) {
-      testimonialImageUrl = new TestimonialImageUrl(`/uploads/${image.filename}`);
-    }
-    // Si en el futuro quieres aceptar imageUrl directo del body, puedes agregar:
-    // else if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '') {
-    //   testimonialImageUrl = new TestimonialImageUrl(imageUrl);
-    // }
-
     const testimonial = new Testimonial(
       new TestimonialId(randomUUID()),
       new TestimonialIdempotencyKey(randomUUID()),
@@ -90,7 +77,7 @@ export class WidgetController {
       new TestimonialCategory(TestimonialCategoryEnum.OTHER),
       new TestimonialIsEdited(false),
       new OrganizationId(organizationId),
-      testimonialImageUrl,
+      image ? `/uploads/${image.filename}` : undefined,
       videoUrl || undefined,
       new TestimonialCreatedAt(new Date()),
       undefined,
@@ -102,7 +89,7 @@ export class WidgetController {
   }
 
   // ========================
-  // GET DATA
+  // GET TESTIMONIALS DATA
   // ========================
   @Public()
   @Get('data')
@@ -142,7 +129,7 @@ export class WidgetController {
   }
 
   // ========================
-  // EMBED.JS
+  // EMBED.JS - Widget Script
   // ========================
   @Public()
   @Get('embed.js')
@@ -155,6 +142,7 @@ export class WidgetController {
     const isDark = theme === 'dark';
     const apiUrl = process.env.API_URL || 'http://localhost:3000';
 
+    // Obtener testimonios
     let testimonials: any[] = [];
     if (organizationId === 'demo-org-id') {
       testimonials = [
@@ -185,6 +173,7 @@ export class WidgetController {
       }));
     }
 
+    // Resumen IA simple
     const summary =
       testimonials.length > 0
         ? `Las personas comentan que: "${testimonials[0].content}"${
@@ -194,11 +183,13 @@ export class WidgetController {
           }`
         : 'Aún no hay testimonios. ¡Sé el primero en compartir tu experiencia!';
 
+    // JavaScript del widget (versión mejorada)
     const jsCode = `
       (function() {
         const orgId = "${organizationId}";
         const isDark = ${isDark};
         const layout = "${layout}";
+        const apiUrl = "${apiUrl}";
 
         if (document.getElementById('testimo-widget-' + orgId)) return;
 
@@ -215,11 +206,16 @@ export class WidgetController {
           margin: 20px auto;
         \`;
 
+        // Header
         const header = document.createElement('h2');
         header.textContent = 'What People Say';
-        header.style.cssText = 'text-align: center; margin: 0 0 32px 0; font-size: 28px; font-weight: 700;';
+        header.style.textAlign = 'center';
+        header.style.margin = '0 0 32px 0';
+        header.style.fontSize = '28px';
+        header.style.fontWeight = '700';
         container.appendChild(header);
 
+        // Summary
         const summaryDiv = document.createElement('div');
         summaryDiv.style.cssText = \`
           padding: 20px 24px;
@@ -234,6 +230,7 @@ export class WidgetController {
         summaryDiv.textContent = ${JSON.stringify(summary)};
         container.appendChild(summaryDiv);
 
+        // Testimonials List
         const list = document.createElement('div');
         list.style.display = '${layout === 'grid' ? 'grid' : 'flex'}';
         list.style.gap = '24px';
@@ -254,26 +251,33 @@ export class WidgetController {
             padding: 24px;
             transition: all 0.3s ease;
           \`;
+
           card.innerHTML = \`
-            <p style="font-size:18px;line-height:1.7;margin-bottom:20px;color:\${isDark ? '#cbd5e1' : '#334155'};">"\${t.content}"</p>
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <strong>\${t.author}</strong>
-              <span style="color:#fbbf24;font-size:20px;">\${'★'.repeat(t.rating || 0)}</span>
+            <p style="font-size: 18px; line-height: 1.7; margin-bottom: 20px; color: \${isDark ? '#cbd5e1' : '#334155'};">
+              "\${t.content}"
+            </p>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <strong style="font-size: 16px;">\${t.author}</strong>
+              <span style="color: #fbbf24; font-size: 20px;">
+                \${'★'.repeat(t.rating || 0)}
+              </span>
             </div>
           \`;
+
           list.appendChild(card);
         });
 
         container.appendChild(list);
 
+        // Insertar en la página
         const widgetTag = document.querySelector('testimo-widget');
         if (widgetTag) {
           widgetTag.innerHTML = '';
           widgetTag.appendChild(container);
         } else {
-          const script = document.currentScript;
-          if (script && script.parentNode) {
-            script.parentNode.insertBefore(container, script);
+          const currentScript = document.currentScript;
+          if (currentScript && currentScript.parentNode) {
+            currentScript.parentNode.insertBefore(container, currentScript);
           } else {
             document.body.appendChild(container);
           }
@@ -284,5 +288,25 @@ export class WidgetController {
     res.setHeader('Content-Type', 'application/javascript');
     res.setHeader('Cache-Control', 'no-cache');
     res.send(jsCode);
+  }
+
+  // ========================
+  // SDK (opcional)
+  // ========================
+  @Public()
+  @Get('sdk.js')
+  getSdk(@Res() res: Response) {
+    const filePath = join(process.cwd(), '../sdk/dist/sdk.js');
+    res.sendFile(filePath);
+  }
+}
+============
+  // SDK (opcional)
+  // ========================
+  @Public()
+  @Get('sdk.js')
+  getSdk(@Res() res: Response) {
+    const filePath = join(process.cwd(), '../sdk/dist/sdk.js');
+    res.sendFile(filePath);
   }
 }
