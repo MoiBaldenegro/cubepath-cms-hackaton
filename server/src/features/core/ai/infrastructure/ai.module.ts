@@ -2,7 +2,6 @@ import { Module, forwardRef } from '@nestjs/common';
 import { TestimonialModule } from '../../testimonial/infraestructure/nest/testimonial.module';
 import { AISummaryController } from '../presentation/AISummaryController';
 import { SummarizeTestimonialsUseCase } from '../application/SummarizeTestimonialsUseCase';
-import { OpenAIAISummaryService } from './OpenAIAISummaryService';
 import { OpenRouterAISummaryService } from './OpenRouterAISummaryService';
 import { NestTestimonialsProvider } from './NestTestimonialsProvider';
 

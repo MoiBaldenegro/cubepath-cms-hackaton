@@ -13,8 +13,9 @@ export const EmbedWidget = () => {
   const [installCopied, setInstallCopied] = useState(false);
 
   const organizationId = import.meta.env.VITE_ORG_ID || 'YOUR_ORG_ID';
-  const scriptSrc = 'https://cdn.testimo-widget.com/widget.js'; // Cambia si tu CDN es diferente
-  const API_URL = import.meta.env.VITE_API_URL || ''; // Si lo necesitas
+  const API_URL = import.meta.env.VITE_API_URL || '';
+  // Usar siempre el endpoint real del backend para la preview y el código generado
+  const scriptSrc = `${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}`;
 
   const frameworkConfig: Record<Framework, {
     label: string;
@@ -184,23 +185,20 @@ import 'testimo-widget';
 
   if (integrationMethod === 'script') {
     embedCode = `<!--
-  INTEGRACIÓN RÁPIDA (solo <script>):
-  El widget se monta automáticamente antes del <script>.
-  Si quieres controlar el lugar exacto, pon <testimo-widget></testimo-widget> donde quieras el widget.
-  Ambos modos funcionan.
+INTEGRACIÓN RÁPIDA (solo <script>):
+El widget se monta automáticamente antes del <script>.
+Debes poner tu organizationId en la URL del script.
+Si quieres controlar el lugar exacto, pon <testimo-widget></testimo-widget> donde quieras el widget.
+Ambos modos funcionan.
 -->
-<script 
-  src="${scriptSrc}" 
+<script
+  src="${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}"
   type="module"
   async>
 </script>
 
 <!-- Opción avanzada: usa el tag personalizado para controlar el lugar -->
-<testimo-widget 
-  organization-id="${organizationId}" 
-  theme="${theme}" 
-  layout="${layout}"
-></testimo-widget>`;
+<testimo-widget></testimo-widget>`;
   } else {
     embedCode = frameworkConfig[selectedFramework].code;
   }
@@ -366,12 +364,14 @@ import 'testimo-widget';
       <div className={styles.codeBlock}>
         <div style={{ position: 'relative' }}>
           <pre style={{ 
-            background: '#f8f9fa', 
+            background: '#23272f',
+            color: '#f8fafc',
             padding: '20px', 
             borderRadius: '8px', 
             overflow: 'auto',
             fontSize: '14px',
-            lineHeight: '1.5'
+            lineHeight: '1.5',
+            border: '1px solid #222',
           }}>
             {embedCode}
           </pre>
@@ -402,13 +402,8 @@ import 'testimo-widget';
                 </head>
                 <body>
                   ${integrationMethod === 'script'
-                    ? `<script src="${scriptSrc}" type="module" async></script>`
+                    ? `<script src="${scriptSrc}" type="module" async></script>\n<testimo-widget organization-id=\"${organizationId}\" theme=\"${theme}\" layout=\"${layout}\"></testimo-widget>`
                     : ''}
-                  <testimo-widget 
-                    organization-id="${organizationId}" 
-                    theme="${theme}" 
-                    layout="${layout}"
-                  ></testimo-widget>
                 </body>
               </html>
             `}
