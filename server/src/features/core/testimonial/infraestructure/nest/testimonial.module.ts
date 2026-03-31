@@ -13,6 +13,8 @@ import { TestimonialEntity } from '../typeorm/Testimonial.entity';
 import { TestimonialRepository } from '../../domain/ports/TestimonialRepository';
 
 import { AuthModule } from '../../../../auth/infrastructure/nest/auth.module';
+import { AIModule } from '../../../ai/infrastructure/ai.module';
+import { forwardRef } from '@nestjs/common';
 import { MediaRepository } from 'src/features/media/domain/MediaRepository';
 import { CloudinaryMediaRepository } from 'src/features/media/infrastructure/CloudinaryMediaRepository';
 
@@ -31,7 +33,7 @@ const MEDIA_REPOSITORY_PROVIDER = {
     TypeOrmModule.forFeature([TestimonialEntity]),
     AuthModule,
     ConfigModule,
-    // AIModule, // No debe importar AIModule para evitar dependencia circular
+    forwardRef(() => AIModule), // Import AIModule with forwardRef to resolve circular dependency
   ],
   controllers: [TestimonialController, WidgetController],
   providers: [

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TestimonialModule } from '../../testimonial/infraestructure/nest/testimonial.module';
 import { AISummaryController } from '../presentation/AISummaryController';
 import { SummarizeTestimonialsUseCase } from '../application/SummarizeTestimonialsUseCase';
@@ -7,7 +7,7 @@ import { OpenRouterAISummaryService } from './OpenRouterAISummaryService';
 import { NestTestimonialsProvider } from './NestTestimonialsProvider';
 
 @Module({
-  imports: [TestimonialModule],
+  imports: [forwardRef(() => TestimonialModule)],
   controllers: [AISummaryController],
   providers: [
     // Cambia aquí entre OpenAIAISummaryService y OpenRouterAISummaryService según lo que quieras usar

@@ -9,7 +9,6 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
   const [category, setCategory] = useState<TestimonialCategory>(TestimonialCategory.TECHNOLOGY);
   const [tags, setTags] = useState<TestimonialTag[]>([]);
   const [imageUrl, setImageUrl] = useState('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
