@@ -213,4 +213,14 @@ export class TestimonialService {
       method: 'DELETE',
     });
   }
+
+  static async getSummary(): Promise<{ summary: string }> {
+    // MOCK MODE
+    const token = localStorage.getItem('token');
+    if (token === 'demo-token') {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      return { summary: 'Este es un resumen generado por IA de los testimonios más relevantes.' };
+    }
+    return this.request<{ summary: string }>('testimonial/summary');
+  }
 }
