@@ -1,0 +1,82 @@
+:root {
+  --foreground-primary: #111827;
+  --foreground-secondary: #4b5563;
+  --foreground-tertiary: #9ca3af;
+  --foreground-muted: #d1d5db;
+
+  --surface-base: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-muted: #f9fafb;
+  --surface-hover: #f3f4f6;
+
+  --border-default: #e5e7eb;
+  --border-emphasis: #d1d5db;
+  --border-strong: #9ca3af;
+
+  --brand-primary: #3b5bdb;
+  --brand-hover: #2f4ac6;
+  --brand-muted: #edf2ff;
+
+  --semantic-success: #059669;
+  --semantic-success-light: #ecfdf5;
+  --semantic-warning: #d97706;
+  --semantic-warning-light: #fffbeb;
+  --semantic-error: #dc2626;
+  --semantic-error-light: #fef2f2;
+
+  --control-background: #f9fafb;
+  --control-background-hover: #f3f4f6;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--surface-base);
+  color: var(--foreground-primary);
+  line-height: 1.5;
+}
+
+input, button, textarea, select {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: var(--brand-muted);
+  color: var(--brand-primary);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-emphasis);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
