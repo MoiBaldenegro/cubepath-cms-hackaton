@@ -68,6 +68,12 @@ export class WidgetController {
       return { success: false, message: 'Missing required fields' };
     }
 
+    let imageUrl: TestimonialImageUrl | undefined = undefined;
+    if (image && image.filename) {
+      // Solo crea el value object si hay imagen subida
+      imageUrl = new TestimonialImageUrl(`/uploads/${image.filename}`);
+    }
+
     const testimonial = new Testimonial(
       new TestimonialId(randomUUID()),
       new TestimonialIdempotencyKey(randomUUID()),
@@ -79,7 +85,7 @@ export class WidgetController {
       new TestimonialCategory(TestimonialCategoryEnum.OTHER),
       new TestimonialIsEdited(false),
       new OrganizationId(organizationId),
-      image ? new TestimonialImageUrl(`/uploads/${image.filename}`) : undefined,
+      imageUrl,
       videoUrl || undefined,
       new TestimonialCreatedAt(new Date()),
       undefined,
