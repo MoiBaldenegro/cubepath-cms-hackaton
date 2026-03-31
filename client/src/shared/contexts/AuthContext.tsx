@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { UserRole } from '../../features/users/domain/UserRole'; // Assuming create this later or define inline
+import { createContext, useState, useMemo, type ReactNode } from 'react';
+import { UserRole } from '../../features/users/domain/UserRole';
 
 interface User {
   id: string;
@@ -19,19 +19,25 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export { AuthContext };
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
-    
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const storedUser = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    const userStr = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    if (userStr && token) {
+      try {
+        return JSON.parse(userStr) as User;
+      } catch {
+        return null;
+      }
     }
-    setIsLoading(false);
+    return null;
   }, []);
+
+  const [user, setUser] = useState<User | null>(storedUser);
+  const isLoading = false;
 
   const login = (userData: User, token: string) => {
     localStorage.setItem('user', JSON.stringify(userData));
@@ -61,12 +67,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

@@ -1,0 +1,44 @@
+.container {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.image {
+  max-width: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--border-default);
+  cursor: zoom-in;
+  transition: all 0.2s ease;
+  background: var(--surface-muted);
+}
+
+.image:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+.image.zoomed {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.1);
+  max-width: 90vw;
+  max-height: 90vh;
+  z-index: 1000;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 999;
+  cursor: zoom-out;
+  backdrop-filter: blur(4px);
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--foreground-muted);
+  margin-top: 0.5rem;
+}

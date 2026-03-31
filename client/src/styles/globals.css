@@ -1,35 +1,40 @@
 :root {
-  --foreground-primary: #111827;
-  --foreground-secondary: #4b5563;
-  --foreground-tertiary: #9ca3af;
-  --foreground-muted: #d1d5db;
+  --foreground-primary: #f9fafb;
+  --foreground-secondary: #9ca3af;
+  --foreground-tertiary: #6b7280;
+  --foreground-muted: #4b5563;
 
-  --surface-base: #ffffff;
-  --surface-elevated: #ffffff;
-  --surface-muted: #f9fafb;
-  --surface-hover: #f3f4f6;
+  --surface-base: #0f1117;
+  --surface-elevated: #161921;
+  --surface-muted: #1e222d;
+  --surface-hover: #252a38;
+  --surface-active: #2d3344;
 
-  --border-default: #e5e7eb;
-  --border-emphasis: #d1d5db;
-  --border-strong: #9ca3af;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-emphasis: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.25);
 
-  --brand-primary: #3b5bdb;
-  --brand-hover: #2f4ac6;
-  --brand-muted: #edf2ff;
+  --brand-primary: #6366f1;
+  --brand-hover: #818cf8;
+  --brand-muted: rgba(99, 102, 241, 0.15);
+  --brand-glow: rgba(99, 102, 241, 0.4);
 
-  --semantic-success: #059669;
-  --semantic-success-light: #ecfdf5;
-  --semantic-warning: #d97706;
-  --semantic-warning-light: #fffbeb;
-  --semantic-error: #dc2626;
-  --semantic-error-light: #fef2f2;
+  --semantic-success: #34d399;
+  --semantic-success-light: rgba(52, 211, 153, 0.1);
+  --semantic-warning: #fbbf24;
+  --semantic-warning-light: rgba(251, 191, 36, 0.1);
+  --semantic-error: #f87171;
+  --semantic-error-light: rgba(248, 113, 113, 0.1);
 
-  --control-background: #f9fafb;
-  --control-background-hover: #f3f4f6;
+  --control-background: #1a1d27;
+  --control-background-hover: #22262f;
+  --control-border: rgba(255, 255, 255, 0.08);
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
 }
 
 * {
@@ -39,7 +44,7 @@
 }
 
 html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -56,11 +61,12 @@ input, button, textarea, select {
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
 ::selection {
   background: var(--brand-muted);
-  color: var(--brand-primary);
+  color: var(--brand-hover);
 }
 
 ::-webkit-scrollbar {

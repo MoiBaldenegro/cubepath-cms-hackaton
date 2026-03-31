@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import { TestimonialCategory, TestimonialTag } from '../../domain/Testimonial';
 import { TestimonialService } from '../../infrastructure/TestimonialService';
+import styles from './CreateTestimonialForm.module.css';
+
+interface TestimonialInput {
+  author: string;
+  content: string;
+  rating: number;
+  category: TestimonialCategory;
+  tags: TestimonialTag[];
+  iKey: string;
+  imageUrl?: string;
+  videoUrl?: string;
+}
 
 export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [author, setAuthor] = useState('');
@@ -12,13 +24,11 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
   const [videoUrl, setVideoUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [imageError, setImageError] = useState('');
 
   const generateIdempotencyKey = () => {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
       return crypto.randomUUID();
     }
-    // Fallback UUID v4 generator
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       const r = (Math.random() * 16) | 0;
       const v = c === 'x' ? r : (r & 0x3) | 0x8;
@@ -40,8 +50,7 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
     setError('');
 
     try {
-      // Solo enviar imageUrl y videoUrl si existen
-      const testimonialData: any = {
+      const testimonialData: TestimonialInput = {
         author,
         content,
         rating,
@@ -60,51 +69,92 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
       setImageUrl('');
       setVideoUrl('');
       onSuccess();
-      alert('Testimonial created successfully!');
-    } catch (err: any) {
-      setError(err.message || 'Failed to create testimonial');
+      alert('¡Testimonio creado exitosamente!');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error al crear el testimonio';
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
 
+  const categoryLabels: Record<string, string> = {
+    TECHNOLOGY: 'Tecnología',
+    HEALTHCARE: 'Salud',
+    EDUCATION: 'Educación',
+    FINANCE: 'Finanzas',
+    RETAIL: 'Comercio',
+    OTHER: 'Otro',
+  };
+
   return (
-    <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h3>Create New Testimonial</h3>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Author:</label>
-          <input
-            type="text"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            required
-            style={{ display: 'block', width: '100%' }}
-          />
+    <div className={styles.formContainer}>
+      <div className={styles.formHeader}>
+        <h3 className={styles.formTitle}>Crear Nuevo Testimonio</h3>
+        <p className={styles.formSubtitle}>Completa los detalles del testimonio del cliente</p>
+      </div>
+
+      {error && <div className={styles.error}>{error}</div>}
+
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <div className={styles.formGrid}>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Autor</label>
+            <input
+              type="text"
+              className={styles.input}
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="Nombre del cliente"
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Categoría</label>
+            <select
+              className={`${styles.input} ${styles.select}`}
+              value={category}
+              onChange={(e) => setCategory(e.target.value as TestimonialCategory)}
+              required
+            >
+              {Object.values(TestimonialCategory).map((c) => (
+                <option key={c} value={c}>
+                  {categoryLabels[c] || c}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Calificación</label>
+            <div className={styles.ratingContainer}>
+              <div className={styles.stars}>
+                {[1, 2, 3, 4, 5].map((r) => (
+                  <span
+                    key={r}
+                    className={`${styles.star} ${r <= rating ? styles.active : ''}`}
+                    onClick={() => setRating(r)}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Category:</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as TestimonialCategory)}
-            required
-            style={{ display: 'block', width: '100%' }}
-          >
-            {Object.values(TestimonialCategory).map((c) => (
-              <option key={c} value={c}>
-                {c.charAt(0) + c.slice(1).toLowerCase()}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Tags:</label>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+
+        <div className={styles.inputGroup}>
+          <label className={styles.label}>Etiquetas</label>
+          <div className={styles.tagsContainer}>
             {Object.values(TestimonialTag).map((tag) => (
-              <label key={tag} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <label
+                key={tag}
+                className={`${styles.tagOption} ${tags.includes(tag) ? styles.selected : ''}`}
+              >
                 <input
                   type="checkbox"
+                  className={styles.tagCheckbox}
                   checked={tags.includes(tag)}
                   onChange={() => handleTagChange(tag)}
                 />
@@ -113,70 +163,48 @@ export const CreateTestimonialForm = ({ onSuccess }: { onSuccess: () => void }) 
             ))}
           </div>
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Imagen (opcional):</label>
-          <input
-            type="file"
-            accept="image/jpeg,image/jpg,image/png"
-            onChange={e => {
-              setImageError('');
-              if (e.target.files && e.target.files[0]) {
-                const file = e.target.files[0];
-                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                if (!validTypes.includes(file.type)) {
-                  setImageError('Formato de imagen no válido. Solo se permiten archivos JPEG, JPG o PNG.');
-                  return;
-                }
-                setImageUrl(''); // Limpiar el campo de URL si se sube archivo
-              } else {
-                // No hay imageFile, solo limpiar error
-              }
-            }}
-            style={{ display: 'block', width: '100%' }}
-          />
-          {imageError && (
-            <div style={{ color: 'red', marginTop: '5px' }}>{imageError}</div>
-          )}
-            <p style={{ color: '#888', fontSize: '12px' }}>
-              Puedes dejar este campo vacío si no deseas subir una imagen.
-            </p>
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Video URL (Optional):</label>
-          <input
-            type="url"
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-            style={{ display: 'block', width: '100%' }}
-            placeholder="https://example.com/video.mp4"
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Content:</label>
+
+        <div className={styles.inputGroup}>
+          <label className={styles.label}>Contenido</label>
           <textarea
+            className={`${styles.input} ${styles.textarea}`}
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            placeholder="Escribe el testimonio del cliente..."
             required
-            style={{ display: 'block', width: '100%', minHeight: '80px' }}
           />
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Rating:</label>
-          <select
-            value={rating}
-            onChange={(e) => setRating(Number(e.target.value))}
-            style={{ display: 'block', width: '100%' }}
-          >
-            {[1, 2, 3, 4, 5].map((r) => (
-              <option key={r} value={r}>
-                {r} Stars
-              </option>
-            ))}
-          </select>
+
+        <div className={styles.formGrid}>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>URL de Imagen (opcional)</label>
+            <input
+              type="url"
+              className={styles.input}
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="https://ejemplo.com/imagen.jpg"
+            />
+            <span className={styles.fileHint}>Ingresa una URL de imagen válida</span>
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>URL de Video (opcional)</label>
+            <input
+              type="url"
+              className={styles.input}
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder="https://ejemplo.com/video.mp4"
+            />
+          </div>
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Creating...' : 'Create Testimonial'}
-        </button>
+
+        <div className={styles.formActions}>
+          <button type="submit" className={styles.submitButton} disabled={loading}>
+            {loading ? 'Creando...' : 'Crear Testimonio'}
+          </button>
+        </div>
       </form>
     </div>
   );

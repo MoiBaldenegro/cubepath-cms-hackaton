@@ -1,18 +1,27 @@
-import styles from "../../LandingPage.module.css";
+import styles from '../../features/FeaturesPage.module.css';
 
 const EnterpriseSecurity = () => (
-  <section className={styles.selfHostSection}>
-    <div className={styles.selfHostContent}>
-      <h2 className={styles.selfHostTitle}>Enterprise Security 🛡️</h2>
-      <p className={styles.selfHostSubtitle}>
-        Funcionalidades avanzadas de seguridad: whitelisting de dominios, protección anti-spam y autenticación robusta.
+  <section className={styles.section}>
+    <div className={styles.sectionContent}>
+      <h2 className={styles.sectionTitle}>
+        <span className={styles.sectionIcon}>🏢</span>
+        Seguridad enterprise
+      </h2>
+      <p className={styles.sectionDesc}>
+        Para equipos que necesitan cumplimiento normativo: SSO/SAML, auditoría completa, 
+        roles granulares y políticas de retención de datos.
       </p>
-      <ul className={styles.selfHostList}>
-        <li>Endpoints protegidos y roles de usuario.</li>
-        <li>Auditoría y trazabilidad de cambios.</li>
-      </ul>
-      <p className={styles.selfHostNote}>
-        <b>¿Por qué importa?</b> Tranquilidad para equipos de IT y compliance.
+      <div className={styles.codeBlock}>
+        <pre>{`# SSO con SAML 2.0
+SAML_PROVIDER=okta
+SAML_METADATA_URL=https://okta.com/metadata
+
+# Auditoría
+AUDIT_LOG_ENABLED=true
+AUDIT_LOG_RETENTION_DAYS=365`}</pre>
+      </div>
+      <p className={styles.note}>
+        <strong>Enterprise ready:</strong> Diseñado para cumplir con los requisitos más exigentes.
       </p>
     </div>
   </section>

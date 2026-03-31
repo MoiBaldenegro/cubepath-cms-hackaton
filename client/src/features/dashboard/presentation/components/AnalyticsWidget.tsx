@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import styles from './AnalyticsWidget.module.css';
+
+const API_URL = 'http://hackathoncubepath-server-zzxmva-37677b-108-165-47-237.traefik.me';
 
 interface AnalyticsWidgetProps {
   organizationId: string;
@@ -6,26 +9,33 @@ interface AnalyticsWidgetProps {
 
 export const AnalyticsWidget: React.FC<AnalyticsWidgetProps> = ({ organizationId }) => {
   const [loading, setLoading] = useState(true);
-  const [views, setViews] = useState<number | null>(null);
-  const [clicks, setClicks] = useState<number | null>(null);
+  const [stats, setStats] = useState<{ views: number; clicks: number; approved: number; pending: number }>({
+    views: 0,
+    clicks: 0,
+    approved: 0,
+    pending: 0,
+  });
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://cubepathhackaton-api-aymrvj-31e30c-108-165-47-144.traefik.me';
         const [viewsRes, clicksRes] = await Promise.all([
-          fetch(`${apiUrl}/analytics/stats?organizationId=${organizationId}&type=view`),
-          fetch(`${apiUrl}/analytics/stats?organizationId=${organizationId}&type=click`),
+          fetch(`${API_URL}/analytics/stats?organizationId=${organizationId}&type=view`),
+          fetch(`${API_URL}/analytics/stats?organizationId=${organizationId}&type=click`),
         ]);
         if (!viewsRes.ok || !clicksRes.ok) throw new Error('Error fetching analytics');
         const viewsData = await viewsRes.json();
         const clicksData = await clicksRes.json();
-        setViews(viewsData.count);
-        setClicks(clicksData.count);
-      } catch (err: any) {
-        setError(err.message || 'Error fetching analytics');
+        setStats(prev => ({
+          ...prev,
+          views: viewsData.count || 0,
+          clicks: clicksData.count || 0,
+        }));
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Error al cargar analíticas';
+        setError(message);
       } finally {
         setLoading(false);
       }
@@ -33,19 +43,29 @@ export const AnalyticsWidget: React.FC<AnalyticsWidgetProps> = ({ organizationId
     fetchStats();
   }, [organizationId]);
 
-  if (loading) return <div style={{ padding: 16 }}>Cargando analíticas...</div>;
-  if (error) return <div style={{ color: 'red', padding: 16 }}>{error}</div>;
+  if (loading) return <div className={styles.loading}>Cargando estadísticas...</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
+
+  const statItems = [
+    { label: 'Vistas del widget', value: stats.views, icon: '👁️', variant: 'views' },
+    { label: 'Clics en testimonios', value: stats.clicks, icon: '👆', variant: 'clicks' },
+    { label: 'Testimonios aprobados', value: stats.approved, icon: '✅', variant: 'approved' },
+    { label: 'Pendientes de aprobación', value: stats.pending, icon: '⏳', variant: 'pending' },
+  ];
 
   return (
-    <div style={{ background: '#f3f4f6', borderRadius: 8, padding: 24, margin: '24px 0', boxShadow: '0 2px 8px #0001', display: 'flex', gap: 32, justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 32, fontWeight: 700, color: '#3b82f6' }}>{views ?? 0}</div>
-        <div style={{ fontSize: 14, color: '#555' }}>Vistas del widget</div>
-      </div>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 32, fontWeight: 700, color: '#f59e0b' }}>{clicks ?? 0}</div>
-        <div style={{ fontSize: 14, color: '#555' }}>Clics en testimonios</div>
-      </div>
+    <div className={styles.container}>
+      {statItems.map((stat) => (
+        <div key={stat.label} className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles[stat.variant]}`}>
+            {stat.icon}
+          </div>
+          <div className={styles.statContent}>
+            <div className={styles.statValue}>{stat.value}</div>
+            <div className={styles.statLabel}>{stat.label}</div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

@@ -22,3 +22,9 @@
   0% { background-position: -200px 0; }
   100% { background-position: calc(200px + 100%) 0; }
 }
+
+.errorText {
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+}

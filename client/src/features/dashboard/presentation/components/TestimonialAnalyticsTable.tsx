@@ -8,6 +8,8 @@ import { AnalyticsAuthorFilter } from './AnalyticsAuthorFilter';
 import { AnalyticsStatusFilter } from './AnalyticsStatusFilter';
 import { TestimonialStatus } from '../../../testimonials/domain/Testimonial';
 
+const API_URL = 'http://hackathoncubepath-server-zzxmva-37677b-108-165-47-237.traefik.me';
+
 interface TestimonialAnalyticsTableProps {
   organizationId: string;
   testimonials: Testimonial[];
@@ -46,11 +48,10 @@ export const TestimonialAnalyticsTable: React.FC<TestimonialAnalyticsTableProps>
     const fetchAnalytics = async () => {
       setLoading(true);
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://cubepathhackaton-api-aymrvj-31e30c-108-165-47-144.traefik.me';
         const testimonialIds = filteredTestimonials.map(t => t.id);
         const [viewsRes, clicksRes] = await Promise.all([
-          fetch(`${apiUrl}/analytics/batch-stats?organizationId=${organizationId}&testimonialIds=${testimonialIds.join(',')}&type=view`),
-          fetch(`${apiUrl}/analytics/batch-stats?organizationId=${organizationId}&testimonialIds=${testimonialIds.join(',')}&type=click`)
+          fetch(`${API_URL}/analytics/batch-stats?organizationId=${organizationId}&testimonialIds=${testimonialIds.join(',')}&type=view`),
+          fetch(`${API_URL}/analytics/batch-stats?organizationId=${organizationId}&testimonialIds=${testimonialIds.join(',')}&type=click`)
         ]);
         const viewsData = await viewsRes.json();
         const clicksData = await clicksRes.json();
@@ -69,7 +70,7 @@ export const TestimonialAnalyticsTable: React.FC<TestimonialAnalyticsTableProps>
       }
     };
     if (filteredTestimonials.length > 0) fetchAnalytics();
-  }, [organizationId, category, author, status, from, to, testimonials]);
+  }, [organizationId, category, author, status, from, to, testimonials, filteredTestimonials]);
 
   if (loading) return <div style={{ padding: 16 }}>Cargando analíticas por testimonio...</div>;
   if (error) return <div style={{ color: 'red', padding: 16 }}>{error}</div>;

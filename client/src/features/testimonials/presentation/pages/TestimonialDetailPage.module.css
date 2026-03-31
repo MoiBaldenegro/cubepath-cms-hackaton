@@ -1,0 +1,313 @@
+.container {
+  min-height: 100vh;
+  background: var(--surface-base);
+  padding: 2rem 1rem 4rem;
+}
+
+.card {
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding: 0.625rem 1rem;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  color: var(--foreground-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.backButton:hover {
+  background: var(--surface-hover);
+  color: var(--foreground-primary);
+  border-color: var(--border-emphasis);
+}
+
+.content {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.imageSection {
+  flex-shrink: 0;
+}
+
+.details {
+  flex: 1;
+  min-width: 280px;
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.author {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--foreground-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #fbbf24;
+  font-size: 1.5rem;
+}
+
+.quote {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  font-style: italic;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--surface-muted);
+  border-left: 4px solid var(--brand-primary);
+  border-radius: 0 12px 12px 0;
+  color: var(--foreground-primary);
+  position: relative;
+}
+
+.quote::before {
+  content: '"';
+  position: absolute;
+  top: -0.5rem;
+  left: 1rem;
+  font-size: 4rem;
+  color: var(--brand-primary);
+  opacity: 0.3;
+  line-height: 1;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--foreground-secondary);
+}
+
+.actionBtn:hover {
+  background: var(--surface-hover);
+  color: var(--foreground-primary);
+  border-color: var(--border-emphasis);
+}
+
+.actionBtn.copied {
+  background: var(--semantic-success-light);
+  border-color: var(--semantic-success);
+  color: var(--semantic-success);
+}
+
+.shareBtn {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: white;
+}
+
+.shareBtn:hover {
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+  color: white;
+}
+
+.socialLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.socialLink:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.socialLink.twitter {
+  background: #1da1f2;
+  color: white;
+}
+
+.socialLink.facebook {
+  background: #1877f3;
+  color: white;
+}
+
+.socialLink.linkedin {
+  background: #0a66c2;
+  color: white;
+}
+
+.socialLink.whatsapp {
+  background: #25d366;
+  color: white;
+}
+
+.videoSection {
+  margin-bottom: 2rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metaLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--foreground-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.metaValue {
+  font-size: 0.9375rem;
+  color: var(--foreground-primary);
+  font-weight: 500;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.statusBadge.approved {
+  background: var(--semantic-success-light);
+  color: var(--semantic-success);
+}
+
+.statusBadge.pending {
+  background: var(--semantic-warning-light);
+  color: var(--semantic-warning);
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.aiBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.15));
+  color: #a78bfa;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+  color: var(--foreground-secondary);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-default);
+  border-top-color: var(--brand-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error {
+  max-width: 500px;
+  margin: 4rem auto;
+  text-align: center;
+  padding: 2rem;
+  background: var(--semantic-error-light);
+  border: 1px solid var(--semantic-error);
+  border-radius: 16px;
+  color: var(--semantic-error);
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 1.5rem;
+  }
+  
+  .content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .author {
+    font-size: 1.5rem;
+  }
+  
+  .quote {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+}

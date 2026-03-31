@@ -1,0 +1,220 @@
+.container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--foreground-primary);
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--brand-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.addButton:hover {
+  background: var(--brand-hover);
+  transform: translateY(-1px);
+}
+
+.addButtonIcon {
+  font-size: 1rem;
+}
+
+.addForm {
+  background: var(--surface-muted);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.addFormTitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--foreground-primary);
+  margin-bottom: 1rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.inputLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--foreground-secondary);
+}
+
+.input {
+  padding: 0.625rem 0.875rem;
+  background: var(--control-background);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--foreground-primary);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-muted);
+}
+
+.formActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.submitBtn {
+  padding: 0.625rem 1.25rem;
+  background: var(--brand-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.submitBtn:hover {
+  background: var(--brand-hover);
+}
+
+.cancelBtn {
+  padding: 0.625rem 1.25rem;
+  background: var(--surface-base);
+  color: var(--foreground-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cancelBtn:hover {
+  background: var(--surface-hover);
+}
+
+.tableContainer {
+  overflow-x: auto;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 0.875rem 1rem;
+  background: var(--surface-muted);
+  font-weight: 600;
+  color: var(--foreground-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--foreground-primary);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover td {
+  background: var(--surface-muted);
+}
+
+.providerBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.providerBadge.local {
+  background: var(--surface-muted);
+  color: var(--foreground-secondary);
+}
+
+.providerBadge.social {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+}
+
+.roleSelect {
+  padding: 0.375rem 0.625rem;
+  background: var(--control-background);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: var(--foreground-primary);
+  cursor: pointer;
+}
+
+.roleSelect:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--foreground-secondary);
+}
+
+.error {
+  background: var(--semantic-error-light);
+  border: 1px solid var(--semantic-error);
+  color: var(--semantic-error);
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import styles from './WidgetTestimonials.module.css';
+import styles from './WidgetSummaryBox.module.css';
 import { TestimonialService } from '../../../testimonials/infrastructure/TestimonialService';
 
 export const WidgetSummaryBox = () => {
@@ -8,15 +8,23 @@ export const WidgetSummaryBox = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    setLoading(true);
-    setError('');
-    // Llama al endpoint de resumen AI
+    let cancelled = false;
     TestimonialService.getSummary()
       .then((res) => {
-        setSummary(res.summary || '');
+        if (!cancelled) {
+          setSummary(res.summary || '');
+          setLoading(false);
+        }
       })
-      .catch(() => setError('No se pudo cargar el resumen AI.'))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled) {
+          setError('No se pudo cargar el resumen AI.');
+          setLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -25,7 +33,7 @@ export const WidgetSummaryBox = () => {
       {loading ? (
         <div className={styles.skeleton}>Cargando resumen...</div>
       ) : error ? (
-        <div style={{ color: 'red' }}>{error}</div>
+        <div className={styles.errorText}>{error}</div>
       ) : (
         <div className={styles.summaryText}>{summary}</div>
       )}

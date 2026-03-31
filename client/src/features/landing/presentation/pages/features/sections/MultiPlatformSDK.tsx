@@ -1,15 +1,32 @@
-import styles from "../../LandingPage.module.css";
+import styles from '../../features/FeaturesPage.module.css';
+
 
 const MultiPlatformSDK = () => (
-  <section className={styles.selfHostSection}>
-    <div className={styles.selfHostContent}>
-      <h2 className={styles.selfHostTitle}>Multi-Platform SDK 🌐</h2>
-      <p className={styles.selfHostSubtitle}>
-        Un solo SDK para React, Vue, Angular o Vanilla JS. Integra testimonios en cualquier frontend moderno sin dependencias adicionales.
+  <section className={styles.section}>
+    <div className={styles.sectionContent}>
+      <h2 className={styles.sectionTitle}>
+        <span className={styles.sectionIcon}>🌐</span>
+        SDK Multi-plataforma
+      </h2>
+      <p className={styles.sectionDesc}>
+        Librerías oficiales para React, Vue, Angular, Next.js, Svelte y más. 
+        API REST completa para integraciones headless o custom.
       </p>
-      <pre className={styles.selfHostCodeBlock}>{`npm install @cubepath/sdk`}</pre>
-      <p className={styles.selfHostNote}>
-        <b>¿Por qué importa?</b> Facilita la integración en proyectos existentes y acelera la adopción cross-team.
+      <div className={styles.codeBlock}>
+        <pre>{`// React
+import 'testimo-widget';
+
+<testimo-widget organization-id="tu-org" />
+
+// Vue
+<script setup>
+import 'testimo-widget';
+</script>
+
+<testimo-widget organization-id="tu-org" />`}</pre>
+      </div>
+      <p className={styles.note}>
+        <strong>Multi-stack:</strong> El mismo widget, la misma experiencia. Elige tu framework favorito.
       </p>
     </div>
   </section>

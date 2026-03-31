@@ -1,24 +1,20 @@
-
 import { useEffect, useState } from 'react';
 import { TestimonialStatus, type Testimonial } from '../../domain/Testimonial';
 import { TestimonialService } from '../../infrastructure/TestimonialService';
 import { TestimonialListVideoCell } from './TestimonialListVideoCell';
-import { FilterByStatus } from './filters/FilterByStatus';
-import { FilterByAuthor } from './filters/FilterByAuthor';
-import { FilterByRating } from './filters/FilterByRating';
-import { FilterByCategory } from './filters/FilterByCategory';
-import { FilterByMedia } from './filters/FilterByMedia';
-import { TestimonialAnalyticsTable } from '../../../dashboard/presentation/components/TestimonialAnalyticsTable';
+import styles from './TestimonialList.module.css';
 
-function TestimonialList({ isAdmin }: { isAdmin: boolean }) {
+interface TestimonialListProps {
+  isAdmin: boolean;
+}
+
+function TestimonialList({ isAdmin }: TestimonialListProps) {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
   const [author, setAuthor] = useState('');
   const [rating, setRating] = useState('');
-  const [category, setCategory] = useState('');
-  const [media, setMedia] = useState('');
 
   useEffect(() => {
     TestimonialService.findAll()
@@ -37,8 +33,6 @@ function TestimonialList({ isAdmin }: { isAdmin: boolean }) {
     if (status && t.status !== status) return false;
     if (author && t.author !== author) return false;
     if (rating && String(t.rating) !== rating) return false;
-    if (category && t.category !== category) return false;
-    if (media && ((media === 'image' && !t.imageUrl) || (media === 'video' && !t.videoUrl))) return false;
     return true;
   });
 
@@ -69,94 +63,144 @@ function TestimonialList({ isAdmin }: { isAdmin: boolean }) {
     }
   };
 
-  if (loading) return <div>Cargando testimonios...</div>;
-  if (error) return <div style={{ color: 'red' }}>{error}</div>;
+  if (loading) return <div className={styles.loading}>Cargando testimonios...</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
+
+  const statusLabels: Record<string, string> = {
+    APPROVED: 'Aprobado',
+    PENDING: 'Pendiente',
+    REJECTED: 'Rechazado',
+  };
 
   return (
-    <div>
-      <h3>All Testimonials</h3>
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', margin: '18px 0 24px 0', alignItems: 'flex-end' }}>
-        <FilterByStatus value={status} onChange={setStatus} />
-        <FilterByAuthor value={author} onChange={setAuthor} authors={authors} />
-        <FilterByRating value={rating} onChange={setRating} />
-        <FilterByCategory value={category} onChange={setCategory} />
-        <FilterByMedia value={media} onChange={setMedia} />
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h3 className={styles.title}>Todos los testimonios</h3>
+        <div className={styles.filters}>
+          <select
+            className={styles.filterSelect}
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+          >
+            <option value="">Todos los estados</option>
+            {Object.values(TestimonialStatus).map((s) => (
+              <option key={s} value={s}>{statusLabels[s]}</option>
+            ))}
+          </select>
+          <select
+            className={styles.filterSelect}
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+          >
+            <option value="">Todos los autores</option>
+            {authors.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+          <select
+            className={styles.filterSelect}
+            value={rating}
+            onChange={(e) => setRating(e.target.value)}
+          >
+            <option value="">Todas las calificaciones</option>
+            {[5, 4, 3, 2, 1].map((r) => (
+              <option key={r} value={r}>{r} estrellas</option>
+            ))}
+          </select>
+        </div>
       </div>
+
       {filtered.length === 0 ? (
-        <p>No testimonials found.</p>
+        <div className={styles.empty}>
+          <div className={styles.emptyIcon}>💬</div>
+          <p className={styles.emptyText}>No se encontraron testimonios</p>
+        </div>
       ) : (
         <>
-          {/* Mostrar testimonio AI si existe y es el primero */}
           {filtered[0]?.aiGenerated && (
-            <div style={{
-              background: 'linear-gradient(90deg, #f8fafc 60%, #e0e7ef 100%)',
-              border: '2px dashed #6b7280',
-              borderRadius: 10,
-              padding: 18,
-              marginBottom: 18,
-              position: 'relative',
-              boxShadow: '0 2px 8px #e0e7ef',
-            }}>
-              <div style={{ position: 'absolute', top: 8, right: 16, color: '#64748b', fontWeight: 600, fontSize: 13, opacity: 0.7 }}>
-                <span style={{ background: '#e0e7ef', borderRadius: 4, padding: '2px 8px' }}>Generado por AI</span>
+            <div className={styles.aiCard}>
+              <div className={styles.aiCardHeader}>
+                <span className={styles.aiBadge}>✨ Generado por IA</span>
               </div>
-              <div style={{ fontSize: 17, fontStyle: 'italic', marginBottom: 8 }}>
-                "{filtered[0].content}"
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontWeight: 600 }}>{filtered[0].author}</span>
-                <span style={{ color: '#f59e42', fontSize: 18 }}>{'★'.repeat(filtered[0].rating || 0)}{'☆'.repeat(5 - (filtered[0].rating || 0))}</span>
+              <p className={styles.aiCardContent}>"{filtered[0].content}"</p>
+              <div className={styles.aiCardAuthor}>
+                <span style={{ fontWeight: 500 }}>{filtered[0].author}</span>
+                <span className={styles.rating}>
+                  {'★'.repeat(filtered[0].rating || 0)}{'☆'.repeat(5 - (filtered[0].rating || 0))}
+                </span>
               </div>
             </div>
           )}
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid #ddd', textAlign: 'left' }}>
-                <th style={{ padding: '8px' }}>Imagen</th>
-                <th style={{ padding: '8px' }}>Video</th>
-                <th style={{ padding: '8px' }}>Autor</th>
-                <th style={{ padding: '8px' }}>Contenido</th>
-                <th style={{ padding: '8px' }}>Calificación</th>
-                <th style={{ padding: '8px' }}>Estado</th>
-                <th style={{ padding: '8px' }}>Ver detalles</th>
-                {isAdmin && <th style={{ padding: '8px' }}>Acciones</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((t) => (
-                <tr key={t.id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ padding: '8px', textAlign: 'center' }}>
-                    {t.imageUrl ? (
-                      <img src={t.imageUrl} alt="Testimonial" style={{ maxWidth: '80px', maxHeight: '80px', borderRadius: '8px', border: '1px solid #eee' }} />
-                    ) : (
-                      <span style={{ color: '#bbb', fontSize: '12px' }}>Sin imagen</span>
-                    )}
-                  </td>
-                  <td style={{ padding: '8px', textAlign: 'center' }}>
-                    <TestimonialListVideoCell videoUrl={t.videoUrl} />
-                  </td>
-                  <td style={{ padding: '8px' }}>{t.author}</td>
-                  <td style={{ padding: '8px' }}>{t.content}</td>
-                  <td style={{ padding: '8px' }}>{t.rating} ★</td>
-                  <td style={{ padding: '8px' }}>{t.status}</td>
-                  <td style={{ padding: '8px' }}>
-                    <a href={`/testimonials/${t.id}`} target="_blank" rel="noopener noreferrer">Ver</a>
-                  </td>
-                  {isAdmin && (
-                    <td style={{ padding: '8px' }}>
-                      {t.status !== TestimonialStatus.APPROVED && (
-                        <button onClick={() => handleApprove(t.id)} style={{ marginRight: 8 }}>Aprobar</button>
-                      )}
-                      <button onClick={() => handleRemove(t.id)} style={{ color: '#ef4444' }}>Eliminar</button>
-                    </td>
-                  )}
+
+          <div className={styles.tableContainer}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Imagen</th>
+                  <th>Video</th>
+                  <th>Autor</th>
+                  <th>Contenido</th>
+                  <th>Calificación</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                  {isAdmin && <th>Admin</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {isAdmin && filtered.length > 0 && (
-            <TestimonialAnalyticsTable organizationId={filtered[0].organizationId} testimonials={filtered} />
-          )}
+              </thead>
+              <tbody>
+                {filtered.map((t) => (
+                  <tr key={t.id}>
+                    <td>
+                      {t.imageUrl ? (
+                        <img src={t.imageUrl} alt="Testimonio" className={styles.cellImage} />
+                      ) : (
+                        <span style={{ color: 'var(--foreground-muted)', fontSize: '0.75rem' }}>Sin imagen</span>
+                      )}
+                    </td>
+                    <td>
+                      <div className={styles.cellVideo}>
+                        <TestimonialListVideoCell videoUrl={t.videoUrl} />
+                      </div>
+                    </td>
+                    <td className={styles.cellAuthor}>
+                      <span className={styles.cellAuthorName}>{t.author}</span>
+                      <span className={styles.cellAuthorMeta}>{t.category}</span>
+                    </td>
+                    <td className={styles.cellContent}>{t.content}</td>
+                    <td>
+                      <span className={styles.rating}>
+                        {'★'.repeat(t.rating || 0)}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`${styles.statusBadge} ${styles[t.status.toLowerCase()]}`}>
+                        <span className={styles.statusDot}></span>
+                        {statusLabels[t.status] || t.status}
+                      </span>
+                    </td>
+                    <td>
+                      <a href={`/testimonials/${t.id}`} target="_blank" rel="noopener noreferrer" className={styles.viewBtn}>
+                        Ver ↗
+                      </a>
+                    </td>
+                    {isAdmin && (
+                      <td>
+                        <div className={styles.actions}>
+                          {t.status !== TestimonialStatus.APPROVED && (
+                            <button onClick={() => handleApprove(t.id)} className={`${styles.actionBtn} ${styles.approveBtn}`}>
+                              Aprobar
+                            </button>
+                          )}
+                          <button onClick={() => handleRemove(t.id)} className={`${styles.actionBtn} ${styles.deleteBtn}`}>
+                            Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </div>

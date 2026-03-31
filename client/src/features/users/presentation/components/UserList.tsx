@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import {  UserService } from '../../infrastructure/UserService';
+import { UserService } from '../../infrastructure/UserService';
 import { UserRole } from '../../domain/UserRole';
 import type { User } from '../../../auth/domain/AuthRepository';
+import styles from './UserList.module.css';
 
 export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -16,8 +17,9 @@ export const UserList = () => {
       setLoading(true);
       const data = await UserService.findAll();
       setUsers(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load users');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error al cargar usuarios';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -31,8 +33,9 @@ export const UserList = () => {
       setNewModPassword('');
       setShowAddForm(false);
       fetchUsers();
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error al crear moderador';
+      alert(message);
     }
   };
 
@@ -48,76 +51,109 @@ export const UserList = () => {
           user.id === userId ? { ...user, role: newRole as UserRole } : user
         )
       );
-    } catch (err: any) {
-      alert(err.message || 'Failed to update role');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error al actualizar el rol';
+      alert(message);
     }
   };
 
-  if (loading) return <p>Loading users...</p>;
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+  const roleLabels: Record<string, string> = {
+    ADMIN: 'Administrador',
+    EDITOR: 'Editor',
+    USER: 'Usuario',
+  };
+
+  if (loading) return <div className={styles.loading}>Cargando usuarios...</div>;
+  if (error) return <div className={styles.error}>Error: {error}</div>;
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3>Team / Moderators</h3>
-        <button onClick={() => setShowAddForm(!showAddForm)}>
-          {showAddForm ? 'Cancel' : 'Add Moderator'}
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h3 className={styles.title}>Equipo y Moderadores</h3>
+        <button
+          className={styles.addButton}
+          onClick={() => setShowAddForm(!showAddForm)}
+        >
+          <span className={styles.addButtonIcon}>+</span>
+          {showAddForm ? 'Cancelar' : 'Agregar Moderador'}
         </button>
       </div>
 
       {showAddForm && (
-        <form onSubmit={handleAddModerator} style={{ background: '#f9f9f9', padding: '10px', marginBottom: '10px' }}>
-            <div style={{ marginBottom: '10px' }}>
-                <label>Email: </label>
-                <input type="email" value={newModEmail} onChange={e => setNewModEmail(e.target.value)} required />
+        <form className={styles.addForm} onSubmit={handleAddModerator}>
+          <div className={styles.addFormTitle}>Agregar Nuevo Moderador</div>
+          <div className={styles.formGrid}>
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>Correo electrónico</label>
+              <input
+                type="email"
+                className={styles.input}
+                value={newModEmail}
+                onChange={(e) => setNewModEmail(e.target.value)}
+                placeholder="moderador@empresa.com"
+                required
+              />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label>Password: </label>
-                <input type="password" value={newModPassword} onChange={e => setNewModPassword(e.target.value)} required />
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>Contraseña</label>
+              <input
+                type="password"
+                className={styles.input}
+                value={newModPassword}
+                onChange={(e) => setNewModPassword(e.target.value)}
+                placeholder="Contraseña segura"
+                required
+              />
             </div>
-            <button type="submit">Create Moderator</button>
+          </div>
+          <div className={styles.formActions}>
+            <button type="submit" className={styles.submitBtn}>Crear Moderador</button>
+            <button
+              type="button"
+              className={styles.cancelBtn}
+              onClick={() => setShowAddForm(false)}
+            >
+              Cancelar
+            </button>
+          </div>
         </form>
       )}
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-        <thead>
-          <tr style={{ borderBottom: '2px solid #ddd', textAlign: 'left' }}>
-            <th style={{ padding: '8px' }}>Email</th>
-            <th style={{ padding: '8px' }}>Provider</th>
-            <th style={{ padding: '8px' }}>Role</th>
-            <th style={{ padding: '8px' }}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id} style={{ borderBottom: '1px solid #eee' }}>
-              <td style={{ padding: '8px' }}>{user.email}</td>
-              <td style={{ padding: '8px' }}>
-                 <span style={{ 
-                     padding: '2px 6px', 
-                     borderRadius: '4px',
-                     fontSize: '0.8rem',
-                     backgroundColor: user.provider === 'local' ? '#e0e0e0' : '#d1c4e9',
-                     color: user.provider === 'local' ? '#333' : '#512da8'
-                 }}>
-                     {user.provider}
-                 </span>
-              </td>
-              <td style={{ padding: '8px' }}>{user.role}</td>
-              <td style={{ padding: '8px' }}>
-                <select
-                  value={user.role}
-                  onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                  style={{ padding: '4px' }}
-                >
-                  <option value={UserRole.EDITOR}>Editor</option>
-                  <option value={UserRole.ADMIN}>Admin</option>
-                </select>
-              </td>
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Correo</th>
+              <th>Proveedor</th>
+              <th>Rol</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td>{user.email}</td>
+                <td>
+                  <span className={`${styles.providerBadge} ${user.provider === 'local' ? styles.local : styles.social}`}>
+                    {user.provider === 'local' ? '📧 Local' : '🌐 Social'}
+                  </span>
+                </td>
+                <td>{user.role ? (roleLabels[user.role] || user.role) : user.role}</td>
+                <td>
+                  <select
+                    className={styles.roleSelect}
+                    value={user.role}
+                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                  >
+                    <option value={UserRole.EDITOR}>Editor</option>
+                    <option value={UserRole.ADMIN}>Administrador</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

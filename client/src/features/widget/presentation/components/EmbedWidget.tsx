@@ -1,9 +1,10 @@
-
 import { useState } from 'react';
-import { useAuth } from '../../../../shared/contexts/AuthContext';
-import styles from './EmbedWidget.module.css'; // Ajusta la ruta según tu proyecto
+import { useAuth } from '../../../../shared/contexts/useAuth';
+import styles from './EmbedWidget.module.css';
 
 type Framework = 'react' | 'nextjs' | 'vue' | 'nuxt' | 'svelte' | 'solid' | 'angular' | 'html';
+
+const API_URL = 'http://hackathoncubepath-server-zzxmva-37677b-108-165-47-237.traefik.me';
 
 export const EmbedWidget = () => {
   const [integrationMethod, setIntegrationMethod] = useState<'script' | 'npm'>('npm');
@@ -14,16 +15,21 @@ export const EmbedWidget = () => {
   const [envCopied, setEnvCopied] = useState(false);
   const [installCopied, setInstallCopied] = useState(false);
 
-  // Obtener organizationId del usuario logueado si existe
   const { user } = useAuth();
-  const organizationId = (user && user.organizationId) ? user.organizationId : (import.meta.env.VITE_ORG_ID || 'YOUR_ORG_ID');
-  const API_URL = import.meta.env.VITE_API_URL || '';
-  // Usar siempre el endpoint real del backend para la preview y el código generado
+  const organizationId = (user && user.organizationId) ? user.organizationId : 'TU_ORG_ID';
   const scriptSrc = `${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}`;
 
-  // Generar el bloque de código para copiar y pegar, siempre con organizationId real si está logueado
-  const scriptExample = `<!--\nINTEGRACIÓN RÁPIDA (solo <script>):\nEl widget se monta automáticamente antes del <script>.\nDebes poner tu organizationId en la URL del script.\nSi quieres controlar el lugar exacto, pon <testimo-widget organization-id=\"${organizationId}\"></testimo-widget> donde quieras el widget.\nAmbos modos funcionan.\n-->
-<script\n  src=\"${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}\"\n  type=\"module\"\n  async>\n</script>\n\n<!-- Opción avanzada: usa el tag personalizado para controlar el lugar -->\n<testimo-widget organization-id=\"${organizationId}\" theme=\"${theme}\" layout=\"${layout}\"></testimo-widget>`;
+  const scriptExample = `<!--
+INTEGRación rápida con Testimo
+El código ya está configurado con tu Organization ID
+-->
+<script
+  src="${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}"
+  type="module"
+  async>
+</script>
+
+<testimo-widget organization-id="${organizationId}" theme="${theme}" layout="${layout}"></testimo-widget>`;
 
   const frameworkConfig: Record<Framework, {
     label: string;
@@ -138,7 +144,6 @@ const orgId = config.public.orgId;
       variable: 'VITE_ORG_ID',
       install: 'npm install testimo-widget',
       code: `import 'testimo-widget';
-import { createSignal } from 'solid-js';
 
 export default function Testimonials() {
   const orgId = import.meta.env.VITE_ORG_ID;
@@ -162,7 +167,6 @@ import 'testimo-widget';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  // ...
 })
 
 // app.component.html
@@ -177,12 +181,14 @@ import 'testimo-widget';
       variable: 'ORG_ID',
       install: 'npm install testimo-widget',
       code: `<!-- index.html -->
-<script type="module">
-  import 'testimo-widget';
+<script
+  src="${API_URL}/widget/embed.js?organizationId=${organizationId}"
+  type="module"
+  async>
 </script>
 
 <testimo-widget 
-  organization-id="YOUR_ORG_ID" 
+  organization-id="${organizationId}" 
   theme="${theme}" 
   layout="${layout}"
 ></testimo-widget>`
@@ -193,11 +199,9 @@ import 'testimo-widget';
   if (integrationMethod === 'script') {
     embedCode = scriptExample;
   } else {
-    // Para frameworks, si el usuario está logueado, sugerir cómo pasar el organizationId real
     let code = frameworkConfig[selectedFramework].code;
-    if (organizationId && organizationId !== 'YOUR_ORG_ID') {
-      // Reemplazar el placeholder por el organizationId real si es posible
-      code = code.replace(/YOUR_ORG_ID|orgId|process.env.(NEXT_PUBLIC_ORG_ID|NUXT_PUBLIC_ORG_ID|PUBLIC_ORG_ID)/g, organizationId);
+    if (organizationId && organizationId !== 'TU_ORG_ID') {
+      code = code.replace(/TU_ORG_ID|orgId|process.env.(NEXT_PUBLIC_ORG_ID|NUXT_PUBLIC_ORG_ID|PUBLIC_ORG_ID)/g, organizationId);
     }
     embedCode = code;
   }
@@ -224,15 +228,14 @@ import 'testimo-widget';
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Embed Your Testimonials</h2>
-        <p className={styles.subtitle}>Choose your preferred integration method.</p>
+        <h2 className={styles.title}>Integrar Widget de Testimonios</h2>
+        <p className={styles.subtitle}>Selecciona tu método de integración preferido</p>
       </div>
 
       <div className={styles.controls}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
-          {/* Integration Method */}
+        <div className={styles.controlsGrid}>
           <div className={styles.controlGroup}>
-            <label className={styles.label}>Integration Method</label>
+            <label className={styles.label}>Método de Integración</label>
             <div className={styles.toggleGroup}>
               <button 
                 className={`${styles.toggleButton} ${integrationMethod === 'script' ? styles.active : ''}`}
@@ -249,9 +252,8 @@ import 'testimo-widget';
             </div>
           </div>
 
-          {/* Theme */}
           <div className={styles.controlGroup}>
-            <label className={styles.label}>Theme</label>
+            <label className={styles.label}>Tema</label>
             <div className={styles.toggleGroup}>
               <button 
                 className={`${styles.toggleButton} ${theme === 'light' ? styles.active : ''}`}
@@ -268,9 +270,8 @@ import 'testimo-widget';
             </div>
           </div>
 
-          {/* Layout */}
           <div className={styles.controlGroup}>
-            <label className={styles.label}>Layout</label>
+            <label className={styles.label}>Diseño</label>
             <div className={styles.toggleGroup}>
               <button 
                 className={`${styles.toggleButton} ${layout === 'grid' ? styles.active : ''}`}
@@ -288,10 +289,9 @@ import 'testimo-widget';
           </div>
         </div>
 
-        {/* Framework selector */}
         {integrationMethod === 'npm' && (
-          <div className={styles.controlGroup} style={{ marginTop: '16px' }}>
-            <label className={styles.label}>Select Framework</label>
+          <div className={styles.controlGroup}>
+            <label className={styles.label}>Seleccionar Framework</label>
             <div className={styles.frameworkGrid}>
               {(Object.keys(frameworkConfig) as Framework[]).map((fw) => (
                 <button
@@ -307,113 +307,69 @@ import 'testimo-widget';
         )}
       </div>
 
-      {/* Environment Variable */}
       {integrationMethod === 'npm' && (
         <div className={styles.envSection}>
-          <label className={styles.label}>Environment Variable (.env)</label>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <code style={{ 
-              flex: 1, 
-              padding: '12px', 
-              background: '#fff', 
-              border: '1px solid #ddd', 
-              borderRadius: '6px', 
-              fontFamily: 'monospace',
-              overflowX: 'auto'
-            }}>
+          <label className={styles.label}>Variable de Entorno (.env)</label>
+          <div className={styles.envRow}>
+            <code className={styles.envCode}>
               {frameworkConfig[selectedFramework].variable}={organizationId}
             </code>
             <button 
               className={styles.copyButton}
               onClick={handleEnvCopy}
             >
-              {envCopied ? '✓ Copied' : 'Copy'}
+              {envCopied ? '✓ Copiado' : 'Copiar'}
             </button>
           </div>
-          <p style={{ fontSize: '13px', color: '#666', marginTop: '6px' }}>
+          <p className={styles.hint}>
             Agrega esto en tu archivo <code>.env</code>
           </p>
         </div>
       )}
 
-      {/* Install command */}
       {integrationMethod === 'npm' && (
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between', 
-          padding: '12px 16px', 
-          background: 'rgba(0,0,0,0.03)', 
-          borderRadius: '8px',
-          marginBottom: '16px'
-        }}>
-          <code style={{ fontFamily: 'monospace', fontSize: '14px' }}>
+        <div className={styles.installRow}>
+          <code className={styles.installCode}>
             {frameworkConfig[selectedFramework].install}
           </code>
           <button 
             className={styles.copyButton}
             onClick={handleInstallCopy}
           >
-            {installCopied ? '✓' : 'Copy'}
+            {installCopied ? '✓' : 'Copiar'}
           </button>
         </div>
       )}
 
-      {/* Code Block */}
       <div className={styles.codeBlock}>
-        <div style={{ position: 'relative' }}>
-          <pre style={{ 
-            background: '#23272f',
-            color: '#f8fafc',
-            padding: '20px', 
-            borderRadius: '8px', 
-            overflow: 'auto',
-            fontSize: '14px',
-            lineHeight: '1.5',
-            border: '1px solid #222',
-          }}>
-            {embedCode}
-          </pre>
-          <button 
-            className={`${styles.copyButton} ${copied ? styles.copied : ''}`}
-            onClick={handleCopy}
-            style={{ position: 'absolute', top: '12px', right: '12px' }}
-          >
-            {copied ? '✓ Copied!' : 'Copy Code'}
-          </button>
-        </div>
+        <pre className={styles.codePre}>{embedCode}</pre>
+        <button 
+          className={`${styles.codeCopyBtn} ${copied ? styles.copied : ''}`}
+          onClick={handleCopy}
+        >
+          {copied ? '✓ Copiado!' : 'Copiar Código'}
+        </button>
       </div>
 
-      {/* Live Preview */}
       <div className={styles.previewSection}>
         <h3 className={styles.previewTitle}>Vista Previa</h3>
         <div className={styles.previewContainer}>
           <iframe 
             key={`${theme}-${layout}-${integrationMethod}-${selectedFramework}`}
+            className={styles.previewIframe}
             srcDoc={`
               <!DOCTYPE html>
               <html>
                 <head>
                   <style>body { margin: 20px; font-family: system-ui, sans-serif; }</style>
-                  ${integrationMethod === 'npm' 
-                    ? `<script type="module" src="${API_URL}/widget/sdk.js"></script>` 
-                    : ''}
+                  <script src="${scriptSrc}" type="module" async></script>
                 </head>
                 <body>
-                  ${integrationMethod === 'script'
-                    ? `<script src="${scriptSrc}" type="module" async></script>\n<testimo-widget organization-id=\"${organizationId}\" theme=\"${theme}\" layout=\"${layout}\"></testimo-widget>`
-                    : ''}
+                  <testimo-widget organization-id="${organizationId}" theme="${theme}" layout="${layout}"></testimo-widget>
                 </body>
               </html>
             `}
             title="Widget Preview"
-            style={{ 
-              width: '100%', 
-              height: '420px', 
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              background: '#fff'
-            }}
           />
         </div>
       </div>

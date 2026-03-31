@@ -1,18 +1,27 @@
-import styles from "../../LandingPage.module.css";
+import styles from '../../features/FeaturesPage.module.css';
+
 
 const SelfHostedReady = () => (
-  <section className={styles.selfHostSection}>
-    <div className={styles.selfHostContent}>
-      <h2 className={styles.selfHostTitle}>Self-Hosted Ready ☁️</h2>
-      <p className={styles.selfHostSubtitle}>
-        Usa Testimo en la nube o despliega tu propia instancia para control total de datos y cumplimiento normativo.
+  <section className={styles.section}>
+    <div className={styles.sectionContent}>
+      <h2 className={styles.sectionTitle}>
+        <span className={styles.sectionIcon}>🖥️</span>
+        Autohospedaje listo
+      </h2>
+      <p className={styles.sectionDesc}>
+        Ejecuta tu propia instancia de Testimo. Docker Compose incluido, base de datos propia, 
+        zero vendor lock-in.
       </p>
-      <ul className={styles.selfHostList}>
-        <li>Docker y Traefik listos para producción.</li>
-        <li>Soporte para PostgreSQL y Supabase.</li>
-      </ul>
-      <p className={styles.selfHostNote}>
-        <b>¿Por qué importa?</b> Ideal para empresas que requieren soberanía de datos o integración con infraestructura propia.
+      <div className={styles.codeBlock}>
+        <pre>{`# Levanta todo en segundos
+docker-compose up -d
+
+# Configura tu API
+TESTIMO_API_URL=https://api.tu-dominio.com
+DATABASE_URL=postgres://...`}</pre>
+      </div>
+      <p className={styles.note}>
+        <strong>Control total:</strong> Tu infraestructura, tus reglas, tus datos. Sin intermediarios.
       </p>
     </div>
   </section>

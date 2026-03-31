@@ -1,146 +1,163 @@
 .container {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   background: var(--surface-base);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.glowOrb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glowOrb1 {
+  width: 600px;
+  height: 600px;
+  background: var(--brand-primary);
+  top: -200px;
+  right: -100px;
+  opacity: 0.15;
+}
+
+.glowOrb2 {
+  width: 500px;
+  height: 500px;
+  background: #8b5cf6;
+  bottom: -150px;
+  left: -100px;
+  opacity: 0.1;
 }
 
 .leftPanel {
   display: none;
-  background: var(--brand-primary);
   position: relative;
-  overflow: hidden;
+  background: linear-gradient(135deg, var(--surface-elevated) 0%, var(--surface-base) 100%);
   padding: 3rem;
-  flex-direction: column;
-  justify-content: space-between;
+  z-index: 1;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .leftPanel {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
 
-.leftPanelContent {
-  position: relative;
-  z-index: 1;
+.leftContent {
+  max-width: 480px;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: white;
-  font-weight: 600;
-  font-size: 1.25rem;
-}
-
-.logoIcon {
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--brand-primary), #8b5cf6);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
+  box-shadow: 0 0 30px var(--brand-glow);
 }
 
-.testimonialCard {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  padding: 2rem;
-  margin-top: 4rem;
-  position: relative;
+.logoText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground-primary);
+  letter-spacing: -0.02em;
 }
 
-.quoteIcon {
-  font-size: 2.5rem;
-  opacity: 0.5;
-  line-height: 1;
-  margin-bottom: 1rem;
-}
-
-.testimonialText {
-  color: white;
-  font-size: 1.125rem;
-  line-height: 1.6;
+.headline {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--foreground-primary);
+  line-height: 1.1;
   margin-bottom: 1.5rem;
-  font-weight: 400;
+  letter-spacing: -0.03em;
 }
 
-.testimonialAuthor {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+.headlineAccent {
+  background: linear-gradient(135deg, var(--brand-primary), #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.authorAvatar {
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.subheadline {
+  font-size: 1.125rem;
+  color: var(--foreground-secondary);
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
 }
 
-.authorName {
-  color: white;
-  font-weight: 600;
-  font-size: 0.9375rem;
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-subtle);
 }
 
-.authorRole {
-  color: rgba(255, 255, 255, 0.6);
+.statItem {
+  text-align: left;
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--foreground-primary);
+  letter-spacing: -0.02em;
+}
+
+.statLabel {
   font-size: 0.8125rem;
+  color: var(--foreground-tertiary);
+  margin-top: 0.25rem;
 }
 
-.decoration {
-  position: absolute;
+.testimonialBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-default);
+  border-radius: 100px;
+  font-size: 0.8125rem;
+  color: var(--foreground-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.testimonialBadgeDot {
+  width: 6px;
+  height: 6px;
+  background: var(--semantic-success);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  animation: pulse 2s ease-in-out infinite;
 }
 
-.decoration1 {
-  width: 400px;
-  height: 400px;
-  bottom: -150px;
-  right: -100px;
-}
-
-.decoration2 {
-  width: 300px;
-  height: 300px;
-  top: 20%;
-  right: 10%;
-}
-
-.features {
-  position: relative;
-  z-index: 1;
-}
-
-.featureItem {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
-}
-
-.featureIcon {
-  width: 20px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .rightPanel {
@@ -148,16 +165,18 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: var(--surface-base);
+  position: relative;
+  z-index: 1;
 }
 
 .formCard {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   background: var(--surface-elevated);
   border: 1px solid var(--border-default);
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 2.5rem;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
 }
 
 .formHeader {
@@ -166,7 +185,7 @@
 }
 
 .formTitle {
-  font-size: 1.5rem;
+  font-size: 1.625rem;
   font-weight: 700;
   color: var(--foreground-primary);
   margin-bottom: 0.5rem;
@@ -193,7 +212,7 @@
 .label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--foreground-primary);
+  color: var(--foreground-secondary);
 }
 
 .inputWrapper {
@@ -202,23 +221,24 @@
 
 .inputIcon {
   position: absolute;
-  left: 0.875rem;
+  left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--foreground-tertiary);
+  color: var(--foreground-muted);
   pointer-events: none;
-  font-size: 1rem;
+  font-size: 1.125rem;
+  transition: color 0.2s ease;
 }
 
 .input {
   width: 100%;
-  padding: 0.75rem 0.875rem 0.75rem 2.75rem;
+  padding: 0.875rem 1rem 0.875rem 3rem;
   background: var(--control-background);
-  border: 1px solid var(--border-default);
-  border-radius: 10px;
+  border: 1px solid var(--control-border);
+  border-radius: 12px;
   font-size: 0.9375rem;
   color: var(--foreground-primary);
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .input::placeholder {
@@ -228,8 +248,13 @@
 .input:focus {
   outline: none;
   border-color: var(--brand-primary);
-  background: var(--surface-base);
-  box-shadow: 0 0 0 3px rgba(59, 91, 219, 0.1);
+  background: var(--surface-muted);
+  box-shadow: 0 0 0 3px var(--brand-muted);
+}
+
+.input:focus + .inputIcon,
+.inputWrapper:focus-within .inputIcon {
+  color: var(--brand-primary);
 }
 
 .input:disabled {
@@ -239,21 +264,36 @@
 
 .button {
   width: 100%;
-  padding: 0.875rem 1rem;
-  background: var(--brand-primary);
+  padding: 0.9375rem 1.25rem;
+  background: linear-gradient(135deg, var(--brand-primary), #7c3aed);
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   margin-top: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1));
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 .button:hover {
-  background: var(--brand-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--brand-glow);
+}
+
+.button:hover::before {
+  opacity: 1;
 }
 
 .button:active {
@@ -270,21 +310,21 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin: 1.5rem 0 1.25rem;
+  margin: 1.5rem 0;
 }
 
 .dividerLine {
   flex: 1;
   height: 1px;
-  background: var(--border-default);
+  background: linear-gradient(90deg, transparent, var(--border-default), transparent);
 }
 
 .dividerText {
-  color: var(--foreground-tertiary);
+  color: var(--foreground-muted);
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
 }
 
 .socialButtons {
@@ -297,39 +337,44 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: var(--surface-base);
+  gap: 0.625rem;
+  padding: 0.8125rem 1rem;
+  background: var(--surface-muted);
   border: 1px solid var(--border-default);
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--foreground-primary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .socialButton:hover {
-  background: var(--surface-muted);
+  background: var(--surface-hover);
   border-color: var(--border-emphasis);
+  transform: translateY(-1px);
+}
+
+.socialButton:active {
+  transform: translateY(0);
 }
 
 .socialIcon {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
 }
 
 .demoButton {
   width: 100%;
   padding: 0.875rem;
-  background: var(--surface-muted);
+  background: transparent;
   color: var(--foreground-secondary);
   border: 1px dashed var(--border-default);
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
-  margin-top: 1rem;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -337,41 +382,54 @@
 }
 
 .demoButton:hover {
-  background: var(--surface-elevated);
+  background: var(--surface-muted);
+  border-style: solid;
   border-color: var(--border-emphasis);
   color: var(--foreground-primary);
+}
+
+.demoIcon {
+  font-size: 1rem;
 }
 
 .link {
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.875rem;
-  color: var(--foreground-secondary);
+  color: var(--foreground-tertiary);
 }
 
 .link a {
-  color: var(--brand-primary);
+  color: var(--brand-hover);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.15s ease;
+  transition: color 0.2s ease;
 }
 
 .link a:hover {
-  color: var(--brand-hover);
-  text-decoration: underline;
+  color: var(--brand-primary);
 }
 
-.error {
-  background: var(--semantic-error-light);
-  border: 1px solid var(--semantic-error);
-  color: var(--semantic-error);
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  font-size: 0.875rem;
+.termsText {
+  font-size: 0.75rem;
+  color: var(--foreground-muted);
   text-align: center;
+  margin-top: 1.25rem;
+  line-height: 1.6;
 }
 
-.mobileLogo {
+.termsText a {
+  color: var(--foreground-tertiary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+
+.termsText a:hover {
+  color: var(--brand-hover);
+}
+
+.mobileBranding {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -379,15 +437,21 @@
   margin-bottom: 2rem;
 }
 
+@media (min-width: 1024px) {
+  .mobileBranding {
+    display: none;
+  }
+}
+
 .mobileLogoIcon {
-  width: 44px;
-  height: 44px;
-  background: var(--brand-primary);
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--brand-primary), #7c3aed);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 
 .mobileLogoText {
@@ -396,25 +460,35 @@
   color: var(--foreground-primary);
 }
 
-@media (min-width: 900px) {
-  .mobileLogo {
-    display: none;
-  }
+.passwordRequirements {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.375rem;
 }
 
-.termsText {
+.requirement {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.75rem;
-  color: var(--foreground-tertiary);
-  text-align: center;
-  margin-top: 1rem;
-  line-height: 1.5;
+  color: var(--foreground-muted);
 }
 
-.termsText a {
-  color: var(--brand-primary);
-  text-decoration: none;
+.requirementIcon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-default);
 }
 
-.termsText a:hover {
-  text-decoration: underline;
+.requirementMet {
+  background: var(--semantic-success-light);
+  border-color: var(--semantic-success);
+  color: var(--semantic-success);
 }

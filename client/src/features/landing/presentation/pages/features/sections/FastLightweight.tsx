@@ -1,14 +1,24 @@
-import styles from "../../LandingPage.module.css";
+import styles from '../../features/FeaturesPage.module.css';
 
 const FastLightweight = () => (
-  <section className={styles.selfHostSection}>
-    <div className={styles.selfHostContent}>
-      <h2 className={styles.selfHostTitle}>Fast & Lightweight 🚀</h2>
-      <p className={styles.selfHostSubtitle}>
-        SDK y widget ultra-ligeros (&lt; 10kb gzipped), sin dependencias externas. Carga instantánea y rendimiento óptimo en cualquier dispositivo.
+  <section className={styles.section}>
+    <div className={styles.sectionContent}>
+      <h2 className={styles.sectionTitle}>
+        <span className={styles.sectionIcon}>🚀</span>
+        Ultra rápido y ligero
+      </h2>
+      <p className={styles.sectionDesc}>
+        Widget de menos de 10kb gzipped. Lazy loading automático, 
+        cache inteligente y performance optimizada para Core Web Vitals.
       </p>
-      <p className={styles.selfHostNote}>
-        <b>¿Por qué importa?</b> Mejora el SEO, la experiencia de usuario y la conversión.
+      <div className={styles.codeBlock}>
+        <pre>{`# Stats de Bundle
+testimo-widget: 8.2kb gzipped
+Time to Interactive: <100ms
+Lighthouse Performance: 100`}</pre>
+      </div>
+      <p className={styles.note}>
+        <strong>Velocidad importa:</strong> Un widget lento mata la conversión. Testimo no compromete velocidad.
       </p>
     </div>
   </section>
