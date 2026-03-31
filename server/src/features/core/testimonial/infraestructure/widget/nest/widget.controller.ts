@@ -185,7 +185,7 @@ export class WidgetController {
     // TODO: Reemplazar por llamada real a IA si existe endpoint
     let summary = '';
     if (data.length > 0) {
-      summary = `Resumen IA: ${data.length} testimonios. Ejemplo: "${data[0].content}"`;
+      summary = `Según los testimonios de las personas, se destaca lo siguiente: "${data[0].content}"`;
     } else {
       summary = 'Aún no hay testimonios para analizar.';
     }
