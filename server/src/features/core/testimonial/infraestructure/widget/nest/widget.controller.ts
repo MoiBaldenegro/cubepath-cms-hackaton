@@ -8,17 +8,14 @@ import {
   Req,
   UseInterceptors,
   UploadedFile,
+  Header,
 } from '@nestjs/common';
-
-import type { Response } from 'express';
-import type { Request } from 'express';
-
+import type { Response, Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 
 import type { TestimonialRepository } from '../../../domain/ports/TestimonialRepository';
-
 import { OrganizationId } from '../../../domain/value-objects/OrganizationId';
 import { Public } from '../../../../../auth/infrastructure/nest/decorators/public.decorator';
 
@@ -55,9 +52,6 @@ export class WidgetController {
     private readonly mediaRepository: MediaRepository,
   ) {}
 
-  // ========================
-  // SUBMIT TESTIMONIAL
-  // ========================
   @Public()
   @Post('submit')
   @UseInterceptors(FileInterceptor('image'))
@@ -65,23 +59,20 @@ export class WidgetController {
     @UploadedFile() image: Express.Multer.File | undefined,
     @Req() req: Request,
   ) {
-
     const { organizationId, author, content, rating, videoUrl } = req.body || {};
 
     if (!organizationId || !author || !content || !rating) {
       return { success: false, message: 'Missing required fields' };
     }
 
-        // Subir imagen a Cloudinary y asignar URL si existe
-        let imageUrl: TestimonialImageUrl | undefined = undefined;
-        if (image) {
-          const uploadedUrl = await this.mediaRepository.uploadImage(image);
-          if (uploadedUrl) {
-            imageUrl = new TestimonialImageUrl(uploadedUrl);
-          }
-        }
+    let imageUrl: TestimonialImageUrl | undefined = undefined;
+    if (image) {
+      const uploadedUrl = await this.mediaRepository.uploadImage(image);
+      if (uploadedUrl) {
+        imageUrl = new TestimonialImageUrl(uploadedUrl);
+      }
+    }
 
-        // force
     const testimonial = new Testimonial(
       new TestimonialId(randomUUID()),
       new TestimonialIdempotencyKey(randomUUID()),
@@ -100,84 +91,193 @@ export class WidgetController {
     );
 
     await this.testimonialRepository.create(testimonial);
-
     return { success: true, message: 'Testimonial submitted successfully' };
   }
 
-  // ========================
-  // GET DATA
-  // ========================
   @Public()
   @Get('data')
   async getData(@Query('organizationId') organizationId: string) {
     if (!organizationId) return [];
 
-    if (organizationId === 'demo-org-id') {
-      return [
-        {
-          id: '1',
-          content: 'Testimo has transformed how we gather feedback...',
-          author: 'Alice Johnson',
-          rating: 5,
-        },
-        {
-          id: '2',
-          content: 'The API is clean and the documentation is top notch...',
-          author: 'Charlie Brown',
-          rating: 5,
-        },
-      ];
-    }
-
-    const testimonials =
-      await this.testimonialRepository.findApprovedByOrganization(
-        new OrganizationId(organizationId),
-      );
+    const testimonials = await this.testimonialRepository.findApprovedByOrganization(
+      new OrganizationId(organizationId),
+    );
 
     return testimonials.map((t) => ({
       id: t.id.value,
       content: t.content.value,
       author: t.author.value,
       rating: t.rating.value,
+      imageUrl: t.imageUrl?.value,
     }));
   }
 
-  // ========================
-  // EMBED.JS → Sirve el mismo código que tienes en src/main.ts
-  // ========================
   @Public()
   @Get('embed.js')
+  @Header('Content-Type', 'application/javascript')
+  @Header('Access-Control-Allow-Origin', '*')
   getEmbed(@Res() res: Response) {
-    const filePath = join(
-      process.cwd(),
-      'src/features/core/testimonial/infraestructure/widget/nest/main.ts',
-    );
-    // O mejor: sirve el archivo compilado si usas Vite/Rollup
-
-    // Opción recomendada: Servir el archivo JS compilado
-    // Asumiendo que tienes un build del web component en: dist/widget/testimo-widget.js
-
-    const widgetPath = join(process.cwd(), 'dist/widget/testimo-widget.js'); // Ajusta esta ruta según tu build
-
-    res.setHeader('Content-Type', 'application/javascript');
-    res.setHeader('Cache-Control', 'no-cache');
-
-    // Si el archivo existe, lo servimos directamente
-    res.sendFile(widgetPath, (err) => {
-      if (err) {
-        // Fallback: si no existe el archivo compilado, devolvemos un mensaje claro
-        res
-          .status(404)
-          .send(
-            `// Error: testimo-widget.js no encontrado.\n// Por favor compila el Web Component primero.`,
-          );
+    const scriptContent = `
+(function() {
+  if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
+    class TestimoWidget extends HTMLElement {
+      static get observedAttributes() {
+        return ['organization-id', 'theme', 'layout', 'api-url'];
       }
-    });
+
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this._data = [];
+        this._aiSummary = '';
+        this._loading = true;
+        this._error = null;
+        this._submitting = false;
+        this.formListener = null;
+        this.clickListeners = [];
+      }
+
+      connectedCallback() {
+        this.fetchData();
+        this.trackView();
+      }
+
+      disconnectedCallback() {
+        this.removeAllListeners();
+      }
+
+      removeAllListeners() {
+        if (this.formListener) {
+          const form = this.shadowRoot?.getElementById('testimonial-form');
+          if (form) form.removeEventListener('submit', this.formListener);
+          this.formListener = null;
+        }
+        this.clickListeners.forEach(unlisten => unlisten());
+        this.clickListeners = [];
+      }
+
+      get apiUrl() {
+        return this.getAttribute('api-url') || window.location.origin;
+      }
+
+      attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue !== newValue) {
+          if (name === 'organization-id' || name === 'api-url') {
+            this.fetchData();
+          } else {
+            this.render();
+          }
+        }
+      }
+
+      async trackView() {
+        const orgId = this.getAttribute('organization-id');
+        if (!orgId) return;
+        try {
+          await fetch(\`\${this.apiUrl}/analytics/track\`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ organizationId: orgId, type: 'view' })
+          });
+        } catch (e) {}
+      }
+
+      async fetchData() {
+        const orgId = this.getAttribute('organization-id');
+        if (!orgId) {
+          this._error = 'Organization ID is missing';
+          this._loading = false;
+          this.render();
+          return;
+        }
+        this._loading = true;
+        this.render();
+        try {
+          const response = await fetch(\`\${this.apiUrl}/widget/data?organizationId=\${orgId}\`);
+          this._data = await response.json();
+          this._aiSummary = this._data.length > 0 ? \`Resumen de \${this._data.length} testimonios cargados.\` : 'Sin testimonios.';
+        } catch (err) {
+          this._error = 'Error al cargar';
+        } finally {
+          this._loading = false;
+          this.render();
+        }
+      }
+
+      _handleSubmit = async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const orgId = this.getAttribute('organization-id');
+        if (this._submitting || !orgId) return;
+
+        this._submitting = true;
+        this.render();
+
+        try {
+          formData.append('organizationId', orgId);
+          await fetch(\`\${this.apiUrl}/widget/submit\`, { method: 'POST', body: formData });
+          form.reset();
+          alert('¡Gracias por tu testimonio!');
+          this.fetchData();
+        } catch (err) {
+          alert('Error al enviar');
+        } finally {
+          this._submitting = false;
+          this.render();
+        }
+      }
+
+      render() {
+        if (!this.shadowRoot) return;
+        this.removeAllListeners();
+        const isDark = this.getAttribute('theme') === 'dark';
+        
+        const styles = \`
+          :host { display: block; font-family: sans-serif; }
+          .container { padding: 20px; border-radius: 8px; background: \${isDark ? '#333' : '#fff'}; color: \${isDark ? '#fff' : '#000'}; border: 1px solid #ccc; }
+          .card { border-bottom: 1px solid #eee; padding: 10px 0; }
+          form { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+          input, textarea { width: 100%; box-sizing: border-box; }
+        \`;
+
+        const items = this._data.map(t => \`
+          <div class="card">
+            <p>"\${t.content}"</p>
+            <small>- \${t.author} (\${'★'.repeat(t.rating)})</small>
+          </div>
+        \`).join('');
+
+        this.shadowRoot.innerHTML = \`
+          <style>\${styles}</style>
+          <div class="container">
+            <h3>Testimonios</h3>
+            <p><i>\${this._aiSummary}</i></p>
+            <div>\${this._loading ? 'Cargando...' : items}</div>
+            <form id="testimonial-form">
+              <input name="author" placeholder="Tu nombre" required />
+              <input type="number" name="rating" min="1" max="5" value="5" required />
+              <textarea name="content" placeholder="Tu mensaje" required></textarea>
+              <button type="submit" \${this._submitting ? 'disabled' : ''}>
+                \${this._submitting ? 'Enviando...' : 'Enviar Testimonio'}
+              </button>
+            </form>
+          </div>
+        \`;
+
+        const form = this.shadowRoot.getElementById('testimonial-form');
+        if (form) {
+          this.formListener = this._handleSubmit;
+          form.addEventListener('submit', this.formListener);
+        }
+      }
+    }
+    customElements.define('testimo-widget', TestimoWidget);
+  }
+})();`;
+    return res.send(scriptContent);
   }
 
-  // ========================
-  // SDK (opcional)
-  // ========================
   @Public()
   @Get('sdk.js')
   getSdk(@Res() res: Response) {
