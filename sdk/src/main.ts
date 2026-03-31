@@ -11,7 +11,6 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
     private _error: string | null = null;
     private _submitting: boolean = false;
 
-    // Referencias a elementos que necesitamos manipular
     private formListener: ((e: Event) => void) | null = null;
     private clickListeners: (() => void)[] = [];
 
@@ -26,7 +25,6 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
     }
 
     disconnectedCallback() {
-      // Limpieza de listeners al remover el componente
       this.removeAllListeners();
     }
 
@@ -38,6 +36,20 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
 
       this.clickListeners.forEach(unlisten => unlisten());
       this.clickListeners = [];
+    }
+
+    get apiUrl() {
+      return this.getAttribute('api-url') || 'http://hackathoncubepath-server-zzxmva-37677b-108-165-47-237.traefik.me';
+    }
+
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+      if (oldValue !== newValue) {
+        if (name === 'organization-id' || name === 'api-url') {
+          this.fetchData();
+        } else {
+          this.render();
+        }
+      }
     }
 
     async trackView() {
@@ -60,20 +72,6 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
       }
     }
 
-    get apiUrl() {
-      return this.getAttribute('api-url') || 'http://hackathoncubepath-server-zzxmva-37677b-108-165-47-237.traefik.me/';
-    }
-
-    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-      if (oldValue !== newValue) {
-        if (name === 'organization-id' || name === 'api-url') {
-          this.fetchData();
-        } else {
-          this.render();
-        }
-      }
-    }
-
     async fetchData() {
       const orgId = this.getAttribute('organization-id');
       if (!orgId) {
@@ -88,25 +86,23 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
       this.render();
 
       try {
-        // Fetch testimonials
         const response = await fetch(`${this.apiUrl}/widget/data?organizationId=${orgId}`);
         if (!response.ok) throw new Error('Failed to fetch testimonials');
+
         this._data = await response.json();
 
-        // IA summary mock (igual que embed.js)
-        let summary = '';
+        // Generar resumen IA simple
         if (this._data.length > 0) {
           if (this._data.length === 1) {
-            summary = `Las personas comentan que: "${this._data[0].content}"`;
+            this._aiSummary = `Las personas comentan que: "${this._data[0].content}"`;
           } else if (this._data.length === 2) {
-            summary = `Las personas comentan que: "${this._data[0].content}" y "${this._data[1].content}"`;
+            this._aiSummary = `Las personas comentan que: "${this._data[0].content}" y "${this._data[1].content}"`;
           } else {
-            summary = `Las personas comentan que: "${this._data[0].content}", "${this._data[1].content}" y otros ${this._data.length - 2} testimonios más.`;
+            this._aiSummary = `Las personas comentan que: "${this._data[0].content}", "${this._data[1].content}" y otros ${this._data.length - 2} testimonios más.`;
           }
         } else {
-          summary = 'Aún no hay testimonios para analizar.';
+          this._aiSummary = 'Aún no hay testimonios para analizar.';
         }
-        this._aiSummary = summary;
       } catch (err: any) {
         this._error = err.message || 'Failed to load testimonials';
       } finally {
@@ -120,7 +116,6 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
 
       const form = e.target as HTMLFormElement;
       const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
       const orgId = this.getAttribute('organization-id');
       const feedback = this.shadowRoot?.getElementById('form-feedback') as HTMLDivElement;
 
@@ -130,33 +125,34 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
       const btn = form.querySelector('button') as HTMLButtonElement;
       if (btn) {
         btn.disabled = true;
-        btn.textContent = 'Submitting...';
+        btn.textContent = 'Enviando...';
       }
 
       try {
+        formData.append('organizationId', orgId);
+
         const response = await fetch(`${this.apiUrl}/widget/submit`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...data, organizationId: orgId }),
+          body: formData,                    // Usamos FormData porque hay archivo
         });
 
         if (!response.ok) throw new Error('Failed to submit');
 
         form.reset();
         if (feedback) {
-          feedback.textContent = 'Thank you! Your testimonial has been submitted for review.';
+          feedback.textContent = '¡Gracias! Tu testimonio ha sido enviado para revisión.';
           feedback.className = 'success-msg';
         }
       } catch (err) {
         if (feedback) {
-          feedback.textContent = 'Error submitting testimonial. Please try again.';
+          feedback.textContent = 'Error al enviar el testimonio. Inténtalo de nuevo.';
           feedback.className = 'error-msg';
         }
       } finally {
         this._submitting = false;
         if (btn) {
           btn.disabled = false;
-          btn.textContent = 'Submit Testimonial';
+          btn.textContent = 'Enviar testimonio';
         }
       }
     };
@@ -164,7 +160,6 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
     render() {
       if (!this.shadowRoot) return;
 
-      // Limpiar listeners anteriores antes de re-renderizar
       this.removeAllListeners();
 
       const theme = this.getAttribute('theme') || 'light';
@@ -183,6 +178,7 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           max-width: 100%;
           margin: 20px auto;
+          border-radius: 12px;
         }
         h2, h3 {
           text-align: center;
@@ -191,16 +187,19 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
         }
         h2 { font-size: 24px; }
         h3 { font-size: 20px; margin-bottom: 20px; }
+
         .grid {
           display: grid;
-        formData.append('organizationId', orgId);
           grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
           gap: 20px;
-          const response = await fetch(`${this.apiUrl}/widget/submit`, {
-            method: 'POST',
-            body: formData,
-          });
         }
+
+        .list {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
         .card {
           border: 1px solid ${isDark ? '#333' : '#eee'};
           padding: 20px;
@@ -228,17 +227,10 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
           color: #f59e0b;
           font-size: 18px;
         }
-        .error {
-          color: #ef4444;
-          text-align: center;
-          padding: 20px;
-        }
-        .loading {
-          text-align: center;
-          padding: 20px;
-          color: #888;
-        }
-        
+
+        .error { color: #ef4444; text-align: center; padding: 20px; }
+        .loading { text-align: center; padding: 40px; color: #888; }
+
         /* Form Styles */
         .form-section {
           margin-top: 40px;
@@ -271,10 +263,10 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
           border-radius: 8px;
           font-weight: 600;
           cursor: pointer;
-          transition: background-color 0.2s;
         }
         button:hover:not(:disabled) { background-color: #2563eb; }
         button:disabled { background-color: #93c5fd; cursor: not-allowed; }
+
         .success-msg { color: #10b981; text-align: center; margin-top: 10px; font-weight: 500; }
         .error-msg { color: #ef4444; text-align: center; margin-top: 10px; }
       `;
@@ -282,7 +274,7 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
       let content = '';
 
       if (this._loading) {
-        content = '<div class="loading">Loading testimonials...</div>';
+        content = '<div class="loading">Cargando testimonios...</div>';
       } else if (this._error) {
         content = `<div class="error">Error: ${this._error}</div>`;
       } else {
@@ -327,6 +319,7 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
             <textarea name="content" placeholder="Tu testimonio" required></textarea>
             <label>Imagen (opcional): <input type="file" name="image" accept="image/*" /></label>
             <input type="text" name="videoUrl" placeholder="URL de video (opcional)" />
+            
             <div style="margin:8px 0 0 0;">
               <span style="font-size:14px;">Etiquetas:</span><br/>
               <label><input type="checkbox" name="tags" value="PRODUCT" /> Producto</label>
@@ -349,14 +342,14 @@ if (typeof window !== 'undefined' && !customElements.get('testimo-widget')) {
         </div>
       `;
 
-      // Agregar listener del formulario (solo una vez por render)
+      // Agregar listener del formulario
       const form = this.shadowRoot.getElementById('testimonial-form') as HTMLFormElement;
       if (form) {
         this.formListener = this._handleSubmit;
         form.addEventListener('submit', this.formListener);
       }
 
-      // Agregar listeners de clic en tarjetas
+      // Agregar listeners de clic en las tarjetas
       const list = this.shadowRoot.getElementById('testimo-list');
       if (list) {
         this.clickListeners = [];

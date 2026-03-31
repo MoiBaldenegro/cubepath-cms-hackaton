@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth } from '../../../../shared/contexts/useAuth';
 import styles from './EmbedWidget.module.css';
 
@@ -11,32 +11,45 @@ export const EmbedWidget = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
   const [selectedFramework, setSelectedFramework] = useState<Framework>('react');
+
   const [copied, setCopied] = useState(false);
   const [envCopied, setEnvCopied] = useState(false);
   const [installCopied, setInstallCopied] = useState(false);
 
   const { user } = useAuth();
-  const organizationId = (user && user.organizationId) ? user.organizationId : 'TU_ORG_ID';
+  const organizationId = user?.organizationId ?? 'TU_ORG_ID';
+
   const scriptSrc = `${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}`;
 
-  const scriptExample = `<!--
-INTEGRación rápida con Testimo
-El código ya está configurado con tu Organization ID
--->
-<script
-  src="${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}"
-    astro: {
-      label: 'Astro',
-      variable: 'PUBLIC_ORG_ID',
+  const frameworkConfig: Record<Framework, {
+    label: string;
+    variable: string;
+    install: string;
+    getCode: (orgId: string, theme: string, layout: string) => string;
+  }> = {
+    react: {
+      label: 'React (Vite)',
+      variable: 'VITE_ORG_ID',
       install: 'npm install testimo-widget',
-      code: `---
+      getCode: (orgId, theme, layout) => `import 'testimo-widget';
+
+export function Testimonials() {
+  const orgId = import.meta.env.VITE_ORG_ID;
+
+  return (
+    <testimo-widget 
+      organization-id={orgId} 
+      theme="${theme}" 
+      layout="${layout}"
+    ></testimo-widget>
   );
 }`
+    },
     astro: {
       label: 'Astro',
       variable: 'PUBLIC_ORG_ID',
       install: 'npm install testimo-widget',
-      code: `---
+      getCode: (orgId, theme, layout) => `---
 import 'testimo-widget';
 const orgId = import.meta.env.PUBLIC_ORG_ID;
 ---
@@ -51,7 +64,7 @@ const orgId = import.meta.env.PUBLIC_ORG_ID;
       label: 'Vue (Vite)',
       variable: 'VITE_ORG_ID',
       install: 'npm install testimo-widget',
-      code: `<script setup>
+      getCode: (orgId, theme, layout) => `<script setup>
 import 'testimo-widget';
 const orgId = import.meta.env.VITE_ORG_ID;
 </script>
@@ -68,7 +81,7 @@ const orgId = import.meta.env.VITE_ORG_ID;
       label: 'Nuxt 3',
       variable: 'NUXT_PUBLIC_ORG_ID',
       install: 'npm install testimo-widget',
-      code: `<!-- plugin/testimo.client.ts -->
+      getCode: (orgId, theme, layout) => `<!-- plugins/testimo.client.ts -->
 import 'testimo-widget';
 
 <!-- Component.vue -->
@@ -89,7 +102,7 @@ const orgId = config.public.orgId;
       label: 'Svelte/Kit',
       variable: 'PUBLIC_ORG_ID',
       install: 'npm install testimo-widget',
-      code: `<script>
+      getCode: (orgId, theme, layout) => `<script>
   import { onMount } from 'svelte';
   import { env } from '$env/dynamic/public';
 
@@ -108,7 +121,7 @@ const orgId = config.public.orgId;
       label: 'SolidJS',
       variable: 'VITE_ORG_ID',
       install: 'npm install testimo-widget',
-      code: `import 'testimo-widget';
+      getCode: (orgId, theme, layout) => `import 'testimo-widget';
 
 export default function Testimonials() {
   const orgId = import.meta.env.VITE_ORG_ID;
@@ -126,7 +139,7 @@ export default function Testimonials() {
       label: 'Angular',
       variable: 'NG_APP_ORG_ID',
       install: 'npm install testimo-widget',
-      code: `// app.module.ts
+      getCode: (orgId, theme, layout) => `// app.module.ts
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import 'testimo-widget';
 
@@ -145,9 +158,30 @@ import 'testimo-widget';
       label: 'HTML / Buildless',
       variable: 'ORG_ID',
       install: 'npm install testimo-widget',
-      code: `<!-- index.html -->
+      getCode: (orgId, theme, layout) => `<!-- index.html -->
 <script
-  src="${API_URL}/widget/embed.js?organizationId=${organizationId}"
+  src="${API_URL}/widget/embed.js?organizationId=${orgId}&theme=${theme}&layout=${layout}"
+  type="module"
+  async>
+</script>
+
+<testimo-widget 
+  organization-id="${orgId}" 
+  theme="${theme}" 
+  layout="${layout}"
+></testimo-widget>`
+    }
+  };
+
+  // Código final que se muestra (corregido)
+  const embedCode = useMemo(() => {
+    if (integrationMethod === 'script') {
+      return `<!--
+Integración rápida con Testimo
+El código ya está configurado con tu Organization ID
+-->
+<script
+  src="${API_URL}/widget/embed.js?organizationId=${organizationId}&theme=${theme}&layout=${layout}"
   type="module"
   async>
 </script>
@@ -156,38 +190,46 @@ import 'testimo-widget';
   organization-id="${organizationId}" 
   theme="${theme}" 
   layout="${layout}"
-></testimo-widget>`
+></testimo-widget>`;
     }
-  };
 
-  let embedCode = '';
-  if (integrationMethod === 'script') {
-    embedCode = scriptExample;
-  } else {
-    let code = frameworkConfig[selectedFramework].code;
-    if (organizationId && organizationId !== 'TU_ORG_ID') {
-      code = code.replace(/TU_ORG_ID|orgId|process.env.(NEXT_PUBLIC_ORG_ID|NUXT_PUBLIC_ORG_ID|PUBLIC_ORG_ID)/g, organizationId);
+    // Para NPM
+    const config = frameworkConfig[selectedFramework];
+    let code = config.getCode(organizationId, theme, layout);
+
+    // REEMPLAZO CORREGIDO: Solo reemplazamos el valor real, NO la variable "orgId"
+    if (organizationId !== 'TU_ORG_ID') {
+      // Reemplazamos solo cuando el valor está entre comillas o como string literal
+      const orgIdRegex = new RegExp(`(["'])${organizationId}([\"'])`, 'g'); // evita reemplazos erróneos
+      code = code.replace(orgIdRegex, `$1${organizationId}$2`);
+
+      // Reemplazo seguro para los casos donde aún aparece el placeholder
+      code = code.replace(/TU_ORG_ID/g, organizationId);
     }
-    embedCode = code;
-  }
+
+    return code;
+  }, [integrationMethod, selectedFramework, theme, layout, organizationId]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(embedCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(embedCode).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   const handleEnvCopy = () => {
     const variableName = frameworkConfig[selectedFramework].variable;
-    navigator.clipboard.writeText(`${variableName}=${organizationId}`);
-    setEnvCopied(true);
-    setTimeout(() => setEnvCopied(false), 2000);
+    navigator.clipboard.writeText(`${variableName}=${organizationId}`).then(() => {
+      setEnvCopied(true);
+      setTimeout(() => setEnvCopied(false), 2000);
+    });
   };
 
   const handleInstallCopy = () => {
-    navigator.clipboard.writeText(frameworkConfig[selectedFramework].install);
-    setInstallCopied(true);
-    setTimeout(() => setInstallCopied(false), 2000);
+    navigator.clipboard.writeText(frameworkConfig[selectedFramework].install).then(() => {
+      setInstallCopied(true);
+      setTimeout(() => setInstallCopied(false), 2000);
+    });
   };
 
   return (
@@ -320,7 +362,7 @@ import 'testimo-widget';
         <h3 className={styles.previewTitle}>Vista Previa</h3>
         <div className={styles.previewContainer}>
           <iframe 
-            key={`${theme}-${layout}-${integrationMethod}-${selectedFramework}`}
+            key={`${theme}-${layout}-${organizationId}`}
             className={styles.previewIframe}
             srcDoc={`
               <!DOCTYPE html>
