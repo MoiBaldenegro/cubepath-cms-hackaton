@@ -185,7 +185,13 @@ export class WidgetController {
     // TODO: Reemplazar por llamada real a IA si existe endpoint
     let summary = '';
     if (data.length > 0) {
-      summary = `Según los testimonios de las personas, se destaca lo siguiente: "${data[0].content}"`;
+      if (data.length === 1) {
+        summary = `Las personas comentan que: "${data[0].content}"`;
+      } else if (data.length === 2) {
+        summary = `Las personas comentan que: "${data[0].content}" y "${data[1].content}"`;
+      } else {
+        summary = `Las personas comentan que: "${data[0].content}", "${data[1].content}" y otros ${data.length - 2} testimonios más.`;
+      }
     } else {
       summary = 'Aún no hay testimonios para analizar.';
     }
