@@ -64,8 +64,8 @@ export class WidgetController {
     @UploadedFile() image: Express.Multer.File | undefined,
     @Req() req: Request,
   ) {
-    const { organizationId, author, content, rating, videoUrl } =
-      req.body || {};
+
+    const { organizationId, author, content, rating, videoUrl } = req.body || {};
 
     if (!organizationId || !author || !content || !rating) {
       return { success: false, message: 'Missing required fields' };
@@ -80,6 +80,7 @@ export class WidgetController {
           }
         }
 
+
     const testimonial = new Testimonial(
       new TestimonialId(randomUUID()),
       new TestimonialIdempotencyKey(randomUUID()),
@@ -92,7 +93,7 @@ export class WidgetController {
       new TestimonialIsEdited(false),
       new OrganizationId(organizationId),
       imageUrl,
-      videoUrl || undefined,
+      videoUrl,
       new TestimonialCreatedAt(new Date()),
       undefined,
     );

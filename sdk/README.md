@@ -1,3 +1,11 @@
+# ✨ Resumen Automático con IA
+
+El widget incluye una funcionalidad de resumen inteligente impulsada por IA. Al mostrar los testimonios, el widget genera automáticamente un resumen destacado que ayuda a tus usuarios a captar rápidamente lo más relevante de las opiniones recibidas.
+
+- El resumen se actualiza dinámicamente conforme se agregan nuevos testimonios.
+- No requiere configuración adicional: simplemente integra el widget y disfruta de esta feature avanzada.
+- Ideal para mostrar insights rápidos y mejorar la conversión en tu sitio.
+
 ### Ejemplo de uso en React + TypeScript
 
 ```tsx
