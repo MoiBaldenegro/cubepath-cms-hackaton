@@ -120,9 +120,11 @@ export class OpenRouterAISummaryService implements AISummaryService {
           typeof dataUnknown === 'object' &&
           'error' in dataUnknown &&
           (dataUnknown as Record<string, unknown>).error &&
-          typeof ((dataUnknown as { error: { message?: unknown } }).error).message === 'string'
+          typeof (dataUnknown as { error: { message?: unknown } }).error
+            .message === 'string'
         ) {
-          errorMsg = (dataUnknown as { error: { message: string } }).error.message;
+          errorMsg = (dataUnknown as { error: { message: string } }).error
+            .message;
         }
         throw new Error(errorMsg);
       }

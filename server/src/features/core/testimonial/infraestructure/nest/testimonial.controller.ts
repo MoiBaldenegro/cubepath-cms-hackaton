@@ -64,20 +64,28 @@ export class TestimonialController {
 
   @Public()
   @Get('approved')
-  async findApproved(@Query() query: FindApprovedTestimonialsDto, @Request() req) {
-    const testimonials = await this.testimonialServices.findApprovedTestimonials.run(query);
+  async findApproved(
+    @Query() query: FindApprovedTestimonialsDto,
+    @Request() req,
+  ) {
+    const testimonials =
+      await this.testimonialServices.findApprovedTestimonials.run(query);
     let aiTestimonial;
     try {
-      const organizationId = req.user?.organizationId || (testimonials[0] && testimonials[0].organizationId);
+      const organizationId =
+        req.user?.organizationId ||
+        (testimonials[0] && testimonials[0].organizationId);
       if (organizationId) {
-        const aiResult = await this.summarizeTestimonialsUseCase.execute(organizationId);
-        aiTestimonial = typeof aiResult === 'string' ? JSON.parse(aiResult) : aiResult;
+        const aiResult =
+          await this.summarizeTestimonialsUseCase.execute(organizationId);
+        aiTestimonial =
+          typeof aiResult === 'string' ? JSON.parse(aiResult) : aiResult;
       } else {
         aiTestimonial = {
           content: 'Aún no hay testimonios. ¡Sé el primero en dejar el tuyo!',
           rating: 0,
           author: 'Generado por AI',
-          aiGenerated: true
+          aiGenerated: true,
         };
       }
     } catch {
@@ -85,7 +93,7 @@ export class TestimonialController {
         content: 'Aún no hay testimonios. ¡Sé el primero en dejar el tuyo!',
         rating: 0,
         author: 'Generado por AI',
-        aiGenerated: true
+        aiGenerated: true,
       };
     }
     return [aiTestimonial, ...testimonials.map((t) => t.toPrimitives())];
